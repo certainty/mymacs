@@ -1,0 +1,61 @@
+;;; core-completion.el --- Completion -*- lexical-binding: t; -*-
+;;
+;; Copyright (C) 2025 David Krentzlin
+;;
+;; Author: David Krentzlin <david.krentzlin@new-work.se>
+;; Maintainer: David Krentzlin <david.krentzlin@new-work.se>
+;; Created: December 17, 2025
+;; Modified: December 17, 2025
+;; Version: 0.0.1
+;; Keywords: Symbol’s value as variable is void: finder-known-keywords
+;; Homepage: https://github.com/david-krentzlin/core-completion
+;; Package-Requires: ((emacs "24.3"))
+;;
+;; This file is not part of GNU Emacs.
+;;
+;;; Commentary:
+;;
+;;  Description
+;;
+;;; Code:
+
+;;; Minibuffer
+(use-package emacs
+  :init
+  (setq enable-recursive-minibuffers t)
+  (minibuffer-depth-indicate-mode 1))
+
+(use-package vertico
+  :init
+  (vertico-mode)
+  :custom
+  (vertico-cycle t))
+
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles partial-completion)))))
+
+;;; In-Buffer
+(use-package corfu
+  :defer t
+  :custom
+  (corfu-auto t)
+  (corfu-quit-no-match 'separator)
+  (corfu-auto-delay 0.2)
+  (corfu-auto-prefix 2)
+  :general
+  (:keymaps 'corfu-map
+            "C-y" 'corfu-insert
+            "TAB" 'corfu-next
+            [tab] 'corfu-next
+            "S-TAB" 'corfu-previous
+            [backtab] 'corfu-previous)
+  :init
+  (global-corfu-mode)
+  :config
+  (diminish 'corfu-mode))
+
+(provide 'core-completion)
+;;; core-completion.el ends here

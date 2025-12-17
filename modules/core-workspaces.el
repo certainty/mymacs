@@ -1,0 +1,74 @@
+;;; core-workspaces.el --- Workspaces and projects -*- lexical-binding: t; -*-
+;;
+;;
+;;; Commentary:
+;;
+;;  Description
+;;
+;;; Code:
+
+(use-package project
+  :straight nil
+  :general
+  (leader-def
+   "SPC" 'project-find-file
+   "pp" 'project-switch-project
+   "pf" 'project-find-file
+   "pb" 'project-switch-to-buffer
+   "pd" 'project-dired
+   "ps" 'consult-ripgrep
+   "pk" 'project-kill-buffers
+   "pc" 'project-compile)
+  :custom
+  (project-switch-commands
+   '((project-find-file "Find file" ?f)
+     (consult-ripgrep "Ripgrep" ?s)
+     (project-dired "Dired" ?d)
+     (magit-project-status "Magit" ?g)
+     (project-eshell "Eshell" ?e)))
+
+  :config
+  (setq project-vc-extra-root-markers '(".project" ".git" ".node_modules")))
+
+(use-package tabspaces
+  :hook (after-init . tabspaces-mode)
+  :commands (tabspaces-switch-or-create-workspace
+             tabspaces-open-or-create-project-and-workspace)
+  :general
+  (leader-def
+   "TAB TAB" 'tabspaces-switch-or-create-workspace
+   "TAB p" 'tabspaces-open-or-create-project-and-workspace
+   "TAB d" 'tabspaces-close-workspace
+   "TAB b" 'tabspaces-switch-to-buffer
+   "TAB k" 'tabspaces-kill-buffers-close-workspace
+   "TAB R" 'tabspaces-restore-session
+   "TAB S" 'tabspaces-save-session
+   "TAB C" 'tabspaces-clear-buffers
+   "TAB ." 'tabspaces-switch-buffer-and-tab)
+  :custom
+  (tabspaces-use-filtered-buffers-as-default t)
+  (tabspaces-default-tab "Default")
+  (tabspaces-remove-to-default t)
+  (tabspaces-include-buffers '("*scratch*"))
+  (tabspaces-session t)
+  (tabspaces-session-auto-restore nil))
+
+(with-eval-after-load 'consult
+  (consult-customize consult--source-buffer :hidden t :default nil)
+  (defvar consult--source-workspace
+    (list :name     "Workspace Buffers"
+          :narrow   ?w
+          :history  'buffer-name-history
+          :category 'buffer
+          :state    #'consult--buffer-state
+          :default  t
+          :items    (lambda () (consult--buffer-query
+                                :predicate #'tabspaces--local-buffer-p
+                                :sort 'visibility
+                                :as #'buffer-name)))
+    "Workspace buffer candidate source for `consult-buffer'.")
+  (add-to-list 'consult-buffer-sources 'consult--source-workspace))
+
+
+(provide 'core-workspaces)
+;;; core-workspaces.el ends here
