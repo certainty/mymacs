@@ -11,6 +11,8 @@
   :straight nil
   :general
   (leader-def
+   "/" 'consult-ripgrep
+   "*" 'my/ripgrep-symbol
    "SPC" 'project-find-file
    "pp" 'project-switch-project
    "pf" 'project-find-file
@@ -19,6 +21,7 @@
    "ps" 'consult-ripgrep
    "pk" 'project-kill-buffers
    "pc" 'project-compile)
+
   :custom
   (project-switch-commands
    '((project-find-file "Find file" ?f)
@@ -26,6 +29,13 @@
      (project-dired "Dired" ?d)
      (magit-project-status "Magit" ?g)
      (project-eshell "Eshell" ?e)))
+
+  :preface
+  (defun my/ripgrep-symbol ()
+    "Search for symbol at point in project using ripgrep."
+    (interactive)
+    (consult-ripgrep (project-root (project-current t))
+                     (thing-at-point 'symbol)))
 
   :config
   (setq project-vc-extra-root-markers '(".project" ".git" ".node_modules")))

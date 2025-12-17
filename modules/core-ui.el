@@ -110,27 +110,10 @@
      :header-line-active spacious-padding-line-active
      :header-line-inactive spacious-padding-line-inactive)))
 
-;;;  Minibuffer
-(use-package marginalia
-  :hook after-init)
-
 ;;;; Nerd Icons
 (use-package nerd-icons
   :demand t
   :if (display-graphic-p))
-
-(use-package nerd-icons-completion
-  :after (marginalia nerd-icons)
-  :hook after-init
-  :config
-  (nerd-icons-completion-mode)
-
-  :init
-  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
-
-(use-package nerd-icons-dired
-  :after nerd-icons
-  :hook (dired-mode . nerd-icons-dired-mode))
 
 ;;;; HL-TODO - Highlight keywords in comments
 (use-package hl-todo

@@ -21,9 +21,19 @@
   (electric-pair-mode -1)
   (electric-indent-mode -1)
   (global-visual-line-mode -1)
-  (global-auto-revert-mode 1)
+  (global-auto-revert-mode 1))
 
-  (add-hook 'prog-mode-hook 'display-line-numbers-mode))
+(use-package display-line-numbers
+  :straight (:type built-in)
+  :hook (prog-mode . display-line-numbers-mode)
+
+  :general
+  (leader-def
+   "tl" 'display-line-numbers-mode)
+
+  :custom
+  (display-line-numbers-type t)
+  (display-line-numbers-width-start t))
 
 (use-package evil-nerd-commenter
   :after evil

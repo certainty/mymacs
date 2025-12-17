@@ -58,7 +58,6 @@
 
   :custom
   (user-full-name "David Krentzlin")
-  (user-mail-address (if (my/featurep 'context/private "david@krentzlin.me" "david.krentzlin@new-work.se")))
   (custom-file (expand-file-name "custom.el" user-emacs-directory))
   (ring-bell-function 'ignore)
   (use-short-answers t)
@@ -67,7 +66,11 @@
 
   (scroll-margin 0)
   (scroll-conservatively 100000)
-  (scroll-preserve-screen-position 1))
+  (scroll-preserve-screen-position 1)
+  :config
+  (if (my/featurep 'context/private)
+      (setopt user-mail-address "david@krentzlin.me")
+    (setopt user-mail-address "david.krentzlin@new-work.se")))
 
 (use-package diminish
   :demand t)

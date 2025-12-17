@@ -25,6 +25,13 @@
   (setq enable-recursive-minibuffers t)
   (minibuffer-depth-indicate-mode 1))
 
+(use-package savehist
+  :straight (:type built-in)
+  :hook (after-init . savehist-mode)
+  :custom
+  (savehist-save-minibuffer-history t)
+  (savehist-autosave-interval 100))
+
 (use-package vertico
   :init
   (vertico-mode)
@@ -37,14 +44,34 @@
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles partial-completion)))))
 
+(use-package marginalia
+  :hook after-init)
+
+(use-package nerd-icons-completion
+  :after (marginalia nerd-icons)
+  :hook after-init
+  :config
+  (nerd-icons-completion-mode)
+
+  :init
+  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+
 ;;; In-Buffer
 (use-package corfu
-  :defer t
+  :hook
+  (after-init . global-corfu-mode)
+  (corfu-mode . corfu-popupinfo-mode)
   :custom
   (corfu-auto t)
   (corfu-quit-no-match 'separator)
   (corfu-auto-delay 0.2)
   (corfu-auto-prefix 2)
+  (corfu-min-width 20)
+  (corfu-bar-width 0.5)
+  (corfu-count 10)
+  (corfu-cycle t)
+  (corfu-popupinfo-delay '(1.25 . 0.5))
+
   :general
   (:keymaps 'corfu-map
             "C-y" 'corfu-insert
@@ -52,10 +79,34 @@
             [tab] 'corfu-next
             "S-TAB" 'corfu-previous
             [backtab] 'corfu-previous)
-  :init
-  (global-corfu-mode)
   :config
+  (with-eval-after-load 'savehist
+    (use-package corfu-history
+      :demand t
+      :straight nil
+      :hook corfu-mode)
+    (corfu-history-mode 1)
+    (add-to-list 'savehist-additional-variables 'corfu-history))
   (diminish 'corfu-mode))
+
+(use-package nerd-icons-corfu
+  :after corfu
+  :init
+  (with-eval-after-load 'corfu
+    (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)))
+
+(use-package kind-icon
+  :after corfu
+  :custom
+  (kind-icon-style 'nerd-icons)
+  (kind-icon-use-icons t)
+  (kind-icon-default-face 'corfu-default)
+  (kind-icon-blend-background nil)
+
+  :init
+  (with-eval-after-load 'corfu
+    (add-to-list 'corfu-margin-formatters 'kind-icon-margin-formatter)))
+
 
 (provide 'core-completion)
 ;;; core-completion.el ends here

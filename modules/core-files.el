@@ -73,6 +73,11 @@
   (when (and (eq system-type 'darwin) (executable-find "gls"))
     (setq insert-directory-program "gls")))
 
+
+(use-package nerd-icons-dired
+  :after nerd-icons
+  :hook (dired-mode . nerd-icons-dired-mode))
+
 (use-package dired-aux
   :straight (:type built-in)
   :after dired
