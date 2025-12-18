@@ -24,18 +24,18 @@
 
   :general
   (leader-def
-   "c" '(:ignore t :which-key "code")
-   "cl" 'eglot
-   "cr" 'eglot-rename
-   "cf" 'eglot-format
-   "ca" 'eglot-code-actions
-   "cd" 'xref-find-definitions
-   "cD" 'xref-find-references
-   "ci" 'eglot-find-implementation
-   "ct" 'eglot-find-typeDefinition
-   "cR" 'eglot-reconnect
-   "cQ" 'eglot-shutdown
-   "cS" 'eglot-shutdown-all)
+    "c" '(:ignore t :which-key "code")
+    "cl" 'eglot
+    "cr" 'eglot-rename
+    "cf" 'eglot-format
+    "ca" 'eglot-code-actions
+    "cd" 'xref-find-definitions
+    "cD" 'xref-find-references
+    "ci" 'eglot-find-implementation
+    "ct" 'eglot-find-typeDefinition
+    "cR" 'eglot-reconnect
+    "cQ" 'eglot-shutdown
+    "cS" 'eglot-shutdown-all)
 
   :bind
   (:map eglot-mode-map
@@ -62,12 +62,12 @@
   :hook (prog-mode . flymake-mode)
   :general
   (leader-def
-   "!" '(:ignore t :which-key "diagnostics")
-   "!!" 'consult-flymake
-   "!l" 'flymake-show-buffer-diagnostics
-   "!L" 'flymake-show-project-diagnostics
-   "!n" 'flymake-goto-next-error
-   "!p" 'flymake-goto-prev-error)
+    "!" '(:ignore t :which-key "diagnostics")
+    "!!" 'consult-flymake
+    "!l" 'flymake-show-buffer-diagnostics
+    "!L" 'flymake-show-project-diagnostics
+    "!n" 'flymake-goto-next-error
+    "!p" 'flymake-goto-prev-error)
   :custom
   (flymake-no-changes-timeout 0.5)
   (flymake-start-on-save-buffer t)
@@ -85,8 +85,8 @@
   :defer 2
   :general
   (leader-def
-   "to" 'apheleia-mode
-   "tO" 'apheleia-global-mode)
+    "to" 'apheleia-mode
+    "tO" 'apheleia-global-mode)
   :config
   (apheleia-global-mode +1)
   (diminish 'apheleia-mode)
@@ -119,6 +119,17 @@
   (setf (alist-get 'go-ts-mode apheleia-mode-alist) 'gofmt)
   (setf (alist-get 'sh-mode apheleia-mode-alist) 'shfmt)
   (setf (alist-get 'bash-ts-mode apheleia-mode-alist) 'shfmt))
+
+
+;;; Global dev related settings
+(use-package paren
+  :straight (:type built-in)
+  :hook (prog-mode . show-paren-mode)
+  :custom
+  (show-paren-delay 0))
+
+(use-package highlight-parentheses
+  :hook prog-mode)
 
 
 (provide 'dev-base)

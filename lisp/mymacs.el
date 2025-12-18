@@ -15,24 +15,25 @@
 "
   (assoc-delete-all 'feature *my/features*)
   (setq *my/features*
-        (cons (cons feature value) *my/features*)))
+    (cons (cons feature value) *my/features*)))
 
 (cl-defun my/featurep (feature &key (value t))
-  (equal value (assoc feature *my/features*)))
+  (equal value (alist-get feature *my/features*)))
 
 (cl-defun my/require (file &key (guard t))
   "Load the file provided via `FILE' conditionally, depending on the value of `GUARD'."
   (when guard
+    (message "loading file: %s" file)
     (require file)))
 
 (cl-defun my/display-buffer-right (identifier &optional (size 0.3))
   "Simplified interface to manage where buffers are displayed"
   (add-to-list 'display-buffer-alist
-               `(,identifier
-                 (display-buffer-reuse-window display-buffer-in-side-window)
-                 (reusable-frames . visible)
-                 (side . right)
-                 (window-hight . ,size))))
+    `(,identifier
+       (display-buffer-reuse-window display-buffer-in-side-window)
+       (reusable-frames . visible)
+       (side . right)
+       (window-hight . ,size))))
 
 (provide 'mymacs)
 ;;; mymacs.el ends here

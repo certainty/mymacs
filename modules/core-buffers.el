@@ -180,6 +180,7 @@ The DWIM behaviour of this command is as follows:
 
 (with-eval-after-load 'general
   (leader-def
+    "|" 'split-window-right
     "wh" 'evil-window-left
     "wj" 'evil-window-down
     "wk" 'evil-window-up
