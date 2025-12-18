@@ -6,22 +6,22 @@
 ;;
 ;;; Code:
 
-(defcustom my/font "Iosevka Nerd Font"
+(defcustom my/font "Iosevka Nerd Font Mono"
   "Fixed pitch font"
   :type 'string
   :group 'mymacs)
 
-(defcustom my/pitch-font "Iosevka Aile"
+(defcustom my/pitch-font "Iosevka Nerd Font Propo"
   "Variable pitch font"
   :type 'string
   :group 'mymacs)
 
-(defcustom my/font-size 130
+(defcustom my/font-size 110
   "Default font size to use"
   :type 'integer
   :group 'mymacs)
 
-(defcustom my/bigger-font-size 170
+(defcustom my/bigger-font-size 140
   "Default font size to use"
   :type 'integer
   :group 'mymacs)
@@ -32,12 +32,12 @@
   :group 'mymacs)
 
 (defcustom my/org-path "~/Org"
-  "Path to the org files"
+  "Path to the org files."
   :type 'string
   :group 'mymacs)
 
 (defcustom my/notes-path "~/Notes"
-  "Path to the note files"
+  "Path to the note files."
   :type 'string
   :group 'mymacs)
 

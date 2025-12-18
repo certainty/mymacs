@@ -43,8 +43,11 @@
 (my/require 'core-completion)
 (my/require 'core-search)
 (my/require 'core-workspaces)
+(my/require 'core-dashboard)
 
 (my/require 'dev-base)
+
+(my/require 'tools-vc)
 
 (provide 'init)
 ;;; init.el ends here

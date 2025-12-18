@@ -54,15 +54,26 @@
   (revert-buffer t t t)
   (message "Buffer reverted"))
 
+
+(use-package uniquify
+  :demand t
+  :straight (:type built-in)
+  :custom
+  (uniquify-buffer-name-style 'forward)
+  (uniquify-strip-common-suffix t)
+  (uniquify-separator "/")
+  (uniquify-after-kill-buffer-p t)
+  (uniquify-ignore-buffers-re "^\\*"))
+
 ;;;; Popper - Popup buffer management
 (use-package popper
   :demand t
   :general
   (leader-def
-   "b`" 'popper-toggle
-   "b~" 'popper-cycle
-   "bT" 'popper-toggle-type
-   "bP" 'popper-kill-latest-popup)
+    "b`" 'popper-toggle
+    "b~" 'popper-cycle
+    "bT" 'popper-toggle-type
+    "bP" 'popper-kill-latest-popup)
   :custom
   (popper-reference-buffers
    '("\\*Messages\\*"
@@ -83,22 +94,22 @@
 
 (with-eval-after-load 'general
   (leader-def
-   "bb" 'consult-buffer
-   "bB" 'switch-to-buffer
-   "bk" 'kill-buffer
-   "bd" 'my-kill-current-buffer
-   "bD" 'my-delete-current-buffer-file
-   "bn" 'next-buffer
-   "bp" 'previous-buffer
-   "bN" 'evil-buffer-new
-   "bs" 'save-buffer
-   "bS" 'save-some-buffers
-   "br" 'revert-buffer
-   "bR" 'my/rename-file-and-buffer
-   "bi" 'ibuffer
-   "bz" 'bury-buffer
-   "bK" 'my/kill-other-buffers
-   "bx" 'my/kill-all-buffers))
+    "bb" 'consult-buffer
+    "bB" 'switch-to-buffer
+    "bk" 'kill-buffer
+    "bd" 'my-kill-current-buffer
+    "bD" 'my-delete-current-buffer-file
+    "bn" 'next-buffer
+    "bp" 'previous-buffer
+    "bN" 'evil-buffer-new
+    "bs" 'save-buffer
+    "bS" 'save-some-buffers
+    "br" 'revert-buffer
+    "bR" 'my/rename-file-and-buffer
+    "bi" 'ibuffer
+    "bz" 'bury-buffer
+    "bK" 'my/kill-other-buffers
+    "bx" 'my/kill-all-buffers))
 
 ;;;; Ibuffer - Advanced buffer list
 (use-package ibuffer
@@ -131,7 +142,7 @@
 (use-package emacs
   :bind
   (:map mymacs-mode-map
-    ("C-g" . prot/keyboard-quit-dwim))
+        ("C-g" . prot/keyboard-quit-dwim))
   :preface
   (defun prot/keyboard-quit-dwim ()
     "Do-What-I-Mean behaviour for a general `keyboard-quit'.
@@ -158,21 +169,27 @@ The DWIM behaviour of this command is as follows:
       (keyboard-quit)))))
 
 
+
 ;;; Windows
-(with-eval-after-load 'general
-  (message "setting window keys")
+(use-package ace-window
+  :commands (ace-window ace-swap-window)
+  :general
   (leader-def
-   "ww" 'other-window
-   "wh" 'evil-window-left
-   "wj" 'evil-window-down
-   "wk" 'evil-window-up
-   "wl" 'evil-window-right
-   "wd" 'delete-window
-   "ws" 'split-window-below
-   "wv" 'split-window-right
-   "wo" 'delete-other-windows
-   "w=" 'balance-windows
-   "tF" 'toggle-frame-maximized))
+    "ww" 'ace-window
+    "wx" 'ace-swap-window))
+
+(with-eval-after-load 'general
+  (leader-def
+    "wh" 'evil-window-left
+    "wj" 'evil-window-down
+    "wk" 'evil-window-up
+    "wl" 'evil-window-right
+    "wd" 'delete-window
+    "ws" 'split-window-below
+    "wv" 'split-window-right
+    "wo" 'delete-other-windows
+    "w=" 'balance-windows
+    "tF" 'toggle-frame-maximized))
 
 (provide 'core-buffers)
 ;;; buffers.el ends here

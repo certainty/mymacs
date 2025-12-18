@@ -44,18 +44,18 @@
          ("M-g I" . consult-imenu-multi))
   :general
   (leader-def
-   "!!" 'consult-flymake
-   "!c" 'consult-compile-error
-   "bb" 'consult-buffer
-   "fr" 'consult-recent-file
-   "gg" 'consult-goto-line
-   "go" 'consult-outline
-   "gm" 'consult-mark
-   "ss" 'consult-line
-   "sr" 'consult-ripgrep
-   "si" 'consult-imenu
-   "sI" 'consult-imenu-multi
-   "sO" 'consult-outline)
+    "!!" 'consult-flymake
+    "!c" 'consult-compile-error
+    "bb" 'consult-buffer
+    "fr" 'consult-recent-file
+    "gg" 'consult-goto-line
+    "go" 'consult-outline
+    "gm" 'consult-mark
+    "ss" 'consult-line
+    "sr" 'consult-ripgrep
+    "si" 'consult-imenu
+    "sI" 'consult-imenu-multi
+    "sO" 'consult-outline)
   :custom
   (consult-narrow-key "<")
   (consult-project-function (lambda (_) (project-root (project-current))))
@@ -70,6 +70,11 @@
    consult--source-recent-file consult--source-project-recent-file
    :preview-key '(:debounce 0.4 any)))
 
+(use-package embark-consult
+  :after embark
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
 (use-package wgrep
   :commands wgrep-change-to-wgrep-mode
   :custom
@@ -83,8 +88,8 @@
 (use-package p-search
   :general
   (leader-def
-   "sx" 'p-search
-   "sX" 'p-search-directory)
+    "sx" 'p-search
+    "sX" 'p-search-directory)
   :custom
   (p-search-default-searcher 'rg)
   (p-search-default-save-buffers 'ask)
