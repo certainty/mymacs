@@ -23,7 +23,6 @@
 (cl-defun my/require (file &key (guard t))
   "Load the file provided via `FILE' conditionally, depending on the value of `GUARD'."
   (when guard
-    (message "loading file: %s" file)
     (require file)))
 
 (cl-defun my/display-buffer-right (identifier &optional (size 0.3))

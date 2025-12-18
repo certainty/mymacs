@@ -55,6 +55,7 @@
     "o" '(:ignore t :which-key "open")
     "t" '(:ignore t :which-key "toggle")
     "v" '(:ignore t :which-key "vc")
+    "x" '(:ignore t :which-key "gtd")
     "w" '(:ignore t :which-key "window")))
 
 (use-package which-key

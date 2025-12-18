@@ -70,15 +70,14 @@
   (corfu-bar-width 0.5)
   (corfu-count 10)
   (corfu-cycle t)
+  (corfu-preselect 'valid)
   (corfu-popupinfo-delay '(1.25 . 0.5))
 
-  :general
-  (:keymaps 'corfu-map
-            "C-y" 'corfu-insert
-            "TAB" 'corfu-next
-            [tab] 'corfu-next
-            "S-TAB" 'corfu-previous
-            [backtab] 'corfu-previous)
+  :bind
+  (:map corfu-map
+    ("C-y" . corfu-insert)
+    ("M-y" . corfu-insert))
+
   :config
   (with-eval-after-load 'savehist
     (use-package corfu-history

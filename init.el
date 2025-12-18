@@ -59,6 +59,12 @@
 
 (my/require 'data-base)
 (my/require 'writing-base)
+(my/require 'writing-markdown)
+(my/require 'writing-notes)
+(my/require 'writing-org)
+(my/require 'writing-asciidoc :guard (my/featurep 'context/work))
+
+(my/require 'org-gtd)
 
 (my/require 'tools-vc)
 (my/require 'tools-terminal)
