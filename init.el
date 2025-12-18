@@ -48,6 +48,7 @@
 (my/require 'dev-base)
 
 (my/require 'tools-vc)
+(my/require 'tools-terminal)
 
 (provide 'init)
 ;;; init.el ends here
