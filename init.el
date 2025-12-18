@@ -44,5 +44,7 @@
 (my/require 'core-search)
 (my/require 'core-workspaces)
 
+(my/require 'dev-base)
+
 (provide 'init)
 ;;; init.el ends here

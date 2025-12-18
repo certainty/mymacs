@@ -61,14 +61,7 @@
   (consult-project-function (lambda (_) (project-root (project-current))))
 
   :config
-  ;; Search symbol at point in project
-  (defun consult-ripgrep-symbol-at-point ()
-    "Search for symbol at point in project using ripgrep."
-    (interactive)
-    (consult-ripgrep (project-root (project-current t))
-                     (thing-at-point 'symbol)))
-
-  ;; Configure preview
+                                        ; Configure preview
   (consult-customize
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
@@ -84,6 +77,36 @@
   (wgrep-change-readonly-file nil)
   :config
   (setq wgrep-enable-key "i"))
+
+;;;  P-Search
+;;;; P-search - Powerful project-wide search
+(use-package p-search
+  :general
+  (leader-def
+   "sx" 'p-search
+   "sX" 'p-search-directory)
+  :custom
+  (p-search-default-searcher 'rg)
+  (p-search-default-save-buffers 'ask)
+  (p-search-case-fold-search t))
+
+;;;; Helper functions for directory-specific searches
+(defun my/search-in-directory (dir)
+  "Search in DIR using p-search."
+  (let ((default-directory (expand-file-name dir)))
+    (call-interactively #'p-search)))
+
+(defun my/search-notes ()
+  "Search in notes directory using p-search."
+  (interactive)
+  (my-search-in-directory my/notes-path))
+
+(defun my/search-org ()
+  "Search in org directory using p-search."
+  (interactive)
+  (my-search-in-directory my/org-path))
+
+
 
 (provide 'core-search)
 ;;; core-search.el ends here

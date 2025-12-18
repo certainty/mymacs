@@ -16,3 +16,4 @@ tabsession.el
 .env
 bookmarks
 recentf
+transient
