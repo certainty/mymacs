@@ -19,8 +19,8 @@
   :hook (emacs-lisp-mode . turn-on-eldoc-mode)
   :general
   (local-leader-def
-    "te" '("eldoc" . my/toggle-eldoc-buffer)
     :keymaps 'emacs-lisp-mode-map
+    "te" '("eldoc" . my/toggle-eldoc-buffer)
     "e" '(:ignore t :which-key "eval")
     "eb" 'eval-buffer
     "ed" 'eval-defun

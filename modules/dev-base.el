@@ -24,6 +24,7 @@
 
   :general
   (leader-def
+    :keymaps 'eglot-mode-map
     "c" '(:ignore t :which-key "code")
     "cl" 'eglot
     "cr" 'eglot-rename
@@ -39,12 +40,12 @@
 
   :bind
   (:map eglot-mode-map
-        ("M-g e a" . xref-find-apropos)
-        ("M-g e d" . xref-find-definitions)
-        ("M-g e r" . eglot-rename)
-        ("M-g e i" . eglot-find-implementation)
-        ("M-g e D" . eglot-find-declaration)
-        ("M-g e t" . eglot-find-typeDefinition)))
+    ("M-g e a" . xref-find-apropos)
+    ("M-g e d" . xref-find-definitions)
+    ("M-g e r" . eglot-rename)
+    ("M-g e i" . eglot-find-implementation)
+    ("M-g e D" . eglot-find-declaration)
+    ("M-g e t" . eglot-find-typeDefinition)))
 
 ;;; Treesitter
 (use-package treesit-auto
@@ -62,6 +63,7 @@
   :hook (prog-mode . flymake-mode)
   :general
   (leader-def
+    :keymaps 'flymake-mode-map
     "!" '(:ignore t :which-key "diagnostics")
     "!!" 'consult-flymake
     "!l" 'flymake-show-buffer-diagnostics
@@ -92,15 +94,15 @@
   (diminish 'apheleia-mode)
 
   (setf (alist-get 'prettier apheleia-formatters)
-        '("prettier" "--stdin-filepath" filepath))
+    '("prettier" "--stdin-filepath" filepath))
   (setf (alist-get 'black apheleia-formatters)
-        '("black" "-"))
+    '("black" "-"))
   (setf (alist-get 'rustfmt apheleia-formatters)
-        '("rustfmt" "--edition" "2021" "--emit" "stdout"))
+    '("rustfmt" "--edition" "2021" "--emit" "stdout"))
   (setf (alist-get 'gofmt apheleia-formatters)
-        '("gofmt"))
+    '("gofmt"))
   (setf (alist-get 'shfmt apheleia-formatters)
-        '("shfmt" "-i" "2" "-"))
+    '("shfmt" "-i" "2" "-"))
   (setf (alist-get 'typescript-mode apheleia-mode-alist) 'prettier)
   (setf (alist-get 'typescript-ts-mode apheleia-mode-alist) 'prettier)
   (setf (alist-get 'javascript-mode apheleia-mode-alist) 'prettier)
@@ -131,6 +133,9 @@
 (use-package highlight-parentheses
   :hook prog-mode)
 
+(use-package electric-pair
+  :straight (:type built-in)
+  :hook prog-mode)
 
 (provide 'dev-base)
 ;;; dev-base.el ends here

@@ -35,6 +35,7 @@
 (my/require 'core-config)
 (my/require 'core-env)
 (my/require 'core-keys)
+(my/require 'core-mymacs)
 (my/require 'core-editing)
 (my/require 'core-files)
 (my/require 'core-buffers)
@@ -45,10 +46,19 @@
 (my/require 'core-workspaces)
 (my/require 'core-dashboard)
 
+
 (my/require 'dev-base)
 (my/require 'dev-lispy)
 (my/require 'dev-elisp)
+(my/require 'dev-web)
+(my/require 'dev-go)
+
 (my/require 'dev-common-lisp :guard (my/featurep 'context/private))
+(my/require 'dev-ruby :guard (my/featurep 'context/work))
+(my/require 'dev-scala :guard (my/featurep 'context/work))
+
+(my/require 'data-base)
+(my/require 'writing-base)
 
 (my/require 'tools-vc)
 (my/require 'tools-terminal)
