@@ -73,11 +73,6 @@
   (corfu-preselect 'valid)
   (corfu-popupinfo-delay '(1.25 . 0.5))
 
-  :bind
-  (:map corfu-map
-    ("C-y" . corfu-insert)
-    ("M-y" . corfu-insert))
-
   :config
   (with-eval-after-load 'savehist
     (use-package corfu-history
