@@ -67,7 +67,10 @@
 (my/require 'org-gtd)
 
 (my/require 'tools-vc)
+(my/require 'tools-epa)
 (my/require 'tools-terminal)
+
+(my/require 'ai-gptel)
 
 (provide 'init)
 ;;; init.el ends here
