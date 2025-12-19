@@ -49,15 +49,14 @@
 
 ;;; Treesitter
 (use-package treesit-auto
+  :hook (after-init . global-treesit-auto-mode)
   :custom
   (treesit-font-lock-level 5)
   (treesit-auto-install 'prompt)
   :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
+  (treesit-auto-add-to-auto-mode-alist 'all))
 
 ;;; Flymake
-
 (use-package flymake
   :straight (:type built-in)
   :hook (prog-mode . flymake-mode)
