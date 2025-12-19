@@ -111,6 +111,7 @@
 
 ;;;; Spacious Padding
 (use-package spacious-padding
+  :if nil
   :demand t
   :config
   (spacious-padding-mode 1)

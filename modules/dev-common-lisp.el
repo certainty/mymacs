@@ -21,7 +21,7 @@
 
   :config
   (setopt sly-lisp-implementations
-    `((sbcl ("sbcl") :coding-system utf-8-unix)))f
+    `((sbcl ("sbcl") :coding-system utf-8-unix)))
 
   (setq sly-contribs '(sly-fancy sly-stickers sly-scratch sly-mrepl sly-autodoc sly-trace-dialog))
   (setopt sly-common-lisp-set-style 'modern)
@@ -41,8 +41,6 @@
        (side . right)
        (reusable-frames . visible)
        (window-height . 0.4)))
-
-  (defvar inferior-lisp-program "sbcl")
 
   :preface
   (defun my/select-implementation ()
@@ -143,22 +141,25 @@
     "t" '(:ignore t :which-key "trace")
     "tt" 'sly-trace-dialog-toggle-trace
     "tT" 'sly-trace-dialog-toggle-complex-trace
-    "td"  'sly-trace-dialog
+    "td" 'sly-trace-dialog
     "tu" 'sly-trace-dialog-untrace-all
-    ))
+    )
+
+
+  )
+
 
 (use-package sly-asdf
   :after sly
   :general
   (local-leader-def
-    :keymaps sly-mode-map
+    :keymaps 'sly-mode-map
     "a" '(:ignore t :which-key "asdf")
     "ar" 'sly-asdf-reload-system
     "ac" 'sly-asdf-compile-system
     "al" 'sly-asdf-load-system
     "ab" 'sly-asdf-browse-system
     "at" 'sly-asdf-test-system)
-
   :init
   (add-to-list 'sly-contribs 'sly-asdf 'append))
 

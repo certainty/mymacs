@@ -30,15 +30,15 @@
 (use-package general
   :demand t
   :config
+
   (general-create-definer leader-def
-    :states '(normal visual insert emacs)
+    :states '(normal visual)
     :keymaps 'mymacs-mode-map
     :prefix "SPC"
     :non-normal-prefix "C-SPC")
 
   (general-create-definer local-leader-def
     :states '(normal visual)
-    :keymaps 'override
     :prefix "SPC m"
     :non-normal-prefix "C-SPC m")
 
