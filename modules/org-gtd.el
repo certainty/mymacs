@@ -11,6 +11,7 @@
     "xa" 'my/personal-agenda
     "xx" 'org-capture
     "xt" 'my/capture-task
+    "gx" '(:ignore t :which-key "gtd")
     "gxt" 'my/goto-tasks
     "ot" 'my/goto-tasks
     "oa" 'my/personal-agenda)

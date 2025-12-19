@@ -1,18 +1,5 @@
 ;;; core-search.el --- Find things -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2025 David Krentzlin
-;;
-;; Author: David Krentzlin <david.krentzlin@new-work.se>
-;; Maintainer: David Krentzlin <david.krentzlin@new-work.se>
-;; Created: December 17, 2025
-;; Modified: December 17, 2025
-;; Version: 0.0.1
-;; Keywords: Symbol’s value as variable is void: finder-known-keywords
-;; Homepage: https://github.com/david-krentzlin/core-search
-;; Package-Requires: ((emacs "24.3"))
-;;
-;; This file is not part of GNU Emacs.
-;;
 ;;; Commentary:
 ;;
 ;;  Description
@@ -22,26 +9,27 @@
 ;;;; Consult - Enhanced commands
 (use-package consult
   :bind (;; M-s bindings (search map)
-         ("M-s d" . consult-find)
-         ("M-s D" . consult-locate)
-         ("M-s g" . consult-grep)
-         ("M-s G" . consult-git-grep)
-         ("M-s r" . consult-ripgrep)
-         ("M-s l" . consult-line)
-         ("M-s L" . consult-line-multi)
-         ("M-s k" . consult-keep-lines)
-         ("M-s u" . consult-focus-lines)
+          ("M-s d" . consult-find)
+          ("M-s D" . consult-locate)
+          ("M-s g" . consult-grep)
+          ("M-s G" . consult-git-grep)
+          ("M-s r" . consult-ripgrep)
+          ("M-s l" . consult-line)
+          ("M-s L" . consult-line-multi)
+          ("M-s k" . consult-keep-lines)
+          ("M-s u" . consult-focus-lines)
 
-         ;; M-g bindings (goto map)
-         ("M-g e" . consult-compile-error)
-         ("M-g f" . consult-flymake)
-         ("M-g g" . consult-goto-line)
-         ("M-g M-g" . consult-goto-line)
-         ("M-g o" . consult-outline)
-         ("M-g m" . consult-mark)
-         ("M-g k" . consult-global-mark)
-         ("M-g i" . consult-imenu)
-         ("M-g I" . consult-imenu-multi))
+          ;; M-g bindings (goto map)
+          ("M-g b" . consult-bookmark)
+          ("M-g e" . consult-compile-error)
+          ("M-g f" . consult-flymake)
+          ("M-g g" . consult-goto-line)
+          ("M-g M-g" . consult-goto-line)
+          ("M-g o" . consult-outline)
+          ("M-g m" . consult-mark)
+          ("M-g k" . consult-global-mark)
+          ("M-g i" . consult-imenu)
+          ("M-g I" . consult-imenu-multi))
   :general
   (leader-def
     "!!" 'consult-flymake
@@ -50,25 +38,32 @@
     "fr" 'consult-recent-file
     "gg" 'consult-goto-line
     "go" 'consult-outline
+    "gb" 'consult-bookmark
     "gm" 'consult-mark
+    "gM" 'woman
+    "gI" 'consult-info
     "ss" 'consult-line
     "sr" 'consult-ripgrep
     "si" 'consult-imenu
+    "sI" 'consult-info
+    "sM" 'consult-man
     "sI" 'consult-imenu-multi
-    "sO" 'consult-outline)
+    "sO" 'consult-outline
+    "ob" 'consult-bookmark
+    "oM" 'woman
+    "oI" 'consult-info)
   :custom
   (consult-narrow-key "<")
   (consult-project-function (lambda (_) (project-root (project-current))))
 
   :config
-                                        ; Configure preview
   (consult-customize
-   consult-theme :preview-key '(:debounce 0.2 any)
-   consult-ripgrep consult-git-grep consult-grep
-   consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
-   :preview-key '(:debounce 0.4 any)))
+    consult-theme :preview-key '(:debounce 0.2 any)
+    consult-ripgrep consult-git-grep consult-grep
+    consult-bookmark consult-recent-file consult-xref
+    consult--source-bookmark consult--source-file-register
+    consult--source-recent-file consult--source-project-recent-file
+    :preview-key '(:debounce 0.4 any)))
 
 (use-package embark-consult
   :after embark

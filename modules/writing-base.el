@@ -65,43 +65,10 @@
   :config
   (diminish 'writegood-mode))
 
-
-;;;; Olivetti - Distraction-free writing
-(use-package olivetti
-  :commands olivetti-mode
+(use-package writeroom-mode
   :general
-  (local-leader-def
-    :keymaps 'olivetti-mode
-    "ow" 'olivetti-set-width)
-  :custom
-  (olivetti-body-width 100)
-  (olivetti-minimum-body-width 80)
-  :config
-  (diminish 'olivetti-mode))
-
-;;;; Helper: Enable all writing tools
-(defun my/writing-mode ()
-  "Enable all writing assistance tools."
-  (interactive)
-  (if (featurep 'jinx)
-    (jinx-mode 1)
-    (flyspell-mode 1))
-  (writegood-mode 1)
-  (wc-mode 1)
-  (visual-line-mode 1)
-  (message "Writing mode enabled"))
-
-(defun my/prose-mode ()
-  "Enable distraction-free prose writing."
-  (interactive)
-  (my-writing-mode)
-  (olivetti-mode 1)
-  (message "Prose mode enabled"))
-
-(leader-def
-  "Wm" 'my/writing-mode
-  "Wp" 'my/prose-mode)
-
+  (leader-def
+    "Wm" 'writeroom-mode))
 
 (provide 'writing-base)
 ;;; writing-base.el ends here

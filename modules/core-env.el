@@ -10,6 +10,7 @@
 
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
+  :demand t
   :custom
   (exec-path-from-shell-variables *my/required-environment-variables*)
   (exec-path-from-shell-arguments '("-l"))
