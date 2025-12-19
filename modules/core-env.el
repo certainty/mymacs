@@ -8,6 +8,11 @@
 
 (defvar *my/required-environment-variables* '("PATH" "MANPATH" "GOPATH" "CARGO_HOME" "RUSTUP_HOME" "JAVA_HOME" "SBT_HOME"))
 
+(use-package emacs
+  :init
+  ;; my local installations like mise will be found here
+  (add-to-list 'exec-path (expand-file-name "~/.local/bin")))
+
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
   :demand t

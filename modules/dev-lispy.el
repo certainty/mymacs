@@ -29,5 +29,4 @@
   (smartparens-strict-mode 1)
   (diminish 'evil-cleverparens-mode))
 
-
 (provide 'dev-lispy)
