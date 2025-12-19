@@ -49,28 +49,24 @@
 
 
 (use-package emacs
-  :init
-  (add-hook 'after-init-hook (lambda () (mymacs-mode 1)))
-  (setq-default
-   indent-tabs-mode nil
-   tab-width 2
-   fill-column 150)
-
   :custom
   (user-full-name "David Krentzlin")
   (custom-file (expand-file-name "custom.el" user-emacs-directory))
-  (ring-bell-function 'ignore)
-  (use-short-answers t)
-  (initial-scratch-message nil)
-  (inhibit-startup-screen t)
 
-  (scroll-margin 0)
-  (scroll-conservatively 100000)
-  (scroll-preserve-screen-position 1)
-  :config
-  (if (my/featurep 'context/private)
-      (setopt user-mail-address "david@krentzlin.me")
-    (setopt user-mail-address "david.krentzlin@new-work.se")))
+  :init
+  (add-hook 'after-init-hook (lambda () (mymacs-mode 1)))
+
+  (when (my/featurep 'context/private)
+    (setopt user-mail-address "david@krentzlin.me"))
+
+  (when (my/featurep 'context/work)
+    (setopt user-mail-address "david.krentzlin@new-work.se"))
+
+  (when (memq window-system '(mac ns))
+    (setopt my/pitch-font "Iosevka Aile")
+    (setopt my/font-size 130)
+    (setopt my/bigger-font-size 170)
+    (setopt my/presentation-font-size 230)))
 
 (use-package diminish
   :demand t)
