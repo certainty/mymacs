@@ -16,7 +16,8 @@
     "SPC" 'project-find-file
     "pp" 'project-switch-project
     "pf" 'project-find-file
-    "pb" 'project-switch-to-buffer
+    "pB" 'project-switch-to-buffer
+    "pb" 'consult-project-buffer
     "pd" 'project-dired
     "ps" 'consult-ripgrep
     "pk" 'project-kill-buffers

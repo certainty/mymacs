@@ -20,7 +20,8 @@
           ("M-s u" . consult-focus-lines)
 
           ;; M-g bindings (goto map)
-          ("M-g b" . consult-bookmark)
+          ("M-g B" . consult-bookmark)
+          ("M-g b" . consult-project-buffer)
           ("M-g e" . consult-compile-error)
           ("M-g f" . consult-flymake)
           ("M-g g" . consult-goto-line)
