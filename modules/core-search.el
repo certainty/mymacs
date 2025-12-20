@@ -38,7 +38,7 @@
     "bb" 'consult-buffer
     "fr" 'consult-recent-file
     "gg" 'consult-goto-line
-    "go" 'consult-outline
+    "gO" 'consult-outline
     "gb" 'consult-bookmark
     "gm" 'consult-mark
     "gM" 'woman

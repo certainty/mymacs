@@ -24,7 +24,8 @@
     "nR" 'denote-rename-file-using-front-matter
 
     "nf" 'denote-open-or-create
-    "nF" 'denote-open-or-create-with-command)
+    "nF" 'denote-open-or-create-with-command
+    "gN" 'my/open-notes-path)
   :hook (dired-mode . denote-dired-mode)
   :bind
   (:map dired-mode-map
@@ -51,6 +52,10 @@
   (denote-link-button-action #'find-file)
 
   :config
+  (defun my/open-notes-path ()
+    (interactive)
+    (dired my/notes-path))
+
   (defalias 'denote-new 'denote)
   (defalias 'denote-find 'denote-open-or-create))
 
@@ -61,7 +66,9 @@
   :general
   (leader-def
     "nN" 'consult-notes
-    "n/" 'consult-notes-search-in-all-notes)
+    "n/" 'consult-notes-search-in-all-notes
+    "gn" 'consult-notes
+    "sn" 'consult-notes-search-in-all-notes)
   :custom
   (consult-notes-file-dir-sources
     `(("Notes"  ?n ,(expand-file-name my/notes-path))

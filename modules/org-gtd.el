@@ -12,7 +12,10 @@
     "xa" 'my/personal-agenda
     "xx" 'org-capture
     "xt" 'my/capture-task
+    "xn" 'my/capture-note
+    "xe" 'my/capture-event
     "gx" '(:ignore t :which-key "gtd")
+    "gxx" 'my/open-org-dir
     "gxt" 'my/goto-tasks
     "ot" 'my/goto-tasks
     "oa" 'my/personal-agenda)
@@ -172,6 +175,18 @@
   (defun my/capture-task ()
     (interactive)
     (org-capture nil "t"))
+
+  (defun my/capture-note ()
+    (interactive)
+    (org-capture nil "n"))
+
+  (defun my/capture-event ()
+    (interactive)
+    (org-capture nil "n"))
+
+  (defun my/open-org-dir ()
+    (interactive)
+    (dired my/org-path))
 
   (defun my/goto-tasks ()
     (interactive)
