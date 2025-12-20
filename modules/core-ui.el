@@ -25,83 +25,102 @@
 
   :init
   (setq-default
-    indent-tabs-mode nil
-    tab-width 2
-    fill-column 150))
+   indent-tabs-mode nil
+   tab-width 2
+   fill-column 150))
 
-(use-package doom-themes
+;; Mode-line: Mood-line
+(use-package mood-line
   :demand t
-  :config
-  (setq doom-themes-enable-bold t
-    doom-themes-enable-italic t)
-  (load-theme 'doom-nord t)
-  (doom-themes-visual-bell-config)
-  (doom-themes-org-config))
-
-;;;; Doom Modeline
-(use-package doom-modeline
-  :demand t
-  :init (doom-modeline-mode 1)
   :custom
-  (doom-modeline-height 25)
-  (doom-modeline-bar-width 0)
-  (doom-modeline-icon t)
-  (doom-modeline-major-mode-icon t)
-  (doom-modeline-major-mode-color-icon t)
-  (doom-modeline-buffer-state-icon t)
-  (doom-modeline-buffer-modification-icon t)
-  (doom-modeline-minor-modes nil)
-  (doom-modeline-enable-word-count nil)
-  (doom-modeline-buffer-encoding nil)
-  (doom-modeline-indent-info nil)
-  (doom-modeline-vcs-max-length 12)
-  (doom-modeline-workspace-name t)
-  (doom-modeline-persp-name t)
-  (doom-modeline-lsp t)
-  (doom-modeline-github nil)
-  (doom-modeline-modal-icon t)
-  (doom-modeline-env-version t))
+  (mood-line-glyph-alist mood-line-glyphs-unicode)
+  (mood-line-segment-modal-evil-state-alist
+    '((normal  . ("🅝" . font-lock-variable-name-face))
+       (insert  . ("🅘" . font-lock-string-face))
+       (visual  . ("🅥" . font-lock-keyword-face))
+       (replace . ("🅡" . font-lock-type-face))
+       (motion  . ("🅜" . font-lock-constant-face))
+       (operator . ("🅞" . font-lock-function-name-face))
+       (emacs   . ("🄴" . font-lock-builtin-face))))
+
+  :config
+  (mood-line-mode))
+
+(use-package modus-themes
+  :demand t
+  :custom
+  (modus-themes-to-toggle '(modus-vivendi modus-operandi))
+  (modus-themes-mode-line '(moody))
+  (modus-themes-custom-auto-reload t)
+  (modus-themes-disable-other-themes nil)
+  (modus-themes-mixed-fonts t)
+  (modus-themes-italic-constructs t)
+  (modus-themes-bold-constructs t)
+  (modus-themes-variable-pitch-ui t)
+  (modus-themes-prompts '(extrabold italic))
+  (modus-themes-paren-match '(bold intense))
+  (modus-themes-org-blocks 'tinted-background)
+  (modus-themes-completions
+    '((matches . (extrabold underline))
+       (selection . (semibold italic))))
+  :config
+  (defun my/modus-defaults-with-overrides (defaults overrides)
+    "Merge overrides into defaults. Overriding any defaults."
+    (append (cl-remove-if (lambda (x) (member (car x) (mapcar 'car overrides))) defaults) overrides))
+
+  ;; I prefer a less vibrant version of the theme (less greenish)
+  (setopt modus-themes-common-palette-overrides
+    (my/modus-defaults-with-overrides modus-themes-preset-overrides-faint
+      `((bg-paren-match bg-magenta-intense)
+         (underline-paren-match fg-main)
+         (fg-line-number-active red-cooler))))
+
+  (setopt modus-themes-headings
+    '((1 . (variable-pitch 1.1))
+       (t . (1.0))))
+
+  (load-theme 'modus-vivendi :no-confirm))
 
 ;;; Fonts
 (use-package fontaine
   :demand t
   :general
   (leader-def
-    "tf" '(:ignore t :which-key "font")
-    "tff" '(my/toggle-font-bigger :which-key "bigger")
-    "tfp" '(my/toggle-font-presentation :which-key "presentation"))
+   "tf" '(:ignore t :which-key "font")
+   "tff" '(my/toggle-font-bigger :which-key "bigger")
+   "tfp" '(my/toggle-font-presentation :which-key "presentation"))
   :custom
   (x-underline-at-descent-line nil)
   (fontaine-presets
-    `((regular)
-       (bigger
-         :default-height ,my/bigger-font-size)
-       (presentation
-         :default-height ,my/presentation-font-size)
-       (t
-         :default-family ,my/font
-         :default-weight regular
-         :default-slant normal
-         :default-height ,my/font-size
+   `((regular)
+     (bigger
+      :default-height ,my/bigger-font-size)
+     (presentation
+      :default-height ,my/presentation-font-size)
+     (t
+      :default-family ,my/font
+      :default-weight regular
+      :default-slant normal
+      :default-height ,my/font-size
 
-         :fixed-pitch-family ,my/font
-         :fixed-pitch-height 1.0
-         :fixed-pitch-serif-height 1.0
+      :fixed-pitch-family ,my/font
+      :fixed-pitch-height 1.0
+      :fixed-pitch-serif-height 1.0
 
-         :variable-pitch-family ,my/pitch-font
-         :variable-pitch-height 1.0)))
+      :variable-pitch-family ,my/pitch-font
+      :variable-pitch-height 1.0)))
 
   :preface
   (defun my/toggle-font-bigger ()
     (interactive)
     (if (eq fontaine-current-preset 'bigger)
-      (fontaine-set-preset 'regular)
+        (fontaine-set-preset 'regular)
       (fontaine-set-preset 'bigger)))
 
   (defun my/toggle-font-presentation ()
     (interactive)
     (if (eq fontaine-current-preset 'presentation)
-      (fontaine-set-preset 'regular)
+        (fontaine-set-preset 'regular)
       (fontaine-set-preset 'presentation)))
 
   :config
@@ -117,10 +136,10 @@
   (spacious-padding-mode 1)
   :custom
   (spacious-padding-subtle-frame-lines
-    '(:mode-line-active spacious-padding-line-active
-       :mode-line-inactive spacious-padding-line-inactive
-       :header-line-active spacious-padding-line-active
-       :header-line-inactive spacious-padding-line-inactive)))
+   '(:mode-line-active spacious-padding-line-active
+     :mode-line-inactive spacious-padding-line-inactive
+     :header-line-active spacious-padding-line-active
+     :header-line-inactive spacious-padding-line-inactive)))
 
 ;;;; Nerd Icons
 (use-package nerd-icons
@@ -132,20 +151,20 @@
   :hook (prog-mode . hl-todo-mode)
   :custom
   (hl-todo-keyword-faces
-    '(("TODO"    . "#88C0D0")
-       ("FIXME"   . "#BF616A")
-       ("NOTE"    . "#EBCB8B")
-       ("HACK"    . "#D08770")
-       ("REVIEW"  . "#A3BE8C")
-       ("DISCUSS" . "#B48EAD")
-       ("XXX"     . "#BF616A")
-       ("TEMP"    . "#D08770")
-       ("DEBUG"   . "#EBCB8B")))
+   '(("TODO"    . "#88C0D0")
+     ("FIXME"   . "#BF616A")
+     ("NOTE"    . "#EBCB8B")
+     ("HACK"    . "#D08770")
+     ("REVIEW"  . "#A3BE8C")
+     ("DISCUSS" . "#B48EAD")
+     ("XXX"     . "#BF616A")
+     ("TEMP"    . "#D08770")
+     ("DEBUG"   . "#EBCB8B")))
   :general
   (leader-def
-    "sH" 'hl-todo-occur
-    "sT" 'hl-todo-next
-    "sP" 'hl-todo-previous)
+   "sH" 'hl-todo-occur
+   "sT" 'hl-todo-next
+   "sP" 'hl-todo-previous)
   :config
   (global-hl-todo-mode 1)
   (diminish 'hl-todo-mode))
