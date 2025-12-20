@@ -20,12 +20,11 @@
                       (registers . 5)))
 
   (dashboard-banner-logo-title "MYMACS")
-  (dashboard-startup-banner 'logo)
+  (dashboard-startup-banner 'official)
   (dashboard-center-content t)
-  (dashboard-show-shortcuts nil)
+  (dashboard-show-shortcuts t)
   (dashboard-set-heading-icons t)
   (dashboard-set-file-icons t)
-  (dashboard-set-navigator t)
 
   (dashboard-footer-messages '("Welcome home!"))
   (dashboard-footer-icon (nerd-icons-codicon "nf-cod-heart"
@@ -33,11 +32,27 @@
                            :v-adjust -0.05
                            :face 'font-lock-keyword-face))
 
+  (dashboard-startupify-list '(dashboard-insert-banner
+                                dashboard-insert-newline
+                                dashboard-insert-banner-title
+                                dashboard-insert-newline
+                                dashboard-insert-navigator
+                                dashboard-insert-newline
+                                dashboard-insert-init-info
+                                dashboard-insert-items
+                                dashboard-insert-newline
+                                dashboard-insert-footer))
   (dashboard-navigator-buttons
-    `(((,(nerd-icons-faicon "nf-fa-github" :height 1.1 :v-adjust 0.0)
-         "GitHub"
-         "Browse GitHub"
-         (lambda (&rest _) (browse-url "https://github.com")))
+    `(((,(nerd-icons-mdicon "nf-md-web" :height 1.1 :v-adjust 0.0)
+         "Hackernews"
+         "Browse Hackernews"
+         (lambda (&rest _) (eww-browse-url "https://news.ycombinator.com")))
+
+        (,(nerd-icons-mdicon "nf-md-web" :height 1.1 :v-adjust 0.0)
+          "Lobste"
+          "Browse Lobste"
+          (lambda (&rest _) (eww-browse-url "https://lobste.rs")))
+
         (,(nerd-icons-faicon "nf-fa-refresh" :height 1.1 :v-adjust 0.0)
           "Reload"
           "Reload dashboard"
