@@ -45,6 +45,7 @@
   (bookmark-save-flag 1)
   (bookmark-default-file (expand-file-name "bookmarks" user-emacs-directory)))
 
+
 ;;; Dired mode
 (use-package dired
   :straight (:type built-in)
@@ -54,10 +55,10 @@
   (dired-mode . hl-line-mode)
   :general
   (leader-def
-   "e" 'dired-jump
-   "E" 'dired)
+    "e" 'dired-jump
+    "E" 'dired)
   :custom
-  (dired-listing-switches "-alh")
+  (dired-listing-switches "-alh --group-directories-first")
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
   (delete-by-moving-to-trash t)
@@ -67,12 +68,10 @@
   (dired-make-directory-clickable t)
   (dired-free-space nil)
   (dired-mouse-drag-files t)
-  (dired-no-confirm t)
+  (dired-no-confirm t))
 
-  :config
-  (when (and (eq system-type 'darwin) (executable-find "gls"))
-    (setq insert-directory-program "gls")))
-
+(use-package diredfl
+  :hook (dired-mode . diredfl-mode))
 
 (use-package nerd-icons-dired
   :after nerd-icons
