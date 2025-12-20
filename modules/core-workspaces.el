@@ -28,7 +28,7 @@
     '((project-find-file "Find file" ?f)
        (consult-ripgrep "Ripgrep" ?s)
        (project-dired "Dired" ?d)
-       (magit-project-status "Magit" ?g)
+       (project-vc-dir "VC" ?v)
        (project-eshell "Eshell" ?e)))
 
   :preface
@@ -47,8 +47,8 @@
               tabspaces-open-or-create-project-and-workspace)
   :general
   (leader-def
-    "TAB TAB" 'tabspaces-switch-or-create-workspace
-    "TAB p" 'tabspaces-open-or-create-project-and-workspace
+    "TAB TAB" 'tabspaces-open-or-create-project-and-workspace
+    ">" 'tabspaces-switch-or-create-workspace
     "TAB d" 'tabspaces-close-workspace
     "TAB b" 'tabspaces-switch-to-buffer
     "TAB k" 'tabspaces-kill-buffers-close-workspace

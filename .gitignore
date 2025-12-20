@@ -22,3 +22,5 @@ elpa/archives/nongnu/
 elpa/gnupg/
 elpa/archives/
 url/*
+.mymacs-tabspaces-session.el
+.org-id-locations
