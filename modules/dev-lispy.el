@@ -15,8 +15,14 @@
     show-paren-when-point-in-periphery t))
 
 (use-package smartparens
+  :hook ((emacs-lisp-mode
+          lisp-mode
+          clojure-mode
+          racket-mode
+          scheme-mode)
+         . smartparens-strict-mode)
   :config
-  (diminish 'smartparens-mode))
+  (sp-pair "'" nil :actions nil))
 
 (use-package evil-cleverparens
   :hook
@@ -26,7 +32,14 @@
   (clojure-mode . evil-cleverparens-mode)
   (racket-mode . evil-cleverparens-mode)
   :config
-  (smartparens-strict-mode 1)
+  (smartparens-strict-mode 1))
+
+(use-package evil-cleverparens
+  :after (evil smartparens)
+  :hook (smartparens-strict-mode . evil-cleverparens-mode)
+  :custom
+  (evil-cleverparens-use-regular-motion t)
+  :config
   (diminish 'evil-cleverparens-mode))
 
 (provide 'dev-lispy)
