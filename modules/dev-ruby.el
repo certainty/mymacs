@@ -22,15 +22,7 @@
     "t" '(:ignore t :which-key "test")
     "ta" 'ruby-test-run-all
     "tt" 'ruby-test-run
-    "ts" 'ruby-test-run-at-point
-
-    "r" '(:ignore t :which-key "refactor")
-    "ri" 'eglot-code-actions
-
-    "g" '(:ignore t :which-key "goto")
-    "gd" 'xref-find-definitions
-    "gr" 'xref-find-references
-    "gi" 'eglot-find-implementation)
+    "ts" 'ruby-test-run-at-point)
   :custom
   (ruby-insert-encoding-magic-comment nil))
 

@@ -21,7 +21,6 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(setq straight-disable-byte-compilation t)
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 (setq use-package-always-defer t)
@@ -54,6 +53,7 @@
 (my/require 'dev-go)
 
 (my/require 'dev-common-lisp :guard (my/featurep 'context/private))
+(my/require 'dev-ocaml :guard (my/featurep 'context/private))
 (my/require 'dev-ruby :guard (my/featurep 'context/work))
 (my/require 'dev-scala :guard (my/featurep 'context/work))
 

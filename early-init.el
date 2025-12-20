@@ -19,11 +19,12 @@
 (push '(vertical-scroll-bars) default-frame-alist)
 
 ;; Native compilation settings
-(when (and (fboundp 'native-comp-available-p) (native-comp-available-p))
+(when (and (fboundp 'native-comp-available-p)
+        (native-comp-available-p))
   (setq native-comp-async-report-warnings-errors nil
-        native-comp-deferred-compilation t
-        native-comp-speed 2  ; Optimize for speed
-        native-comp-prune-cache t))
+    native-comp-deferred-compilation t
+    native-comp-speed 2
+    native-comp-prune-cache t))
 
 (provide 'early-init)
 ;;; early-init.el ends here

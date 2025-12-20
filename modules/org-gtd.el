@@ -56,12 +56,20 @@
 
   ;; Capture for GTD
   (org-capture-templates
-    '(("t" "Task" entry (file+headline "tasks.org" "Main")
-        "* TODO %?
+    '(
+       ("n" "Note" entry (file "notes.org")
+         "*  %?
 :PROPERTIES:
 :CAPTURED: %U
 :END:"
-        :prepend t)
+         )
+
+       ("t" "Task" entry (file+headline "tasks.org" "Main")
+         "* TODO %?
+:PROPERTIES:
+:CAPTURED: %U
+:END:"
+         :prepend t)
        ("e" "Event" entry (file+headline "events.org" "Main")
          "* EVT %?
 :PROPERTIES:
