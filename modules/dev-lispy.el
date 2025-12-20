@@ -14,32 +14,14 @@
     show-paren-when-point-inside-paren t
     show-paren-when-point-in-periphery t))
 
-(use-package smartparens
+(use-package lispyville
   :hook ((emacs-lisp-mode
-          lisp-mode
-          clojure-mode
-          racket-mode
-          scheme-mode)
-         . smartparens-strict-mode)
+           lisp-mode
+           clojure-mode
+           racket-mode
+           scheme-mode)
+          . lispyville-mode)
   :config
-  (sp-pair "'" nil :actions nil))
-
-(use-package evil-cleverparens
-  :hook
-  (emacs-lisp-mode . evil-cleverparens-mode)
-  (lisp-mode . evil-cleverparens-mode)
-  (scheme-mode . evil-cleverparens-mode)
-  (clojure-mode . evil-cleverparens-mode)
-  (racket-mode . evil-cleverparens-mode)
-  :config
-  (smartparens-strict-mode 1))
-
-(use-package evil-cleverparens
-  :after (evil smartparens)
-  :hook (smartparens-strict-mode . evil-cleverparens-mode)
-  :custom
-  (evil-cleverparens-use-regular-motion t)
-  :config
-  (diminish 'evil-cleverparens-mode))
+  (lispyville-set-key-theme '(operators additional slurp/barf-lispy wrap additional-insert commentary additional-movement escape)))
 
 (provide 'dev-lispy)
