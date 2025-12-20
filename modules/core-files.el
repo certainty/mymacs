@@ -24,13 +24,12 @@
 
 (use-package recentf
   :straight (:type built-in)
-  :demand t
+  :hook after-init
   :custom
   (recentf-max-saved-items 100)
   (recentf-max-menu-items 15)
   (recentf-auto-cleanup 'never)
   :config
-  (recentf-mode 1)
   ;; Exclude certain files from recent list
   (add-to-list 'recentf-exclude "^/\\(?:ssh\\|su\\|sudo\\)?:")
   (add-to-list 'recentf-exclude "/\\.emacs\\.d/straight/")
@@ -82,10 +81,10 @@
   :after dired
   :bind
   (:map dired-mode-map
-        ("C-+" . dired-create-empty-file)
-        ("M-s f" . nil)
-        ("C-<return>" . dired-do-open)
-        ("C-x v v" . dired-vc-next-action))
+    ("C-+" . dired-create-empty-file)
+    ("M-s f" . nil)
+    ("C-<return>" . dired-do-open)
+    ("C-x v v" . dired-vc-next-action))
   :custom
   (dired-isearch-filenames 'dwim)
   (dired-create-destination-dirs 'ask)
@@ -98,7 +97,7 @@
   :after dired
   :bind
   (:map dired-mode-map
-        ("I" . dired-info))
+    ("I" . dired-info))
   :custom
   (dired-clean-up-buffers-too t)
   (dired-clean-confirm-killing-deleted-buffers t)
@@ -110,16 +109,16 @@
   :after dired
   :bind
   (:map dired-mode-map
-        ("<tab>" . dired-subtree-toggle)
-        ("<backtab>" . dired-subtree-cycle)))
+    ("<tab>" . dired-subtree-toggle)
+    ("<backtab>" . dired-subtree-cycle)))
 
 (use-package wdired
   :straight (:type built-in)
   :after dired
   :general
   (:keymaps 'dired-mode-map
-   :states 'normal
-   "i" 'wdired-change-to-wdired-mode)
+    :states 'normal
+    "i" 'wdired-change-to-wdired-mode)
   :custom
   (wdired-allow-to-change-permissions t)
   (wdired-create-parent-directories t))
@@ -127,9 +126,9 @@
 
 (with-eval-after-load 'general
   (leader-def
-   "ff" 'find-file
-   "fs" 'save-buffer
-   "fS" 'save-some-buffers))
+    "ff" 'find-file
+    "fs" 'save-buffer
+    "fS" 'save-some-buffers))
 
 (provide 'core-files)
 ;;; core-files.el ends here

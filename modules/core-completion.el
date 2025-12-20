@@ -76,8 +76,7 @@
   :config
   (with-eval-after-load 'savehist
     (use-package corfu-history
-      :demand t
-      :straight nil
+      :straight (:type built-in)
       :hook corfu-mode)
     (corfu-history-mode 1)
     (add-to-list 'savehist-additional-variables 'corfu-history))

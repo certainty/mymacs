@@ -13,9 +13,9 @@
 
   :init
   (setq-default
-   indent-tabs-mode nil
-   tab-width 2
-   fill-column 150)
+    indent-tabs-mode nil
+    tab-width 2
+    fill-column 150)
 
   (show-paren-mode 1)
   (electric-pair-mode -1)
@@ -29,7 +29,7 @@
 
   :general
   (leader-def
-   "tl" 'display-line-numbers-mode)
+    "tl" 'display-line-numbers-mode)
 
   :custom
   (display-line-numbers-type t)
@@ -38,8 +38,8 @@
 (use-package evil-nerd-commenter
   :after evil
   :commands (evilnc-comment-operator
-             evilnc-inner-comment
-             evilnc-outer-commenter)
+              evilnc-inner-comment
+              evilnc-outer-commenter)
   :general ([remap comment-line] #'evilnc-comment-or-uncomment-lines))
 
 (use-package evil-surround
@@ -47,7 +47,6 @@
   :hook ((after-init-hook . (lambda () (global-evil-surround-mode)))))
 
 (use-package evil-exchange
-  :demand t
   :after evil
   :config
   (diminish 'evil-exchange-mode)
@@ -84,35 +83,35 @@
   :after general
   :general
   (:keymaps 'evil-inner-text-objects-map
-            "a" 'evil-inner-arg)
+    "a" 'evil-inner-arg)
   (:keymaps 'evil-outer-text-objects-map
-            "a" 'evil-outer-arg)
+    "a" 'evil-outer-arg)
   (:states 'normal
-           "L" 'evil-forward-arg
-           "H" 'evil-backward-arg
-           "K" 'evil-jump-out-args)
+    "L" 'evil-forward-arg
+    "H" 'evil-backward-arg
+    "K" 'evil-jump-out-args)
   (:states '(normal motion)
-           "[," 'evil-backward-arg
-           "]," 'evil-forward-arg))
+    "[," 'evil-backward-arg
+    "]," 'evil-forward-arg))
 
 
 (use-package embark
   :bind
   (("C-." . embark-act)
-   ("C-;" . embark-dwim)
-   ("C-h B" . embark-bindings))
+    ("C-;" . embark-dwim)
+    ("C-h B" . embark-bindings))
   :general
   (leader-def
-   "." 'embark-act
-   "," 'embark-dwim)
+    "." 'embark-act
+    "," 'embark-dwim)
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
   :config
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none)))))
+    '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+       nil
+       (window-parameters (mode-line-format . none)))))
 
 (use-package embark-consult
   :after (embark consult)

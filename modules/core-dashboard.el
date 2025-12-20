@@ -6,6 +6,8 @@
 ;;; Code:
 
 ;;;; Dashboard
+
+
 (use-package dashboard
   :demand t
   :general
@@ -47,6 +49,11 @@
   (dashboard-path-max-length 60)
 
   :config
+
+  (use-package hide-mode-line
+    :demand t)
+  (add-hook 'dashboard-mode-hook #'hide-mode-line-mode)
+
   ;; Use dashboard as initial buffer
   (dashboard-setup-startup-hook)
 

@@ -24,6 +24,7 @@
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 (setq use-package-always-defer t)
+(setq use-package-always-ensure t)
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
@@ -35,10 +36,10 @@
 (my/require 'core-env)
 (my/require 'core-keys)
 (my/require 'core-mymacs)
+(my/require 'core-ui)
 (my/require 'core-editing)
 (my/require 'core-files)
 (my/require 'core-buffers)
-(my/require 'core-ui)
 (my/require 'core-help)
 (my/require 'core-completion)
 (my/require 'core-search)
@@ -47,6 +48,7 @@
 
 
 (my/require 'dev-base)
+(my/require 'dev-format)
 (my/require 'dev-lispy)
 (my/require 'dev-elisp)
 (my/require 'dev-web)

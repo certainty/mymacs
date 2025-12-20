@@ -6,6 +6,7 @@
   :hook (org-after-todo-state-change . save-buffer)
   :init
   (require 'org-id)
+
   :general
   (leader-def
     "xa" 'my/personal-agenda

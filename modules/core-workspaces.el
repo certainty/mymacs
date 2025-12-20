@@ -8,34 +8,34 @@
 ;;; Code:
 
 (use-package project
-  :straight nil
+  :straight (:type built-in)
   :general
   (leader-def
-   "/" 'consult-ripgrep
-   "*" 'my/ripgrep-symbol
-   "SPC" 'project-find-file
-   "pp" 'project-switch-project
-   "pf" 'project-find-file
-   "pb" 'project-switch-to-buffer
-   "pd" 'project-dired
-   "ps" 'consult-ripgrep
-   "pk" 'project-kill-buffers
-   "pc" 'project-compile)
+    "/" 'consult-ripgrep
+    "*" 'my/ripgrep-symbol
+    "SPC" 'project-find-file
+    "pp" 'project-switch-project
+    "pf" 'project-find-file
+    "pb" 'project-switch-to-buffer
+    "pd" 'project-dired
+    "ps" 'consult-ripgrep
+    "pk" 'project-kill-buffers
+    "pc" 'project-compile)
 
   :custom
   (project-switch-commands
-   '((project-find-file "Find file" ?f)
-     (consult-ripgrep "Ripgrep" ?s)
-     (project-dired "Dired" ?d)
-     (magit-project-status "Magit" ?g)
-     (project-eshell "Eshell" ?e)))
+    '((project-find-file "Find file" ?f)
+       (consult-ripgrep "Ripgrep" ?s)
+       (project-dired "Dired" ?d)
+       (magit-project-status "Magit" ?g)
+       (project-eshell "Eshell" ?e)))
 
   :preface
   (defun my/ripgrep-symbol ()
     "Search for symbol at point in project using ripgrep."
     (interactive)
     (consult-ripgrep (project-root (project-current t))
-                     (thing-at-point 'symbol)))
+      (thing-at-point 'symbol)))
 
   :config
   (setq project-vc-extra-root-markers '(".project" ".git" ".node_modules")))
@@ -43,18 +43,18 @@
 (use-package tabspaces
   :hook (after-init . tabspaces-mode)
   :commands (tabspaces-switch-or-create-workspace
-             tabspaces-open-or-create-project-and-workspace)
+              tabspaces-open-or-create-project-and-workspace)
   :general
   (leader-def
-   "TAB TAB" 'tabspaces-switch-or-create-workspace
-   "TAB p" 'tabspaces-open-or-create-project-and-workspace
-   "TAB d" 'tabspaces-close-workspace
-   "TAB b" 'tabspaces-switch-to-buffer
-   "TAB k" 'tabspaces-kill-buffers-close-workspace
-   "TAB R" 'tabspaces-restore-session
-   "TAB S" 'tabspaces-save-session
-   "TAB C" 'tabspaces-clear-buffers
-   "TAB ." 'tabspaces-switch-buffer-and-tab)
+    "TAB TAB" 'tabspaces-switch-or-create-workspace
+    "TAB p" 'tabspaces-open-or-create-project-and-workspace
+    "TAB d" 'tabspaces-close-workspace
+    "TAB b" 'tabspaces-switch-to-buffer
+    "TAB k" 'tabspaces-kill-buffers-close-workspace
+    "TAB R" 'tabspaces-restore-session
+    "TAB S" 'tabspaces-save-session
+    "TAB C" 'tabspaces-clear-buffers
+    "TAB ." 'tabspaces-switch-buffer-and-tab)
   :custom
   (tabspaces-use-filtered-buffers-as-default t)
   (tabspaces-default-tab "Default")
@@ -67,15 +67,15 @@
   (consult-customize consult--source-buffer :hidden t :default nil)
   (defvar consult--source-workspace
     (list :name     "Workspace Buffers"
-          :narrow   ?w
-          :history  'buffer-name-history
-          :category 'buffer
-          :state    #'consult--buffer-state
-          :default  t
-          :items    (lambda () (consult--buffer-query
-                                :predicate #'tabspaces--local-buffer-p
-                                :sort 'visibility
-                                :as #'buffer-name)))
+      :narrow   ?w
+      :history  'buffer-name-history
+      :category 'buffer
+      :state    #'consult--buffer-state
+      :default  t
+      :items    (lambda () (consult--buffer-query
+                             :predicate #'tabspaces--local-buffer-p
+                             :sort 'visibility
+                             :as #'buffer-name)))
     "Workspace buffer candidate source for `consult-buffer'.")
   (add-to-list 'consult-buffer-sources 'consult--source-workspace))
 

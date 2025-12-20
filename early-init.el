@@ -21,7 +21,7 @@
 ;; Native compilation settings
 (when (and (fboundp 'native-comp-available-p)
         (native-comp-available-p))
-  (setq native-comp-async-report-warnings-errors nil
+  (setq native-comp-async-report-warnings-errors t
     native-comp-deferred-compilation t
     native-comp-speed 2
     native-comp-prune-cache t))

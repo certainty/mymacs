@@ -60,7 +60,7 @@
 
 (use-package which-key
   :straight (:type built-in)
-  :demand t
+  :hook after-init
   :custom
   (which-key-sort-order 'which-key-prefix-then-key-order)
   (which-key-max-display-columns 10)
@@ -72,9 +72,7 @@
   (which-key-side-window-location 'bottom)
   (which-key-setup-minibuffer)
   (which-key-separator " • ")
-  (which-key-prefix-prefix nil)
-  :config
-  (which-key-mode))
+  (which-key-prefix-prefix nil))
 
 
 (when (eq system-type 'darwin)
