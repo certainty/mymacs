@@ -14,6 +14,7 @@
     "xt" 'my/capture-task
     "xn" 'my/capture-note
     "xe" 'my/capture-event
+    "go" 'my/open-org-dir
     "gx" '(:ignore t :which-key "gtd")
     "gxx" 'my/open-org-dir
     "gxt" 'my/goto-tasks
@@ -223,7 +224,7 @@
   :general
   (leader-def
     "xp" 'org-project-capture-capture-for-current-project
-    "xP" 'org-projedt-capture-project-todo-completing-read)
+    "xP" 'org-project-capture-project-todo-completing-read)
 
   :custom
   (org-project-capture-backend (make-instance 'org-project-capture-project-backend))

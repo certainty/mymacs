@@ -65,8 +65,10 @@
 (require 'data-base)
 (require 'writing-base)
 (require 'writing-markdown)
-(require 'writing-notes)
 (require 'writing-org)
+(require 'writing-notes)
+                                        ;(require 'writing-letters)
+
 
 (when (my/context-work-p)
   (require 'writing-asciidoc))

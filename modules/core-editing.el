@@ -8,9 +8,6 @@
 ;;; Code:
 
 (use-package emacs
-  :hook
-  (after-init . auto-insert-mode)
-
   :custom
   (show-paren-delay 0)
 
@@ -125,6 +122,16 @@
 
 (use-package ws-butler
   :hook prog-mode)
+
+;; ----------------------------
+;; Yasnippet
+;; ----------------------------
+(use-package yasnippet
+  :hook (after-init . yas-global-mode)
+  :config
+  (yas-reload-all))
+
+
 
 (provide 'core-editing)
 ;;; core-editing.el ends here

@@ -83,6 +83,13 @@
   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
+
+                                        ; export
+  (require 'ox-latex)
+  (setq org-latex-pdf-process
+    '("pdflatex -interaction nonstopmode -output-directory %o %f"
+       "pdflatex -interaction nonstopmode -output-directory %o %f"))
+
   (add-to-list 'display-buffer-alist
     '("\\*Org \\(Select\\|Note\\)\\*"
        (display-buffer-in-side-window)
