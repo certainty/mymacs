@@ -8,6 +8,9 @@
 ;;; Code:
 
 (use-package emacs
+  :hook
+  (after-init . auto-insert-mode)
+
   :custom
   (show-paren-delay 0)
 
@@ -23,9 +26,10 @@
   (global-visual-line-mode -1)
   (global-auto-revert-mode 1))
 
+
 (use-package display-line-numbers
   :straight (:type built-in)
-  :hook (prog-mode . display-line-numbers-mode)
+  :hook prog-mode
 
   :general
   (leader-def
@@ -36,6 +40,7 @@
   (display-line-numbers-width-start t))
 
 (use-package evil-nerd-commenter
+  :demand t
   :after evil
   :commands (evilnc-comment-operator
               evilnc-inner-comment
@@ -44,7 +49,7 @@
 
 (use-package evil-surround
   :after evil
-  :hook ((after-init-hook . (lambda () (global-evil-surround-mode)))))
+  :hook (after-init global-evil-surround-mode))
 
 (use-package evil-exchange
   :after evil
@@ -54,9 +59,9 @@
 
 (use-package evil-snipe
   :after evil
-  :hook ((after-init-hook . (lambda ()
-                              (evil-snipe-mode 1)
-                              (evil-snipe-override-mode 1))))
+  :hook (after-init . (lambda ()
+                        (evil-snipe-mode 1)
+                        (evil-snipe-override-mode 1)))
   :config
   (diminish 'evil-snipe-mode)
   (evil-snipe-mode 1)
@@ -71,12 +76,12 @@
 ;;;; Evil Visualstar - Search with * in visual mode
 (use-package evil-visualstar
   :after evil
-  :hook ((after-init-hook . (lambda () (global-evil-visualstar-mode 1)))))
+  :hook (after-init . global-evil-visualstar-mode))
 
 ;;;; Evil Lion - Align operators
 (use-package evil-lion
   :after evil
-  :hook ((after-init-hook . (lambda () (evil-lion-mode 1)))))
+  :hook (after-init . evil-lion-mode))
 
 ;;;; Evil Args - Arguments text object
 (use-package evil-args
@@ -119,7 +124,7 @@
   (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package ws-butler
-  :hook (prog-mode . ws-butler-mode))
+  :hook prog-mode)
 
 (provide 'core-editing)
 ;;; core-editing.el ends here

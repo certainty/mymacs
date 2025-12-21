@@ -26,28 +26,18 @@ Possible values:
 - 'external → always use external formatter
 - 'dwim     → use Eglot if possible, otherwise external")
 
+(defvar-local my/external-formatter nil
+  "Function that formats the current buffer using an external formatter.")
+
+(defvar-local my/format-on-save-enabled t
+  "Non-nil if `my/format-buffer` should be called automatically before saving this buffer.")
+
 (defun my/format-buffer-with-indent-region ()
   "Format the entire buffer with `indent-region`, preserving point and narrowing."
   (save-excursion
     (save-restriction
       (widen)
       (indent-region (point-min) (point-max)))))
-
-(defvar-local my/external-formatter #'my/format-buffer-with-indent-region
-  "Function that formats the current buffer using an external formatter.")
-
-(cl-defmacro my/define-mode-formatter (&key hook (policy 'dwim) (external))
-  "Define a buffer-local formatter for a mode.
-Keyword arguments:
-- :hook     (required) the major-mode hook to attach to
-- :policy   (required) one of 'eglot, 'external, or 'dwim
-- :external (optional) a function to format the buffer for external formatting"
-  `(add-hook ,hook
-     (lambda ()
-       ,@(when policy
-           `((setq-local my/format-policy ,policy)))
-       ,@(when external
-           `((setq-local my/external-formatter ,external))))))
 
 (defun my/eglot-can-format-p ()
   "Return non-nil if the current buffer can be formatted by Eglot."
@@ -68,7 +58,6 @@ Keyword arguments:
   "Format buffer using the external formatter."
   (interactive)
   (when (and my/external-formatter (functionp my/external-formatter))
-    (message "running with external formatter")
     (funcall my/external-formatter)
     t))
 
@@ -83,8 +72,10 @@ Keyword arguments:
       (unless (my/format-with-external)
         (user-error "No external formatter configured")))
     ('dwim
-      (or (my/format-with-eglot)
-        (my/format-with-external)))
+      (or
+        (my/format-with-external)
+        (my/format-with-eglot)
+        (my/format-buffer-with-indent-region)))
     (_
       (user-error "Unknown format policy: %s" my/format-policy))))
 
@@ -94,9 +85,6 @@ Keyword arguments:
   (message "policy=%s eglot=%s"
     my/format-policy
     (my/eglot-can-format-p)))
-
-(defvar-local my/format-on-save-enabled nil
-  "Non-nil if `my/format-buffer` should be called automatically before saving this buffer.")
 
 (defun my/enable-format-on-save ()
   "Enables format on save."
@@ -115,5 +103,7 @@ Keyword arguments:
   (if my/format-on-save-enabled
     (my/disable-format-on-save)
     (my/enable-format-on-save)))
+
+(add-hook 'before-save-hook #'my/format-buffer nil)
 
 (provide 'dev-format)
