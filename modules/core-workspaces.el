@@ -21,6 +21,7 @@
     "pd" 'project-dired
     "ps" 'consult-ripgrep
     "pk" 'project-kill-buffers
+    "pD" 'project-forget-project
     "pc" 'project-compile)
 
   :custom

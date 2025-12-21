@@ -68,13 +68,18 @@ Checks MYEMACS_CONTEXT environment variable first, then falls back to OS detecti
   :type 'integer
   :group 'mymacs)
 
-(defcustom my/org-path "~/Org"
+(defcustom my/org-path "~/Documents/Org"
   "Path to the org files."
   :type 'string
   :group 'mymacs)
 
-(defcustom my/notes-path "~/Notes"
+(defcustom my/notes-path "~/Documents/Notes"
   "Path to the note files."
+  :type 'string
+  :group 'mymacs)
+
+(defcustom my/managed-documents-path "~/Documents/Managed"
+  "Path to the managed document files for denote."
   :type 'string
   :group 'mymacs)
 

@@ -34,8 +34,8 @@
     ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords)
     ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
   :custom
-  (denote-directory my/notes-path)
-  (denote-known-keywords '("emacs" "work" "personal" "code" "idea" "reference"))
+  (denote-directory (list my/notes-path my/managed-documents-path))
+  (denote-known-keywords '("emacs" "philosophy" "common-lisp" "personal" "code" "idea" "reference"))
 
   ;; File naming
   (denote-file-type nil) ; Use .org by default
@@ -52,6 +52,7 @@
   (denote-link-button-action #'find-file)
 
   :config
+  (denote-rename-buffer-mode 1)
   (defun my/open-notes-path ()
     (interactive)
     (dired my/notes-path))
@@ -72,7 +73,8 @@
   :custom
   (consult-notes-file-dir-sources
     `(("Notes"  ?n ,(expand-file-name my/notes-path))
-       ("Org"    ?o ,(expand-file-name my/org-path))))
+       ("Org"    ?o ,(expand-file-name my/org-path))
+       ("Documents" ?d ,(expand-file-name my/managed-documents-path))))
   :config
   ;; Use ripgrep for searching note contents
   (consult-notes-denote-mode 1)
@@ -82,6 +84,13 @@
     (setq consult-notes-use-rg t)))
 
 (use-package denote-explore)
+
+(use-package denote-silo
+  :commands (denote-silo-create-note
+              denote-silo-open-or-create
+              denote-silo-select-silo-then-command
+              denote-silo-dired
+              denote-silo-cd))
 
 ;;;; Org Roam style backlinks for Denote
 (with-eval-after-load 'denote
