@@ -8,7 +8,7 @@
     gptel-org-branching-context t
     gptel-include-reasoning t)
 
-  (when (my/featurep 'context-private)
+  (when (my/context-private-p 'context-private)
     (setopt
       gptel-model 'qwen2.5-coder:7b
       gptel-backend (gptel-make-ollama "Ollama" :host "localhost:11434" :stream t :models '(qwen2.5-coder:14b qwen2.5-coder:7b qwen2.5-coder:latest gemma3:latest llama3.1:latest deepseek-r1:latest))))
