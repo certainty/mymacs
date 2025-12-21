@@ -111,13 +111,6 @@
   :after (consult flymake)
   :defer t)
 
-(use-package emacs
-  :general
-  (leader-def
-    "tF" 'my/toggle-format-on-save)
-  :init
-  (add-hook 'prog-mode-hook (lambda () (my/enable-format-on-save))))
-
 
 ;;; Global dev related settings
 (use-package paren
@@ -132,6 +125,9 @@
 (use-package electric-pair
   :straight (:type built-in)
   :hook prog-mode)
+
+(use-package emacs
+  :hook (makefile-gmake-mode . (lambda () (setq-local my/format-on-save-enabled nil))))
 
 (provide 'dev-base)
 ;;; dev-base.el ends here

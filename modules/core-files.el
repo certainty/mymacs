@@ -60,7 +60,6 @@
   (dired-listing-switches "-alh --group-directories-first")
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
-  (delete-by-moving-to-trash t)
   (dired-dwim-target t)
   (dired-kill-when-opening-new-dired-buffer t)
   (dired-auto-revert-buffer #'dired-directory-changed-p) ; also see `dired-do-revert-buffer'
@@ -70,11 +69,11 @@
   (dired-no-confirm t))
 
 (use-package diredfl
-  :hook (dired-mode . diredfl-mode))
+  :hook dired-mode)
 
 (use-package nerd-icons-dired
   :after nerd-icons
-  :hook (dired-mode . nerd-icons-dired-mode))
+  :hook dired-mode)
 
 (use-package dired-aux
   :straight (:type built-in)

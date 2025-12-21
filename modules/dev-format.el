@@ -76,34 +76,31 @@ Possible values:
         (my/format-with-external)
         (my/format-with-eglot)
         (my/format-buffer-with-indent-region)))
-    (_
-      (user-error "Unknown format policy: %s" my/format-policy))))
+    (_ (user-error "Unknown format policy: %s" my/format-policy))))
+
+(defun my/format-on-save ()
+  "Format on save if it's enabled."
+  (interactive)
+  (and my/format-on-save-enabled (my/format-buffer)))
 
 (defun my/format-debug ()
   "Show debug information for the current format settings."
   (interactive)
-  (message "policy=%s eglot=%s"
+  (message "policy=%s eglot=%s on-save=%s"
     my/format-policy
-    (my/eglot-can-format-p)))
-
-(defun my/enable-format-on-save ()
-  "Enables format on save."
-  (interactive)
-  (add-hook 'before-save-hook #'my/format-buffer nil t)
-  (setq my/format-on-save-enabled t))
-
-(defun my/disable-format-on-save ()
-  "Disables format on save."
-  (remove-hook 'before-save-hook #'my/format-buffer t)
-  (setq my/format-on-save-enabled nil))
+    (my/eglot-can-format-p)
+    my/format-on-save-enabled))
 
 (defun my/toggle-format-on-save ()
   "Toggle automatic formatting on save for the current buffer."
   (interactive)
-  (if my/format-on-save-enabled
-    (my/disable-format-on-save)
-    (my/enable-format-on-save)))
+  (setq-local my/format-on-save-enabled (not my/format-on-save-enabled))
+  (message "format on save is %s" (if my/format-on-save-enabled "enabled" "disabled")))
 
-(add-hook 'before-save-hook #'my/format-buffer nil)
+(add-hook 'before-save-hook #'my/format-on-save nil)
+
+(with-eval-after-load 'general
+  (leader-def
+    "tF" 'my/toggle-format-on-save))
 
 (provide 'dev-format)

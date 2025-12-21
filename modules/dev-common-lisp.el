@@ -164,9 +164,13 @@
   (add-to-list 'sly-contribs 'sly-asdf 'append))
 
 (use-package sly-quicklisp
-  :hook sly-mode)
+  :hook sly-mode
+  :init
+  (add-to-list 'sly-contribs 'sly-quicklisp 'append))
 
-(use-package sly-macrostep)
+(use-package sly-macrostep
+  :init
+  (add-to-list 'sly-contribs 'sly-macrostep))
 
 (use-package sly-repl-ansi-color
   :init
