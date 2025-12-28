@@ -78,18 +78,7 @@
       ;; Disable line numbers
       (display-line-numbers-mode -1)
       ;; Center content better
-      (setq-local truncate-lines t)))
-
-  ;; Evil bindings for dashboard
-  (with-eval-after-load 'evil
-    (evil-set-initial-state 'dashboard-mode 'normal)
-    (evil-define-key 'normal dashboard-mode-map
-      (kbd "R") 'dashboard-refresh-buffer
-      (kbd "r") 'dashboard-jump-to-recents
-      (kbd "p") 'dashboard-jump-to-projects
-      (kbd "b") 'dashboard-jump-to-bookmarks
-      (kbd "RET") 'dashboard-return
-      (kbd "q") 'quit-window)))
+      (setq-local truncate-lines t))))
 
 (provide 'core-dashboard)
 ;;; my-dashboard.el ends here

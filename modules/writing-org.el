@@ -1,6 +1,7 @@
 ;;; wriging-org.el --- Org -*- lexical-binding: t; -*-
 
 (use-package org
+  :straight (:type built-in)
   :commands (org-mode)
   :mode (("\\.org$" . org-mode))
   :custom

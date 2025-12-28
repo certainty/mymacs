@@ -34,7 +34,7 @@
     ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords)
     ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
   :custom
-  (denote-directory (list my/notes-path my/managed-documents-path))
+  (denote-directory (list my/notes-path))
   (denote-known-keywords '("emacs" "philosophy" "common-lisp" "personal" "code" "idea" "reference"))
 
   ;; File naming
@@ -53,6 +53,7 @@
 
   :config
   (denote-rename-buffer-mode 1)
+
   (defun my/open-notes-path ()
     (interactive)
     (dired my/notes-path))
@@ -72,25 +73,26 @@
     "sn" 'consult-notes-search-in-all-notes)
   :custom
   (consult-notes-file-dir-sources
-    `(("Notes"  ?n ,(expand-file-name my/notes-path))
-       ("Org"    ?o ,(expand-file-name my/org-path))
-       ("Documents" ?d ,(expand-file-name my/managed-documents-path))))
+    `(("Org"    ?o ,my/org-path)
+       ("Notes" ?n ,my/notes-path)
+       ("Documents" ?d ,my/managed-documents-path)))
   :config
   ;; Use ripgrep for searching note contents
-  (consult-notes-denote-mode 1)
+  ;; somehow this breaks consult-denote
+  ;;(consult-notes-denote-mode 1)
 
   ;; Set up search command
   (when (executable-find "rg")
     (setq consult-notes-use-rg t)))
-
-(use-package denote-explore)
 
 (use-package denote-silo
   :commands (denote-silo-create-note
               denote-silo-open-or-create
               denote-silo-select-silo-then-command
               denote-silo-dired
-              denote-silo-cd))
+              denote-silo-cd)
+  :custom
+  (denote-silo-directories (list denote-directory my/managed-documents-path)))
 
 ;;;; Org Roam style backlinks for Denote
 (with-eval-after-load 'denote
