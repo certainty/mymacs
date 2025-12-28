@@ -76,7 +76,7 @@
     '((1 . (variable-pitch 1.1))
        (t . (1.0))))
 
-  (load-theme 'modus-operandi :no-confirm))
+  (load-theme 'modus-vivendi :no-confirm))
 
 ;;; Fonts
 (use-package fontaine
