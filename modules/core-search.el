@@ -91,23 +91,6 @@
   (p-search-default-save-buffers 'ask)
   (p-search-case-fold-search t))
 
-;;;; Helper functions for directory-specific searches
-(defun my/search-in-directory (dir)
-  "Search in DIR using p-search."
-  (let ((default-directory (expand-file-name dir)))
-    (call-interactively #'p-search)))
-
-(defun my/search-notes ()
-  "Search in notes directory using p-search."
-  (interactive)
-  (my-search-in-directory my/notes-path))
-
-(defun my/search-org ()
-  "Search in org directory using p-search."
-  (interactive)
-  (my-search-in-directory my/org-path))
-
-
 
 (provide 'core-search)
 ;;; core-search.el ends here

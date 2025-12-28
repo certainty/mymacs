@@ -22,9 +22,21 @@
   (load bootstrap-file nil 'nomessage))
 
 (straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
-(setq use-package-always-defer t)
-(setq use-package-always-ensure t)
+(setopt straight-vc-use-snapshot-installation t)
+(setopt straight-use-package-by-default t)
+(setopt use-package-always-defer t)
+(setopt use-package-always-ensure t)
+
+;; let's use pinned versions
+;; (setq straight-profiles
+;;   '((nil . "default.el")
+;;      (pinned . "pinned.el")))
+
+;; ;; make sure we load pinned versions
+;; (autoload #'straight-x-pull-all "straight-x")
+;; (autoload #'straight-x-freeze-versions "straight-x")
+;; (defalias 'straight-pull-all #'straight-x-pull-all)
+;; (defalias 'straight-freeze-versions #'straight-x-freeze-versions)
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))

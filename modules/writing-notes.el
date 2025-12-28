@@ -11,21 +11,28 @@
   (leader-def
     "n" '(:ignore t :which-key "notes")
     "nn" 'denote
-    "nN" 'denote-type
+    "nN" 'denote-subdirectory
+    "nt" 'denote-type
     "nd" 'denote-date
-    "ns" 'denote-subdirectory
+    "ns" 'denote-find
     "nt" 'denote-template
 
-    "ni" 'denote-link
-    "nI" 'denote-add-links
-    "nb" 'denote-backlinks
+    "nl" '(:ignore t :which-key "links")
+    "nll" 'denote-find-link
+    "nlL" 'denote-find-backlink
+    "nli" 'denote-link
+    "nla" 'denote-add-links
+    "nlb" 'denote-backlinks
 
-    "nr" 'denote-rename-file
-    "nR" 'denote-rename-file-using-front-matter
+    "nf" '(:ignore t :which-key "file")
+    "nfr" 'denote-rename-file
+    "nfR" 'denote-rename-file-using-front-matter
 
-    "nf" 'denote-open-or-create
-    "nF" 'denote-open-or-create-with-command
-    "gN" 'my/open-notes-path)
+    "nff" 'denote-open-or-create
+    "nfF" 'denote-open-or-create-with-command
+    "on" '(:ignore t :which-key "notes")
+    "onn" 'my/open-notes-path
+    "ond" 'my/open-managed-documents-path)
   :hook (dired-mode . denote-dired-mode)
   :bind
   (:map dired-mode-map
@@ -34,8 +41,8 @@
     ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords)
     ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
   :custom
-  (denote-directory (list my/notes-path))
-  (denote-known-keywords '("emacs" "philosophy" "common-lisp" "personal" "code" "idea" "reference"))
+  (denote-directory (list my/notes-path my/managed-documents-path))
+  (denote-known-keywords '("emacs" "philosophy" "common-lisp" "personal" "code" "idee" "reference" "auto" "versicherung" "finanzen"))
 
   ;; File naming
   (denote-file-type nil) ; Use .org by default
@@ -58,41 +65,15 @@
     (interactive)
     (dired my/notes-path))
 
+  (defun my/open-managed-documents-path ()
+    (interactive)
+    (dired my/managed-documents-path))
+
+
   (defalias 'denote-new 'denote)
   (defalias 'denote-find 'denote-open-or-create))
 
-;;;; Consult-notes - Search notes with consult
-(use-package consult-notes
-  :commands (consult-notes
-              consult-notes-search-in-all-notes)
-  :general
-  (leader-def
-    "nN" 'consult-notes
-    "n/" 'consult-notes-search-in-all-notes
-    "gn" 'consult-notes
-    "sn" 'consult-notes-search-in-all-notes)
-  :custom
-  (consult-notes-file-dir-sources
-    `(("Org"    ?o ,my/org-path)
-       ("Notes" ?n ,my/notes-path)
-       ("Documents" ?d ,my/managed-documents-path)))
-  :config
-  ;; Use ripgrep for searching note contents
-  ;; somehow this breaks consult-denote
-  ;;(consult-notes-denote-mode 1)
-
-  ;; Set up search command
-  (when (executable-find "rg")
-    (setq consult-notes-use-rg t)))
-
-(use-package denote-silo
-  :commands (denote-silo-create-note
-              denote-silo-open-or-create
-              denote-silo-select-silo-then-command
-              denote-silo-dired
-              denote-silo-cd)
-  :custom
-  (denote-silo-directories (list denote-directory my/managed-documents-path)))
+(use-package consult-denote)
 
 ;;;; Org Roam style backlinks for Denote
 (with-eval-after-load 'denote
@@ -102,6 +83,36 @@
     (let ((file (buffer-file-name)))
       (when file
         (denote-backlinks)))))
+
+(defun my/search-in-directory (dir)
+  "Search in DIR using p-search."
+  (let ((default-directory (expand-file-name dir)))
+    (call-interactively #'p-search)))
+
+(defun my/search-notes ()
+  "Search in notes directory using p-search."
+  (interactive)
+  (my-search-in-directory my/notes-path))
+
+(defun my/search-documents ()
+  "Search in documents directory using p-search."
+  (interactive)
+  (my-search-in-directory my/managed-documents-path))
+
+
+(defun my/search-org ()
+  "Search in org directory using p-search."
+  (interactive)
+  (my-search-in-directory my/org-path))
+
+(leader-def
+  "sn" '(:ignore t :which-key "notes")
+  "snn" 'denote-find
+  "snf" 'consult-denote-find
+  "sng" 'consult-denote-grep
+  "sN" 'my/search-notes
+  "sd" 'my/search-documents
+  "so" 'my/search-org)
 
 (provide 'writing-notes)
 ;;; writing-notes.el ends here
