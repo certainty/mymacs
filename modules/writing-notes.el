@@ -41,7 +41,8 @@
     ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords)
     ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
   :custom
-  (denote-directory (list my/notes-path my/managed-documents-path))
+  (denote-directory (list my/notes-path
+                      my/managed-documents-path))
   (denote-known-keywords '("emacs" "philosophy" "common-lisp" "personal" "code" "idee" "reference" "auto" "versicherung" "finanzen"))
 
   ;; File naming

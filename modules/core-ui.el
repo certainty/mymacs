@@ -66,17 +66,18 @@
     (append (cl-remove-if (lambda (x) (member (car x) (mapcar 'car overrides))) defaults) overrides))
 
   ;; I prefer a less vibrant version of the theme (less greenish)
-  ;; (setopt modus-themes-common-palette-overrides
-  ;;   (my/modus-defaults-with-overrides modus-themes-preset-overrides-faint
-  ;;     `((bg-paren-match bg-magenta-intense)
-  ;;        (underline-paren-match fg-main)
-  ;;        (fg-line-number-active red-cooler))))
+  (setopt modus-themes-common-palette-overrides
+    (my/modus-defaults-with-overrides modus-themes-preset-overrides-faint
+      `((bg-paren-match bg-magenta-intense)
+         (underline-paren-match fg-main)
+         (fg-line-number-active red-cooler))))
 
   (setopt modus-themes-headings
     '((1 . (variable-pitch 1.1))
        (t . (1.0))))
 
   (load-theme 'modus-vivendi :no-confirm))
+
 
 ;;; Fonts
 (use-package fontaine

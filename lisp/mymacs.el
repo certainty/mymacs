@@ -78,7 +78,7 @@ Checks MYEMACS_CONTEXT environment variable first, then falls back to OS detecti
   :type 'string
   :group 'mymacs)
 
-(defcustom my/managed-documents-path "~/Documents/Cloud/Silo"
+(defcustom my/managed-documents-path "~/Documents/Cloud"
   "Path to the managed document files for denote."
   :type 'string
   :group 'mymacs)
