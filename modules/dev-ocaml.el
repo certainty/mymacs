@@ -27,6 +27,8 @@
   (tuareg-mode . ocaml-eglot)
   (ocaml-eglot . eglot-ensure)
   :config
+  (add-to-list 'load-path "/home/david/.opam/default/share/emacs/site-lisp")
+  (require 'ocp-indent)
   (setq ocaml-eglot-syntax-checker 'flymake))
 
 (provide 'dev-ocaml)
