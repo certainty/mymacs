@@ -1,0 +1,23 @@
+# name: letter
+# key: letter
+# --
+#+TITLE: Letter to ${1:${RECIPIENT_NAME}}
+#+DATE: `(format-time-string "%Y-%m-%d")`
+
+#+RECIPIENT_NAME: ${RECIPIENT_NAME}
+#+RECIPIENT_STREET: ${RECIPIENT_STREET}
+#+RECIPIENT_ZIP: ${RECIPIENT_ZIP}
+#+RECIPIENT_CITY: ${RECIPIENT_CITY}
+#+RECIPIENT_COUNTRY: ${RECIPIENT_COUNTRY}
+
+#+SUBJECT: $2
+
+* Letter
+
+Sehr geehrte Damen und Herren,
+
+$0
+
+
+Mit freundlichen Grŭßen
+David Krentzlin
