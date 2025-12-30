@@ -8,7 +8,7 @@
     gptel-org-branching-context t
     gptel-include-reasoning t)
 
-  (when (my/context-private-p 'context-private)
+  (when (my/context-private-p)
     (setopt
       gptel-model 'qwen2.5-coder:7b
       gptel-backend (gptel-make-ollama "Ollama" :host "localhost:11434" :stream t :models '(qwen2.5-coder:14b qwen2.5-coder:7b qwen2.5-coder:latest gemma3:latest llama3.1:latest deepseek-r1:latest)))
@@ -17,7 +17,7 @@
       :host "openrouter.ai"
       :endpoint "/api/v1/chat/completions"
       :stream t
-      :key (auth-source-pass-get 'secret "openrouter.ai")))
+      :key #'gptel-api-key-from-auth-source))
 
   (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
   (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
