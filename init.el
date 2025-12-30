@@ -86,7 +86,7 @@
 (require 'org-gtd)
 
 (require 'tools-vc)
-                                        ;(require 'tools-secrets)
+(require 'tools-secrets)
 (require 'tools-terminal)
 (require 'ai-gptel)
 
