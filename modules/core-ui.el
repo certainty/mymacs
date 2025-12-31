@@ -27,7 +27,40 @@
   (setq-default
     indent-tabs-mode nil
     tab-width 2
-    fill-column 150))
+    fill-column 150)
+
+
+;;; is writting by my night theme switcher gnome extension
+;;; via run command:  (defvar my/gnome-theme-file "~/.cache/gnome-theme")
+  (defvar my/gnome-theme-change-hook nil
+    "Hook run when the GNOME light/dark theme changes.
+Functions are called with one argument: either 'light or 'dark.")
+
+  (defvar my/gnome-theme-file "~/.cache/gnome-theme")
+
+  (defun my/read-gnome-theme-file ()
+    (when (file-exists-p my/gnome-theme-file)
+      (string-trim (with-temp-buffer
+                     (insert-file-contents my/gnome-theme-file)
+                     (buffer-string)))))
+
+  (defun my/gnome-theme-from-file ()
+    (if (string= (my/read-gnome-theme-file) "'prefer-dark'")
+      'dark
+      'light))
+
+  (defun my/gnome-theme-file-changed (_event)
+    (let ((current-theme (my/gnome-theme-from-file))))
+    (run-hook-with-args
+      'my/gnome-theme-change-hook
+      (my/gnome-theme-from-file)))
+
+  (when my/automatically-switch-themes
+    (require 'filenotify)
+    (file-notify-add-watch
+      my/gnome-theme-file
+      '(change)
+      #'my/gnome-theme-file-changed)))
 
 ;; Mode-line: Mood-line
 (use-package mood-line
@@ -45,6 +78,9 @@
 
 (use-package modus-themes
   :demand t
+  :general
+  (leader-def
+    "tt" 'modus-themes-toggle)
   :custom
   (modus-themes-to-toggle '(modus-vivendi modus-operandi))
   (modus-themes-mode-line '(moody))
@@ -61,6 +97,13 @@
     '((matches . (extrabold underline))
        (selection . (semibold italic))))
   :config
+
+  (add-hook 'my/gnome-theme-change-hook
+    (lambda (theme)
+      (if (eq theme 'dark)
+        (modus-themes-select-dark 'modus-vivendi)
+        (modus-themes-select-light 'modus-operandi))))
+
   (defun my/modus-defaults-with-overrides (defaults overrides)
     "Merge overrides into defaults. Overriding any defaults."
     (append (cl-remove-if (lambda (x) (member (car x) (mapcar 'car overrides))) defaults) overrides))
@@ -77,7 +120,6 @@
        (t . (1.0))))
 
   (load-theme 'modus-vivendi :no-confirm))
-
 
 ;;; Fonts
 (use-package fontaine

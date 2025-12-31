@@ -68,6 +68,11 @@ Checks MYEMACS_CONTEXT environment variable first, then falls back to OS detecti
   :type 'integer
   :group 'mymacs)
 
+(defcustom my/automatically-switch-themes t
+  "Switch themes automatically (dark/light)."
+  :type 'boolean
+  :group 'mymacs)
+
 (defcustom my/org-path "~/Documents/Local/Org"
   "Path to the org files."
   :type 'string
