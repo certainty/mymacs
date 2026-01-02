@@ -98,11 +98,12 @@ Functions are called with one argument: either 'light or 'dark.")
        (selection . (semibold italic))))
   :config
 
-  (add-hook 'my/gnome-theme-change-hook
-    (lambda (theme)
-      (if (eq theme 'dark)
-        (modus-themes-select-dark 'modus-vivendi)
-        (modus-themes-select-light 'modus-operandi))))
+  (when my/automatically-switch-themes
+    (add-hook 'my/gnome-theme-change-hook
+      (lambda (theme)
+        (if (eq theme 'dark)
+          (modus-themes-select-dark 'modus-vivendi)
+          (modus-themes-select-light 'modus-operandi)))))
 
   (defun my/modus-defaults-with-overrides (defaults overrides)
     "Merge overrides into defaults. Overriding any defaults."
@@ -119,7 +120,16 @@ Functions are called with one argument: either 'light or 'dark.")
     '((1 . (variable-pitch 1.1))
        (t . (1.0))))
 
-  (load-theme 'modus-vivendi :no-confirm))
+
+  (let ((initial-theme
+          (if my/automatically-switch-themes
+            (let ((current (my/gnome-theme-from-file)))
+              (if (eq current 'dark)
+                'modus-vivendi
+                'modus-operandi))
+            'modus-vivendi)))
+
+    (load-theme initial-theme :no-confirm)))
 
 ;;; Fonts
 (use-package fontaine

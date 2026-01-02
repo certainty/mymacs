@@ -88,6 +88,11 @@ Checks MYEMACS_CONTEXT environment variable first, then falls back to OS detecti
   :type 'string
   :group 'mymacs)
 
+(defcustom my/elfeed-directory "~/Document/Local/Archive/Elfeed"
+  "Path to the elfeed db directory."
+  :type 'string
+  :group 'mymacs)
+
 (define-minor-mode mymacs-mode
   "Minor mode for MYMACS, which gives a home for my customizations and keybindings."
   :global t

@@ -88,6 +88,7 @@
 (require 'tools-vc)
 (require 'tools-secrets)
 (require 'tools-terminal)
+(require 'tools-rss)
 (require 'ai-gptel)
 
 (provide 'init)
