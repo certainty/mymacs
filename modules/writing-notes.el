@@ -93,18 +93,18 @@
 (defun my/search-notes ()
   "Search in notes directory using p-search."
   (interactive)
-  (my-search-in-directory my/notes-path))
+  (my/search-in-directory my/notes-path))
 
 (defun my/search-documents ()
   "Search in documents directory using p-search."
   (interactive)
-  (my-search-in-directory my/managed-documents-path))
+  (my/search-in-directory my/managed-documents-path))
 
 
 (defun my/search-org ()
   "Search in org directory using p-search."
   (interactive)
-  (my-search-in-directory my/org-path))
+  (my/search-in-directory my/org-path))
 
 (leader-def
   "sn" '(:ignore t :which-key "notes")
