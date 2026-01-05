@@ -44,6 +44,7 @@
 
   (leader-def
     "TAB" '(:ignore t :which-key "workspaces")
+    "a" '(:ignore t :which-key "ai")
     "f" '(:ignore t :which-key "files")
     "b" '(:ignore t :which-key "buffers")
     "m" '(:ignore t :which-key "mode")

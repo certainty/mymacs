@@ -2,6 +2,14 @@
 ;;
 
 (use-package gptel
+  :general
+  (leader-def
+    "aa" 'gptel-send
+    "aA" 'gptel
+    "am" 'gptel-menu
+    "ar" 'gptel-rewrite
+    "a." 'gptel-add
+    "af" 'gptel-add-file)
   :config
   (setopt gptel-expert-commands t
     gptel-default-mode 'org-mode
@@ -19,8 +27,21 @@
       :stream t
       :key #'gptel-api-key-from-auth-source))
 
+  (when (my/context-work-p)
+    (setopt gptel-model 'claude-sonnet-4
+      gptel-backend (gptel-make-gh-copilot "Copilot")))
+
   (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
   (add-hook 'gptel-post-response-functions 'gptel-end-of-response)
+
+  (add-to-list 'display-buffer-alist
+    '((lambda (bufname action)
+        (with-current-buffer bufname
+          gptel-mode))
+       (display-buffer-in-side-window)
+       (side . right)
+       (window-width . 0.33)))
+
   (require 'gptel-integrations))
 
 (use-package llm-tool-collection
