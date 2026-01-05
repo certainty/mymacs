@@ -55,7 +55,7 @@ Functions are called with one argument: either 'light or 'dark.")
       'my/gnome-theme-change-hook
       (my/gnome-theme-from-file)))
 
-  (when my/automatically-switch-themes
+  (when (and (my/context-private-p) my/automatically-switch-themes)
     (require 'filenotify)
     (file-notify-add-watch
       my/gnome-theme-file

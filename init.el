@@ -89,7 +89,10 @@
 (require 'tools-secrets)
 (require 'tools-terminal)
 (require 'tools-rss)
+
 (require 'ai-gptel)
+(when (my/context-work-p)
+  (require 'ai-copilot))
 
 (provide 'init)
 ;;; init.el ends here

@@ -13,13 +13,12 @@ Set explicitly via environment variable MYMACS_CONTEXT or detected automatically
 (defun my/detect-context ()
   "Detect whether we're in work or private environment.
 Checks MYEMACS_CONTEXT environment variable first, then falls back to OS detection."
-  (or my/context
-    (let ((env-context (getenv "MYMACS_CONTEXT")))
-      (cond
-        (env-context (intern (downcase env-context)))
-        ((eq system-type 'darwin) 'work)
-        ((eq system-type 'gnu/linux) 'private)
-        (t 'private)))))
+  (let ((env-context (getenv "MYMACS_CONTEXT")))
+    (cond
+      (env-context (intern (downcase env-context)))
+      ((eq system-type 'darwin) 'work)
+      ((eq system-type 'gnu/linux) 'private)
+      (t 'private))))
 
 (defun my/context-private-p ()
   (eq my/context 'private))
