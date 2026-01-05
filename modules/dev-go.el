@@ -40,7 +40,7 @@
     "xb" 'go-build
     "xc" 'compile)
   :custom
-  (go-ts-mode-indent-offset 4))
+  (go-ts-mode-indent-offset 2))
 
 ;;;; Go Mode utilities
 (use-package go-mode

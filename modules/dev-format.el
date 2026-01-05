@@ -81,7 +81,8 @@ Possible values:
 (defun my/format-on-save ()
   "Format on save if it's enabled."
   (interactive)
-  (and my/format-on-save-enabled (my/format-buffer)))
+  (and my/format-on-save-enabled
+    (my/format-buffer)))
 
 (defun my/format-debug ()
   "Show debug information for the current format settings."

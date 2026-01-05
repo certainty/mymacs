@@ -127,7 +127,10 @@
   :hook prog-mode)
 
 (use-package emacs
-  :hook (makefile-gmake-mode . (lambda () (setq-local my/format-on-save-enabled nil))))
+  :hook
+  (makefile-bsdmake-mode . (lambda () (setq-local my/format-on-save-enabled nil)))
+  (makefile-mode . (lambda () (setq-local my/format-on-save-enabled nil)))
+  (makefile-gmake-mode . (lambda () (setq-local my/format-on-save-enabled nil))))
 
 (provide 'dev-base)
 ;;; dev-base.el ends here
