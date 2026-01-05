@@ -53,13 +53,14 @@
     (llm-tool-collection-get-tag 'editing)))
 
 (use-package elysium
+  :general
   (leader-def
     "ae" '(:ignore t :which-key "elysium")
     "aee" 'elysium-query
     "aec" 'elysium-add-context
     "aew" 'elysium-toggle-window
     "aea" 'elysium-keep-all-suggested-changes
-    "ead" 'elysium-discard-all-suggested-changes)
+    "aed" 'elysium-discard-all-suggested-changes)
 
   :custom
   (elysium-window-size 0.33)
