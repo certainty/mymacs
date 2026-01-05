@@ -21,11 +21,12 @@
       gptel-model 'qwen2.5-coder:7b
       gptel-backend (gptel-make-ollama "Ollama" :host "localhost:11434" :stream t :models '(qwen2.5-coder:14b qwen2.5-coder:7b qwen2.5-coder:latest gemma3:latest llama3.1:latest deepseek-r1:latest)))
 
-    (gptel-make-openai "OpenRouter"
-      :host "openrouter.ai"
-      :endpoint "/api/v1/chat/completions"
-      :stream t
-      :key #'gptel-api-key-from-auth-source))
+    (setq my/openrouter-gptel-model
+      (gptel-make-openai "OpenRouter"
+        :host "openrouter.ai"
+        :endpoint "/api/v1/chat/completions"
+        :stream t
+        :key #'gptel-api-key-from-auth-source)))
 
   (when (my/context-work-p)
     (setopt gptel-model 'claude-sonnet-4
@@ -52,6 +53,14 @@
     (llm-tool-collection-get-tag 'editing)))
 
 (use-package elysium
+  (leader-def
+    "ae" '(:ignore t :which-key "elysium")
+    "aee" 'elysium-query
+    "aec" 'elysium-add-context
+    "aew" 'elysium-toggle-window
+    "aea" 'elysium-keep-all-suggested-changes
+    "ead" 'elysium-discard-all-suggested-changes)
+
   :custom
   (elysium-window-size 0.33)
   (elysium-window-style 'vertical))
