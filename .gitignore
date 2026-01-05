@@ -24,3 +24,4 @@ elpa/archives/
 url/*
 .mymacs-tabspaces-session.el
 .org-id-locations
+straight/repos/elysium/
