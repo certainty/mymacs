@@ -2,6 +2,8 @@
 ;;; This is my GTD setup tailored to manage code related tasks
 ;;; All other tasks I manage in a different app
 
+(defvar my/org-log-path (concat user-emacs-directory "org/log.org")) ;; bullet journal style rapid logging facility
+
 (use-package org
   :hook (org-after-todo-state-change . save-buffer)
   :init
@@ -20,10 +22,9 @@
     "gxx" 'my/open-org-dir
     "gxt" 'my/goto-tasks
     "oo" '(:ignore t :which-key "org files")
-    "oot" 'my/goto-tasks
-    "ood" 'my/goto-decisions
-    "oon" 'my/goto-notes
-    "ooe" 'my/goto-events
+    "ood" 'my/open-org-dir
+    "oop" 'my/goto-projects
+    "ool" 'my/goto-log
     "oa" 'my/personal-agenda)
 
   :custom
@@ -35,6 +36,7 @@
        (sequence "TODO(t)" "DOING(g!)" "|" "DONE(d!)")
        (sequence "FEATURE(r)" "DOING(g!)" "|" "DONE(d!)")
        (sequence "TECHDEPT(e)" "|" "DONE(d!)")
+       (sequence "PROJ(p)" "DOING(g!)" "|" "DONE(d!")
        (sequence "FIX(f!)" "REVIEW(r!)" "|" "DONE(d)")
        (sequence "POC(p)" "|" "DONE(d)")
        (sequence "REFACTOR(f)" "|" "DONE(d)")
@@ -68,29 +70,35 @@
   ;; Capture for GTD
   (org-capture-templates
     '(
-       ("n" "Note" entry (file "notes.org")
+       ("n" "Note" entry (file+olp+datetree "log.org")
          "*  %?
 :PROPERTIES:
 :CAPTURED: %U
 :END:"
          )
 
-       ("t" "Task" entry (file+headline "tasks.org" "Main")
+       ("t" "Task" entry (file+olp+datetree "log.org")
          "* TODO %?
 :PROPERTIES:
 :CAPTURED: %U
 :END:"
          :prepend t)
 
-       ("d" "Decision" entry (file "decisions.org")
+       ("p" "Project" entry (file "projects.org")
+         "* PROJ %?
+:PROPERTIES:
+:CAPTURED: %U
+:END:")
+
+
+       ("d" "Decision" entry (file+olp+datetree "log.org")
          "* DECISION %?
 :PROPERTIES:
 :CAPTURED: %U
 :CATEGORY: decision
-:END:"
-         :prepend t)
+:END:")
 
-       ("e" "Event" entry (file+headline "events.org" "Main")
+       ("e" "Event" entry (file+olp+datetree "log.org")
          "* EVT %?
 :PROPERTIES:
 :CAPTURED: %U
@@ -109,8 +117,9 @@
 
   ;; Agenda
   (org-agenda-files
-    (list (concat org-directory "/tasks.org")
-      (concat org-directory "/events.org")
+    (list
+      (concat org-directory "/projects.org")
+      (concat org-directory "/log.org")
       (concat org-directory "/contacts.org")))
 
   (org-agenda-current-time-string
@@ -200,6 +209,10 @@
     (interactive)
     (org-capture nil "n"))
 
+  (defun my/capture-project ()
+    (interactive)
+    (org-capture nil "p"))
+
   (defun my/capture-decision ()
     (interactive)
     (org-capture nil "d"))
@@ -216,21 +229,17 @@
           (write-file file-path)))
       (find-file-other-window file-path)))
 
-  (defun my/goto-tasks ()
+  (defun my/goto-log ()
     (interactive)
-    (my/goto-special-org-files "tasks"))
+    (my/goto-special-org-file "log"))
 
-  (defun my/goto-decisions ()
+  (defun my/goto-projects ()
     (interactive)
-    (my/goto-special-org-file "decisions"))
+    (my/goto-special-org-file "projects"))
 
-  (defun my/goto-notes ()
+  (defun my/goto-contacts ()
     (interactive)
-    (my/goto-special-org-file "notes"))
-
-  (defun my/goto-events ()
-    (interactive)
-    (my/goto-special-org-file "events"))
+    (my/goto-special-org-file "contacts"))
 
   (defun my/org-ripgrep ()
     (interactive)
