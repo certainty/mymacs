@@ -46,7 +46,6 @@
 
   :config
   (fset #'jsonrpc--log-event #'ignore)
-  (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)
 
   :general
   (leader-def

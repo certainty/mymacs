@@ -40,7 +40,13 @@
     "xb" 'go-build
     "xc" 'compile)
   :custom
-  (go-ts-mode-indent-offset 2))
+  (go-ts-mode-indent-offset 2)
+
+  :config
+  (add-hook 'go-ts-mode-hook
+    (lambda ()
+      (setq-local my/external-formatter #'gofmt
+        my/format-policy 'external))))
 
 ;;;; Go Mode utilities
 (use-package go-mode
@@ -94,14 +100,6 @@
   "Build the current package."
   (interactive)
   (compile "go build"))
-
-;;;; Apheleia Go formatters
-(with-eval-after-load 'apheleia
-  ;; Use goimports for Go files
-  (setf (alist-get 'goimports apheleia-formatters)
-    '("goimports"))
-  (setf (alist-get 'go-ts-mode apheleia-mode-alist) 'goimports)
-  (setf (alist-get 'go-mode apheleia-mode-alist) 'goimports))
 
 (provide 'dev-go)
 ;;; dev-go.el ends here

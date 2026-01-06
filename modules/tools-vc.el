@@ -11,44 +11,29 @@
   (leader-def
     "vv" 'project-vc-dir
     "ve" 'vc-edif
-    "vk" 'vc-delete-file
-    "vG" 'vc-log-search
-    "vt" 'vc-create-tag
-    "v." 'vc-dir
-    "vz" '(:ignore t :which-key "stash")
-    "vzp" 'vc-git-stash-pop
-    "vzz" 'vc-git-stash
-    "vzs" 'vc-git-stash-snapshot)
-  :bind
-  (:map goto-map
-    ("v" . project-vc-dir))
-  (:map vc-dir-mode-map
-    ("t" . vc-create-tag)
-    ("O" . vc-log-outgoing)
-    ("o" . vc-dir-find-file-other-window)
-    ("d" . vc-diff)
-    ("k" . vc-dir-delete-file)
-    ("G" . vc-revert))
-  (:map vc-git-stash-shared-map
-    ("a" . vc-git-stash-apply-at-point)
-    ("c" . vc-git-stash)
-    ("k" . vc-git-stash-delete-at-point) ; symmetry with `vc-dir-delete-file'
-    ("p" . vc-git-stash-pop-at-point)
-    ("s" . vc-git-stash-snapshot))
-  (:map vc-annotate-mode-map
-    ("M-q" . vc-annotate-toggle-annotation-visibility)
-    ("C-c C-c" . vc-annotate-goto-line)
-    ("<return>" . vc-annotate-find-revision-at-line))
-  (:map log-edit-mode-map
-    ("M-s" . nil)) ; I use M-s for my search commands
-  (:map log-view-mode-map
-    ("<tab>" . log-view-toggle-entry-display)
-    ("<return>" . log-view-find-revision)
-    ("s" . vc-log-search)
-    ("o" . vc-log-outgoing)
-    ("f" . vc-log-incoming)
-    ("F" . vc-update)
-    ("P" . vc-push))
+    "v." 'vc-dir)
+
+  (local-leader-def
+    :keymaps 'vc-dir-mode-map
+    "b" '(:ignore t :which-key "branch")
+    "bb" 'vc-create-branch
+    "bs" 'vc-switch-branch
+    "z" '(:ignore t :which-key "stash")
+    "zp" 'vc-git-stash-pop-at-point
+    "zz" 'vc-git-stash
+    "zs" 'vc-git-stash-snapshot
+    :keymaps 'vc-annotate-mode-map
+    "a" 'vc-annotate-toggle-annotation-visibility
+    :keymaps 'log-view-mode-map
+    "o" 'vc-log-outgoing
+    "i" 'vc-log-incoming
+    "f" 'vc-log-search
+    "F" 'vc-update
+    "P" 'vc-push
+    :keymaps 'vc-git-stash-shared-map
+    "za" 'vc-git-stash-apply-at-point
+    "zk" 'vc-git-stash-delete-at-point
+    "zp" 'vc-git-stash-pop-at-point)
   :custom
   (vc-follow-symlinks t)
 
@@ -108,21 +93,14 @@
     "vb" 'agitate-vc-git-grep
     "vS" 'agitate-vc-git-show
     "vsf" 'agitate-vc-git-find-revision)
-  :bind
-  (:map diff-mode-map
-    ("C-c C-b" . agitate-diff-refine-cycle) ; replace `diff-refine-hunk'
-    ("C-c C-n" . agitate-diff-narrow-dwim)
-    ("L" . vc-print-root-log)
-    ("v" . vc-next-action)
-    :map log-view-mode-map
-    ("w" . agitate-log-view-kill-revision)
-    ("W" . agitate-log-view-kill-revision-expanded)
-    :map vc-git-log-view-mode-map
-    ("c" . agitate-vc-git-format-patch-single)
-    :map log-edit-mode-map
-    ("C-c C-i C-n" . agitate-log-edit-insert-file-name)
-    ("C-c C-i C-e" . agitate-log-edit-emoji-commit)
-    ("C-c C-i C-c" . agitate-log-edit-conventional-commit))
+  (local-leader-def
+    :keymaps 'vc-dir-mode-map
+    "s" '(:ignore t :which-key "search")
+    "ss" 'agitate-vc-git-grep
+    "sS" 'agitate-vc-git-grep-symbol-at-point
+    "sF" 'agitate-vc-git-find-revision
+    "sB" 'agitate-vc-git-blame
+    "sC" 'agitate-vc-git-commit-search)
 
   :config
   (advice-add #'vc-git-push :override #'agitate-vc-git-push-prompt-for-remote)
