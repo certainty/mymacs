@@ -14,19 +14,25 @@
     "xt" 'my/capture-task
     "xn" 'my/capture-note
     "xe" 'my/capture-event
+    "xd" 'my/capture-decision
     "go" 'my/open-org-dir
     "gx" '(:ignore t :which-key "gtd")
     "gxx" 'my/open-org-dir
     "gxt" 'my/goto-tasks
-    "ot" 'my/goto-tasks
+    "oo" '(:ignore t :which-key "org files")
+    "oot" 'my/goto-tasks
+    "ood" 'my/goto-decisions
+    "oon" 'my/goto-notes
+    "ooe" 'my/goto-events
     "oa" 'my/personal-agenda)
 
   :custom
   (org-id-link-to-org-use-id t)
 
-  ;; TODOs
   (org-todo-keywords
-    '((sequence "TODO(t)" "DOING(g!)" "|" "DONE(d!)")
+    '(
+       (sequence "DECISION(!q)" "|")
+       (sequence "TODO(t)" "DOING(g!)" "|" "DONE(d!)")
        (sequence "FEATURE(r)" "DOING(g!)" "|" "DONE(d!)")
        (sequence "TECHDEPT(e)" "|" "DONE(d!)")
        (sequence "FIX(f!)" "REVIEW(r!)" "|" "DONE(d)")
@@ -75,6 +81,15 @@
 :CAPTURED: %U
 :END:"
          :prepend t)
+
+       ("d" "Decision" entry (file "decisions.org")
+         "* DECISION %?
+:PROPERTIES:
+:CAPTURED: %U
+:CATEGORY: decision
+:END:"
+         :prepend t)
+
        ("e" "Event" entry (file+headline "events.org" "Main")
          "* EVT %?
 :PROPERTIES:
@@ -185,13 +200,37 @@
     (interactive)
     (org-capture nil "n"))
 
+  (defun my/capture-decision ()
+    (interactive)
+    (org-capture nil "d"))
+
   (defun my/open-org-dir ()
     (interactive)
     (dired my/org-path))
 
+  (defun my/goto-special-org-file (name)
+    (interactive "sFile name (without .org): ")
+    (let ((file-path (concat org-directory "/" name ".org")))
+      (unless (file-exists-p file-path)
+        (with-temp-buffer
+          (write-file file-path)))
+      (find-file-other-window file-path)))
+
   (defun my/goto-tasks ()
     (interactive)
-    (find-file-other-window (concat org-directory "/tasks.org")))
+    (my/goto-special-org-files "tasks"))
+
+  (defun my/goto-decisions ()
+    (interactive)
+    (my/goto-special-org-file "decisions"))
+
+  (defun my/goto-notes ()
+    (interactive)
+    (my/goto-special-org-file "notes"))
+
+  (defun my/goto-events ()
+    (interactive)
+    (my/goto-special-org-file "events"))
 
   (defun my/org-ripgrep ()
     (interactive)
