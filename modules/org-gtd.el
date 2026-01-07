@@ -2,8 +2,6 @@
 ;;; This is my GTD setup tailored to manage code related tasks
 ;;; All other tasks I manage in a different app
 
-(defvar my/org-log-path (concat user-emacs-directory "org/log.org")) ;; bullet journal style rapid logging facility
-
 (use-package org
   :hook (org-after-todo-state-change . save-buffer)
   :init
