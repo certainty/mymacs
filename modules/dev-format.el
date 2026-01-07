@@ -42,10 +42,7 @@ Possible values:
 (defun my/eglot-can-format-p ()
   "Return non-nil if the current buffer can be formatted by Eglot."
   (when (and (fboundp 'eglot-managed-p) (eglot-managed-p))
-    (cl-some
-      (lambda (server)
-        (eglot--server-capable server :documentFormattingProvider))
-      (eglot-current-server))))
+    (eglot-server-capable :documentFormattingProvider)))
 
 (defun my/format-with-eglot ()
   "Format buffer using Eglot. Return t if formatting was requested."

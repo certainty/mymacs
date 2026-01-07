@@ -37,7 +37,6 @@
 
 ;;;; JSON Mode (already configured in my-web.el, but add enhancements)
 (with-eval-after-load 'json-ts-mode
-  ;; Pretty print JSON
   (defun my/json-pretty-print-buffer ()
     "Pretty print the current JSON buffer."
     (interactive)
@@ -47,9 +46,10 @@
 
   (defun my/json-mode-setup ()
     "Setup for JSON buffers."
-    (setq-local js-indent-level 2))
+    (setq-local js-indent-level 2)
+    (eglot-ensure))
 
-  (add-hook 'json-ts-mode-hook #'my-json-mode-setup)
+  (add-hook 'json-ts-mode-hook #'my/json-mode-setup)
 
   (local-leader-def
     :keymaps 'json-ts-mode-map
@@ -57,16 +57,12 @@
 
 ;;;; YAML enhancements (already configured in my-ruby.el)
 (with-eval-after-load 'yaml-ts-mode
-  (defun my-yaml-mode-setup ()
+  (defun my/yaml-mode-setup ()
     "Setup for YAML buffers."
-    (setq-local yaml-indent-offset 2))
+    (setq-local yaml-indent-offset 2)
+    (eglot-ensure))
 
-  (add-hook 'yaml-ts-mode-hook #'my-yaml-mode-setup))
-
-;;;; Apheleia formatters for data formats
-(with-eval-after-load 'apheleia
-  (setf (alist-get 'json-ts-mode apheleia-mode-alist) 'prettier)
-  (setf (alist-get 'yaml-ts-mode apheleia-mode-alist) 'prettier))
+  (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-setup))
 
 (provide 'data-base)
 ;;; data-base.el ends here

@@ -188,7 +188,7 @@ The DWIM behaviour of this command is as follows:
     "wv" 'split-window-right
     "wo" 'delete-other-windows
     "w=" 'balance-windows
-    "tF" 'toggle-frame-maximized))
+    "tm" 'toggle-frame-maximized))
 
 (provide 'core-buffers)
 ;;; buffers.el ends here
