@@ -18,6 +18,9 @@
     evil-respect-visual-line-mode t)
   :config
   (evil-mode 1)
+  (evil-global-set-key 'insert (kbd "C-y") nil) ;; free up C-y in insert mode
+  (evil-global-set-key 'motion (kbd "C-y") nil)
+  (evil-global-set-key 'normal (kbd "C-y") nil)
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line))
 

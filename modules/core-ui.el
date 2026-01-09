@@ -29,7 +29,6 @@
     tab-width 2
     fill-column 150)
 
-
 ;;; is writting by my night theme switcher gnome extension
 ;;; via run command:  (defvar my/gnome-theme-file "~/.cache/gnome-theme")
   (defvar my/gnome-theme-change-hook nil
@@ -110,7 +109,7 @@ Functions are called with one argument: either 'light or 'dark.")
     (append (cl-remove-if (lambda (x) (member (car x) (mapcar 'car overrides))) defaults) overrides))
 
   ;; I prefer a less vibrant version of the theme (less greenish)
-  (setopt modus-themes-common-palette-overrides
+  (setq modus-vivendi-palette-overrides
     (my/modus-defaults-with-overrides modus-themes-preset-overrides-faint
       `((bg-paren-match bg-magenta-intense)
          (underline-paren-match fg-main)
@@ -120,9 +119,8 @@ Functions are called with one argument: either 'light or 'dark.")
     '((1 . (variable-pitch 1.1))
        (t . (1.0))))
 
-
   (let ((initial-theme
-          (if my/automatically-switch-themes
+          (if (and (my/context-private-p) my/automatically-switch-themes)
             (let ((current (my/gnome-theme-from-file)))
               (if (eq current 'dark)
                 'modus-vivendi

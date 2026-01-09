@@ -12,6 +12,8 @@
     "acx" 'copilot-logout)
   (:keymaps 'copilot-mode-map
     "M-y" 'copilot-accept-completion
+    "M-Y" 'copilot-accept-completion-by-word
+    "C-M-y" 'copilot-accept-completion-by-line
     "M-]" 'copilot-next-completion
     "M-[" 'copilot-previous-completion
     "C-c C-c" 'copilot-clear-completion

@@ -58,6 +58,14 @@
 
 ;;; In-Buffer
 (use-package corfu
+  :general
+  (:keymaps 'corfu-map
+    "C-y" 'corfu-insert
+    "TAB" 'corfu-next
+    "<tab>" 'corfu-next
+    "S-TAB" 'corfu-previous
+    "<backtab>" 'corfu-previous
+    "C-SPC" 'corfu-show)
   :hook
   (after-init . global-corfu-mode)
   (corfu-mode . corfu-popupinfo-mode)
