@@ -143,11 +143,7 @@
     "tT" 'sly-trace-dialog-toggle-complex-trace
     "td" 'sly-trace-dialog
     "tu" 'sly-trace-dialog-untrace-all
-    )
-
-
-  )
-
+    ))
 
 (use-package sly-asdf
   :after sly
