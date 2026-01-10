@@ -13,10 +13,14 @@
 ;; Disable package.el in favor of straight.el
 (setq package-enable-at-startup nil)
 
-;; UI optimizations - disable early to avoid flashing
+(push '(undecorated . t) default-frame-alist)
 (push '(menu-bar-lines . 0) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
+
+;; set background early to keep it dark
+(push '(background-color . "black") default-frame-alist)
+
 
 ;; Native compilation settings
 (when (and (fboundp 'native-comp-available-p)

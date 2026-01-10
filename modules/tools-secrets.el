@@ -12,8 +12,8 @@
   :init
   (setq auth-sources
     '((:source "~/.emacs.d/secrets/authinfo.gpg")))
-  (setq epa-pinentry-mode 'loopback)
-  (setq epg-pinentry-mode 'loopback)
+  (setq epa-pinentry-mode 'ask)
+  (setq epg-pinentry-mode 'ask)
   (setenv "GPG_AGENT_INFO" nil) ;force pinentry in emacs
   (setenv "GPG_TTY" "/dev/tty"))
 
