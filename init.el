@@ -90,8 +90,8 @@
 (require 'tools-terminal)
 (require 'tools-rss)
 
-(require 'ai-gptel)
 (when (my/context-work-p)
+  (require 'ai-gptel)
   (require 'ai-copilot))
 
 (provide 'init)

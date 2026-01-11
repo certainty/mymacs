@@ -1,5 +1,6 @@
 ;; -*- lexical-binding: t; -*-
 
+
 (use-package gptel
   :general
   (leader-def
@@ -16,16 +17,16 @@
     gptel-include-reasoning t)
 
   (when (my/context-private-p)
-    (setopt
-      gptel-model 'qwen2.5-coder:7b
-      gptel-backend (gptel-make-ollama "Ollama" :host "localhost:11434" :stream t :models '(qwen2.5-coder:14b qwen2.5-coder:7b qwen2.5-coder:latest gemma3:latest llama3.1:latest deepseek-r1:latest)))
-
-    (setq my/openrouter-gptel-model
+    (setq my/gptel-openrouter
       (gptel-make-openai "OpenRouter"
         :host "openrouter.ai"
         :endpoint "/api/v1/chat/completions"
         :stream t
-        :key #'gptel-api-key-from-auth-source)))
+        :key #'(lambda () (my/lookup-password :host "openrouter.ai" :user "bigkey"))))
+    (setopt gptel-api-key (lambda () (my/lookup-password :host "openrouter.ai" :user "bigkey")))
+    (setq my/gptel-ollama (gptel-make-ollama "Ollama" :host "localhost:11434" :stream t :models '(qwen2.5-coder:14b qwen2.5-coder:7b qwen2.5-coder:latest gemma3:latest llama3.1:latest deepseek-r1:latest)))
+    (setopt gptel-model 'qwen2.5-coder:14b)
+    (setopt gptel-backend my/gptel-ollama))
 
   (when (my/context-work-p)
     (setopt gptel-model 'claude-sonnet-4

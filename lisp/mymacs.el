@@ -28,6 +28,12 @@ Checks MYEMACS_CONTEXT environment variable first, then falls back to OS detecti
 
 (setq my/context (my/detect-context))
 
+(defun my/lookup-password (&rest keys)
+  (let ((result (apply #'auth-source-search keys)))
+    (if result
+      (funcall (plist-get (car result) :secret))
+      nil)))
+
 (add-hook 'emacs-startup-hook
   (lambda ()
     (message "MYMACS loaded in %s context" my/context)))
