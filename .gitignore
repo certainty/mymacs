@@ -26,3 +26,4 @@ url/*
 .org-id-locations
 straight/repos/elysium/
 org-caldav*
+data/devdocs/*
