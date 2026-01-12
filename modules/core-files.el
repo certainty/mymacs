@@ -54,7 +54,7 @@
   (dired-mode . hl-line-mode)
   :general
   (leader-def
-    "fd" 'dired-jump
+    "e" 'dired-jump ; I'm just used to this
     "fD" 'dired)
   :custom
   (dired-listing-switches "-alh --group-directories-first")
