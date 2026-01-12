@@ -8,29 +8,10 @@
 
 (use-package emacs
   :init
-  (add-to-list 'display-buffer-alist
-    '("\\*\\(Backtrace\\|Compile-log\\|Messages\\|Warnings\\)\\*"
-       (display-buffer-in-side-window)
-       (side . bottom)
-       (slot . 0)
-       (window-height . 0.33)
-       (window-parameters
-         (no-delete-other-windows . nil))))
-
-  (add-to-list 'display-buffer-alist
-    '("\\*shell:"
-       (display-buffer-below-selected)
-       (window-height . 12)))
-
-  (add-to-list 'display-buffer-alist
-    '("\\*\\(eldoc\\)\\*"
-       (display-buffer-reuse-window display-buffer-in-side-window)
-       (window-width . 30)
-       (window-parameters . ((no-other-window . t)
-                              (no-delete-other-windows . t)))
-       (dedicated . t)
-       (side . bottom)
-       (slot . 5))))
+  (my/window-rule! eldoc-mode :align bottom :size 0.3 :select nil)
+  (my/with-popper! 'eldoc-mode)
+  (my/window-rule! "\\*\\(Backtrace\\|Compile-log\\|Messages\\|Warnings\\)\\*" :align bottom :size 0.3 :select nil)
+  (my/with-popper! "\\*\\(Backtrace\\|Compile-log\\|Messages\\|Warnings\\)\\*"))
 
 (use-package eglot
   :straight (:type built-in)

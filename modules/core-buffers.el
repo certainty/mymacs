@@ -69,33 +69,28 @@
 (use-package shackle
   :hook after-init
   :preface
-  (defun my/window-rule! (&rest args)
-    (add-to-list 'shackle-rules args))
+  (cl-defmacro my/window-rule! (&body args)
+    `(with-eval-after-load 'shackle (add-to-list 'shackle-rules '(,@args))))
 
   :custom
   (shackle-rules
-    '(
-       ;; Lisp / Ruby REPLs
-       ;;(sly-mrepl-mode :align right :size 0.4 :select t)
-       ;;(inferior-ruby-mode :align right :size 0.4 :select t)
-
-       ;; vterm (main terminal, not popups)
-       ("\\*vterm\\*" :align bottom :size 0.3 :select t)
-       ("\\*Help\\*" :align right :size 0.35 :select nil)
-       ("\\*info\\*" :align right :size 0.35 :select t)
-       ("\\*compilation\\*" :align bottom :size 0.3 :select t)
-       ("\\*Org Capture\\*" :align bottom :size 0.3 :select t))))
+    '((info-mode :align right :size 0.3 :select nil)
+       (help-mode :align right :size 0.3 :select nil)
+       (helpful-mode :align right :size 0.3 :select nil)
+       (compilation-mode :align bottom :size 0.3 :select t)
+       (org-capture-mode :align bottom :size 0.3 :select t))))
 
 (use-package popper
   :hook after-init
   :preface
-  (defun my/with-popper! (config)
-    (add-to-list 'popper-reference-buffers config))
-
+  (cl-defun my/with-popper! (&rest config)
+    (with-eval-after-load 'popper
+      (cl-dolist (c config)
+        (add-to-list 'popper-reference-buffers c))))
   :general
   (leader-def
     "bp" '(:ignore t :which-key "Popper")
-    "bp" 'popper-toggle
+    "bpp" 'popper-toggle
     "bpc" 'popper-cycle
     "bpT" 'popper-toggle-type
     "bpk" 'popper-kill-latest-popup)

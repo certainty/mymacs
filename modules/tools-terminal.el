@@ -14,7 +14,7 @@
   :config
   ;; Better evil integration
   (advice-add 'evil-collection-vterm-insert
-              :before (lambda () (vterm-reset-cursor-point))))
+    :before (lambda () (vterm-reset-cursor-point))))
 
 (use-package vterm-toggle
   :general
@@ -24,16 +24,8 @@
   :custom
   (vterm-toggle-fullscreen-p nil)
   (vterm-toggle-scope 'project)
-  :config
-  (add-to-list 'display-buffer-alist
-               '((lambda (buffer-or-name _)
-                   (let ((buffer (get-buffer buffer-or-name)))
-                     (with-current-buffer buffer
-                       (or (equal major-mode 'vterm-mode)
-                           (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
-                 (display-buffer-reuse-window display-buffer-in-side-window)
-                 (reusable-frames . visible)
-                 (size . right)
-                 (window-height . 0.3))))
+  :init
+  (my/window-rule! vterm-mode :align bottom :size 0.3 :select t)
+  (my/with-popper! "\\*vterm\\*"))
 
 (provide 'tools-terminal)

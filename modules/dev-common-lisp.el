@@ -14,9 +14,9 @@
   (sly-complete-symbol-function #'sly-flex-completions)
 
   :init
-  (with-eval-after-load 'popper
-    (cl-pushnew 'sly-mrepl-mode popper-reference-buffers))
-
+  (my/window-rule! sly-mrepl-mode :align right :size 0.4 :select t)
+  (my/with-popper! "^\\*sly-compilation")
+  (my/with-popper! "^\\*sly-mrepl")
   (add-to-list 'auto-mode-alist '("\\.ros\\'" . lisp-mode))
 
   :config
@@ -25,23 +25,6 @@
 
   (setq sly-contribs '(sly-fancy sly-stickers sly-scratch sly-mrepl sly-autodoc sly-trace-dialog))
   (setopt sly-common-lisp-set-style 'modern)
-
-  (add-to-list 'display-buffer-alist
-    '("^\\*sly-compilation"
-       (display-buffer-reuse-window
-         display-buffer-in-side-window)
-       (side . bottom)
-       (reusable-frames . visible)
-       (window-height . 0.3)))
-
-  (add-to-list 'display-buffer-alist
-    '("^\\*sly-mrepl"
-       (display-buffer-reuse-window
-         display-buffer-in-side-window)
-       (side . right)
-       (reusable-frames . visible)
-       (window-height . 0.4)))
-
   :preface
   (defun my/select-implementation ()
     "Select the Common Lisp implementation to use."

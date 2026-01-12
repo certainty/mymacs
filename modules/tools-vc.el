@@ -77,12 +77,14 @@
   (setopt vc-git-log-edit-summary-target-len 80)
   (setopt vc-git-log-edit-summary-max-len 120)
 
-  (add-to-list 'display-buffer-alist
-    '("\\*\\vc-\\(incoming\\|outgoing\\|git : \\).*"
-       (display-buffer-reuse-mode-window display-buffer-below-selected)
-       (window-height . 0.1)
-       (dedicated . t)
-       (preserve-size . (t . t)))))
+  :init
+  (my/with-popper!
+    "\\*vc-diff\\*"
+    "\\*vc-change-log\\*"
+    "\\*vc-log\\*"
+    "\\*vc-annotate\\*")
+
+  (my/window-rule! vc-diff-mode :align right :size 0.35 :select t))
 
 (use-package agitate
   :hook

@@ -90,14 +90,9 @@
   (setq org-latex-pdf-process
     '("pdflatex -interaction nonstopmode -output-directory %o %f"
        "pdflatex -interaction nonstopmode -output-directory %o %f"))
-
-  (add-to-list 'display-buffer-alist
-    '("\\*Org \\(Select\\|Note\\)\\*"
-       (display-buffer-in-side-window)
-       (dedicated . t)
-       (side . bottom)
-       (slot . 0)
-       (window-parameters . ((mode-line-format . none))))))
+  :init
+  (my/with-popper! "\\*Org \\(Select\\|Note\\)\\*" )
+  (my/window-rule! "\\*Org \\(Select\\|Note\\)\\*" :align bottom :size 0.35 :select nil))
 
 ;; use org-modern
 (use-package org-modern

@@ -266,18 +266,9 @@
     (keymap-set embark-org-heading-map
       "i" #'org-id-get-create))
 
-  (with-eval-after-load 'popper
-    (cl-pushnew 'org-agenda-mode popper-reference-buffers)
-    (cl-pushnew "\\*Org Agenda\\*" popper-reference-buffers))
-
-  (add-to-list 'display-buffer-alist
-    '("\\*Org Agenda\\*"
-       (display-buffer-reuse-window
-         display-buffer-in-side-window)
-       (side . right)
-       (slot . 0)
-       (window-width . 0.4)
-       (reusable-frames . visible))))
+  :init
+  (my/with-popper! 'org-agenda-mode)
+  (my/window-rule! org-agenda-mode :align right :size 0.4 :select nil :reuse t))
 
 (use-package org-project-capture
   :general
