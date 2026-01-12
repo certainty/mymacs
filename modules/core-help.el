@@ -38,40 +38,40 @@
 
 (with-eval-after-load 'general
   (leader-def
-    "h" '(:ignore t :which-key "help")
-    "hf" 'helpful-callable
-    "hF" 'helpful-function
-    "hv" 'helpful-variable
-    "hk" 'helpful-key
-    "hc" 'helpful-command
-    "hs" 'helpful-symbol
-    "h." 'helpful-at-point
+    "sh" '(:ignore t :which-key "help")
+    "shf" 'helpful-callable
+    "shF" 'helpful-function
+    "shv" 'helpful-variable
+    "shk" 'helpful-key
+    "shc" 'helpful-command
+    "shs" 'helpful-symbol
+    "sh." 'helpful-at-point
 
-    "hm" 'describe-mode
-    "hb" 'describe-bindings
-    "hK" 'describe-keymap
-    "ha" 'apropos
-    "hA" 'apropos-documentation
+    "shm" 'describe-mode
+    "shb" 'describe-bindings
+    "shK" 'describe-keymap
+    "sha" 'apropos
+    "shA" 'apropos-documentation
 
-    "hw" 'woman
-    "hi" 'info
-    "hI" 'info-display-manual
-    "he" 'my/info-elisp-manual
-    "hE" 'my/info-display-manual
+    "shw" 'woman
+    "shi" 'info
+    "shI" 'info-display-manual
+    "she" 'my/info-elisp-manual
+    "shE" 'my/info-display-manual
 
-    "hP" 'describe-package
-    "hF" 'describe-face
-    "hC" 'describe-char
-    "hT" 'describe-theme
-    "hx" 'describe-syntax
+    "shP" 'describe-package
+    "shC" 'describe-char
+    "shT" 'describe-theme
+    "shx" 'describe-syntax
 
-    "hd" '(:ignore t :which-key "describe")
-    "hdf" 'my/describe-face-at-point
-    "hdp" 'describe-text-properties
+    "shd" '(:ignore t :which-key "describe")
+    "shdf" 'my/describe-face-at-point
+    "shdF" 'describe-face
+    "shdp" 'describe-text-properties
 
     ;; Which-key
-    "h?" 'which-key-show-top-level
-    "hW" 'which-key-show-major-mode))
+    "sh?" 'which-key-show-top-level
+    "shW" 'which-key-show-major-mode))
 
 ;;;; Info mode enhancements
 (use-package info

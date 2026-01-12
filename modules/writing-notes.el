@@ -13,9 +13,8 @@
     "nn" 'denote
     "nN" 'denote-subdirectory
     "nt" 'denote-type
+    "nT" 'denote-template
     "nd" 'denote-date
-    "ns" 'denote-find
-    "nt" 'denote-template
 
     "nl" '(:ignore t :which-key "links")
     "nll" 'denote-find-link
@@ -30,9 +29,8 @@
 
     "nff" 'denote-open-or-create
     "nfF" 'denote-open-or-create-with-command
-    "on" '(:ignore t :which-key "notes")
-    "onn" 'my/open-notes-path
-    "ond" 'my/open-managed-documents-path)
+    "no" 'my/open-notes-path
+    "nO" 'my/open-managed-documents-path)
   :hook
   ((dired-mode . denote-dired-mode)
     (denote-mode-hook . (lambda () (corfu-mode -1))))

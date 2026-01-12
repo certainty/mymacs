@@ -33,26 +33,20 @@
           ("M-g I" . consult-imenu-multi))
   :general
   (leader-def
-    "!!" 'consult-flymake
-    "!c" 'consult-compile-error
-    "bb" 'consult-buffer
     "fr" 'consult-recent-file
     "gg" 'consult-goto-line
-    "gO" 'consult-outline
-    "gb" 'consult-bookmark
-    "gm" 'consult-mark
-    "gM" 'woman
-    "gI" 'consult-info
+    "s!" 'consult-flymake
+    "sC" 'consult-compile-error
+    "sb" 'consult-buffer
+    "sB" 'consult-bookmark
+    "sm" 'consult-mark
+    "sM" 'consult-global-mark
     "ss" 'consult-line
     "sr" 'consult-ripgrep
     "si" 'consult-imenu
-    "sI" 'consult-info
-    "sM" 'consult-man
     "sI" 'consult-imenu-multi
     "sO" 'consult-outline
-    "ob" 'consult-bookmark
-    "oM" 'woman
-    "oI" 'consult-info)
+    )
   :custom
   (consult-narrow-key "<")
   (consult-project-function (lambda (_) (project-root (project-current))))

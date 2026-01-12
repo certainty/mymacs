@@ -54,8 +54,8 @@
   (dired-mode . hl-line-mode)
   :general
   (leader-def
-    "e" 'dired-jump
-    "E" 'dired)
+    "fd" 'dired-jump
+    "fD" 'dired)
   :custom
   (dired-listing-switches "-alh --group-directories-first")
   (dired-recursive-copies 'always)
@@ -126,8 +126,7 @@
 (with-eval-after-load 'general
   (leader-def
     "ff" 'find-file
-    "fs" 'save-buffer
-    "fS" 'save-some-buffers))
+    "fs" 'save-buffer))
 
 (provide 'core-files)
 ;;; core-files.el ends here

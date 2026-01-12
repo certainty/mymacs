@@ -19,8 +19,8 @@
 (use-package vterm-toggle
   :general
   (leader-def
-    "ot" 'vterm-toggle
-    "oT" 'vterm-toggle-cd)
+    "xt" 'vterm-toggle
+    "xT" 'vterm-toggle-cd)
   :custom
   (vterm-toggle-fullscreen-p nil)
   (vterm-toggle-scope 'project)

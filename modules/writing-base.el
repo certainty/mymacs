@@ -68,7 +68,7 @@
 (use-package writeroom-mode
   :general
   (leader-def
-    "Wm" 'writeroom-mode))
+    "xwm" 'writeroom-mode))
 
 (provide 'writing-base)
 ;;; writing-base.el ends here

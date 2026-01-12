@@ -48,13 +48,14 @@
 ;;;; Config Keybindings
 (with-eval-after-load 'general
   (leader-def
-    "Mf" 'my/find-config-file
-    "Md" 'my/browse-config
-    "Mi" 'my/find-init-file
-    "Me" 'my/find-early-init-file
-    "Mm" 'my/edit-config-module
-    "Mr" 'my/reload-config
-    "Mt" 'my/show-startup-time
-    "Mb" 'my/browse-config))
+    "gc" '(:ignore t :which-key "config")
+    "gcf" 'my/find-config-file
+    "gcd" 'my/browse-config
+    "gci" 'my/find-init-file
+    "gce" 'my/find-early-init-file
+    "gcm" 'my/edit-config-module
+    "xc" '(:ignore t :which-key "config")
+    "xcr" 'my/reload-config
+    "xct" 'my/show-startup-time))
 
 (provide 'core-mymacs)

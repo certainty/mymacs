@@ -29,7 +29,7 @@
   (fset #'jsonrpc--log-event #'ignore)
 
   :general
-  (leader-def
+  (local-leader-def
     :keymaps 'eglot-mode-map
     "c" '(:ignore t :which-key "code")
     "cl" 'eglot
@@ -67,7 +67,7 @@
   :straight (:type built-in)
   :hook (prog-mode . flymake-mode)
   :general
-  (leader-def
+  (local-leader-def
     :keymaps 'flymake-mode-map
     "!" '(:ignore t :which-key "diagnostics")
     "!!" 'consult-flymake

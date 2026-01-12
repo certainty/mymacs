@@ -9,22 +9,20 @@
 
   :general
   (leader-def
-    "xa" 'my/personal-agenda
-    "xx" 'org-capture
-    "xt" 'my/capture-task
-    "xn" 'my/capture-note
-    "xe" 'my/capture-event
-    "xd" 'my/capture-decision
-    "go" 'my/open-org-dir
-    "gx" '(:ignore t :which-key "gtd")
-    "gxx" 'my/open-org-dir
-    "gxt" 'my/goto-tasks
-    "oo" '(:ignore t :which-key "org files")
-    "ood" 'my/open-org-dir
-    "oop" 'my/goto-projects
-    "ool" 'my/goto-log
+    "o" '(:ignore t :which-key "org")
     "oa" 'my/personal-agenda
-    "oA" 'org-agenda)
+    "oA" 'org-agenda
+    "oc" 'org-capture
+    "ot" 'my/capture-task
+    "on" 'my/capture-note
+    "oe" 'my/capture-event
+    "od" 'my/capture-decision
+
+    "go" '(:ignore t :which-key "org")
+    "god" 'my/open-org-dir
+    "gop" 'my/goto-projects
+    "gol" 'my/goto-log
+    "goc" 'my/goto-contacts)
 
   :custom
   (org-id-link-to-org-use-id t)
@@ -273,8 +271,8 @@
 (use-package org-project-capture
   :general
   (leader-def
-    "xp" 'org-project-capture-capture-for-current-project
-    "xP" 'org-project-capture-project-todo-completing-read)
+    "op" 'org-project-capture-capture-for-current-project
+    "oP" 'org-project-capture-project-todo-completing-read)
 
   :custom
   (org-project-capture-backend (make-instance 'org-project-capture-project-backend))
@@ -299,7 +297,7 @@
   :if (my/context-private-p)
   :general
   (leader-def
-    "xs" 'org-caldav-sync)
+    "oS" 'org-caldav-sync)
 
   :custom
   (org-caldav-url "https://drive.krentzlin.me/remote.php/dav/calendars/david")

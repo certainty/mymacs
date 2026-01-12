@@ -4,12 +4,13 @@
 (use-package gptel
   :general
   (leader-def
-    "aa" 'gptel-send
-    "aA" 'gptel
-    "am" 'gptel-menu
-    "ar" 'gptel-rewrite
-    "a." 'gptel-add
-    "af" 'gptel-add-file)
+    "aa" '(:ignore t :which-key "ai")
+    "aaa" 'gptel-send
+    "aaA" 'gptel
+    "aam" 'gptel-menu
+    "aar" 'gptel-rewrite
+    "aa." 'gptel-add
+    "aaf" 'gptel-add-file)
   :config
   (setopt gptel-expert-commands t
     gptel-default-mode 'org-mode

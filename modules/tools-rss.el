@@ -3,7 +3,7 @@
 (use-package elfeed
   :general
   (leader-def
-    "or" 'elfeed)
+    "xr" 'elfeed)
   :custom
   (elfeed-search-filter "@2-week-ago +unread ")
   (elfeed-db-directory

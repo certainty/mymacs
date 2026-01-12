@@ -113,9 +113,8 @@
 
 (with-eval-after-load 'general
   (leader-def
-    "bd" 'my-kill-current-buffer
+    "bd" 'my/kill-current-buffer
     "bD" 'my-delete-current-buffer-file
-    "bs" 'consult-buffer
     "bS" 'save-some-buffers
     "br" 'revert-buffer
     "bR" 'my/rename-file-and-buffer

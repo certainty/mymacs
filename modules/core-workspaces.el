@@ -15,7 +15,6 @@
     "*" 'my/ripgrep-symbol
     "SPC" 'project-find-file
     "pp" 'project-switch-project
-    "pf" 'project-find-file
     "pB" 'project-switch-to-buffer
     "pb" 'consult-project-buffer
     "pd" 'project-dired
@@ -49,7 +48,7 @@
   :general
   (leader-def
     "TAB TAB" 'tabspaces-open-or-create-project-and-workspace
-    ">" 'tabspaces-switch-or-create-workspace
+    "TAB >" 'tabspaces-switch-or-create-workspace
     "TAB d" 'tabspaces-close-workspace
     "TAB b" 'tabspaces-switch-to-buffer
     "TAB k" 'tabspaces-kill-buffers-close-workspace

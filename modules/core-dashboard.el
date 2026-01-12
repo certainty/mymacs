@@ -12,7 +12,7 @@
   :demand t
   :general
   (leader-def
-    "td" 'dashboard-open)
+    "xd" 'dashboard-open)
   :custom
   (dashboard-items '((recents . 5)
                       (projects . 8)
