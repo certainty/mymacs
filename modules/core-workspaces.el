@@ -81,9 +81,5 @@
   (add-to-list 'consult-buffer-sources 'consult--source-workspace))
 
 
-;;; Manage tasks in workspaces
-(use-package beads
-  :straight (:type git :repo "http://codeberg.org/ctietze/beads.el"))
-
 (provide 'core-workspaces)
 ;;; core-workspaces.el ends here

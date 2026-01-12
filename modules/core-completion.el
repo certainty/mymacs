@@ -82,6 +82,8 @@
   (corfu-popupinfo-delay '(1.25 . 0.5))
 
   :config
+  ;; Keep Corfu available in Org, but only on manual trigger.
+  (add-hook 'org-mode-hook (lambda () (setq-local corfu-auto nil)))
   (with-eval-after-load 'savehist
     (use-package corfu-history
       :straight (:type built-in)
