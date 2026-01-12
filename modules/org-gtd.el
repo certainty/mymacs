@@ -34,15 +34,8 @@
        (sequence "DECISION(!q)" "|")
        (sequence "TODO(t)" "DOING(g!)" "|" "DONE(d!)")
        (sequence "FEATURE(r)" "DOING(g!)" "|" "DONE(d!)")
-       (sequence "TECHDEPT(e)" "|" "DONE(d!)")
        (sequence "PROJ(p)" "DOING(g!)" "|" "DONE(d!")
-       (sequence "FIX(f!)" "REVIEW(r!)" "|" "DONE(d)")
-       (sequence "POC(p)" "|" "DONE(d)")
-       (sequence "REFACTOR(f)" "|" "DONE(d)")
-       (sequence "DOC(o)" "|" "DONE(d)")
-       (sequence "MEETING(m)" "|" "DONE(d)")
        (sequence "EVT(m)" "|" "DONE(d)")
-       (sequence "APPT(a)" "|" "DONE(d)")
        (sequence "|" "BLOCKED(l!)")
        (sequence "|" "CANCELED(c!)")))
 
@@ -77,20 +70,20 @@
          :tree-type week
          )
 
-       ("t" "Task" entry (file+olp+datetree "log.org")
+       ("t" "Task" entry (file "tasks.org")
          "* TODO %?
 :PROPERTIES:
 :CAPTURED: %U
 :END:"
-         :tree-type week
-         )
+         :prepend t)
 
 
-       ("p" "Project" entry (file "projects.org")
+       ("p" "Project" entry (file "tasks.org")
          "* PROJ %?
 :PROPERTIES:
 :CAPTURED: %U
-:END:")
+:END:"
+         :prepend t)
 
 
        ("d" "Decision" entry (file+olp+datetree "log.org")
@@ -102,30 +95,23 @@
          :tree-type week
          )
 
-       ("e" "Event" entry (file+olp+datetree "log.org")
+       ("e" "Event" entry (file "calendar.org")
          "* EVT %?
 :PROPERTIES:
 :CAPTURED: %U
 :END:"
-         :tree-type week
+         :prepend t
          )
-
-       ("c" "Contact" entry (file "contacts.org")
-         "* %^{Name}
-:PROPERTIES:
-:CAPTURED: %U
-:CATEGORY: contact
-:END:
-
-%?
-"    )))
+       ))
 
   ;; Agenda
   (org-agenda-files
     (list
-      (concat org-directory "/projects.org")
       (concat org-directory "/log.org")
-      (concat org-directory "/contacts.org")))
+      (concat org-directory "/tasks.org")
+      (concat org-directory "/caldav_tasks.org")
+      (concat org-directory "/calendar.org")
+      (concat org-directory "/caldav_calendar.org")))
 
   (org-agenda-current-time-string
     "◀── now ─────────────────────────────────────────────────")
@@ -158,7 +144,7 @@
               (org-agenda-remove-tags nil)
               (org-agenda-show-inherited-tags t)
               (org-agenda-prefix-format "  %?-2i %s ")
-              (org-agenda-todo-keyword-format )))))
+              (org-agenda-todo-keyword-format "")))))
 
        ("y" "My Agenda"
          ((tags-todo "-CATEGORY=\"project\""
@@ -232,7 +218,7 @@
 
   (defun my/capture-event ()
     (interactive)
-    (org-capture nil "n"))
+    (org-capture nil "e"))
 
   (defun my/capture-project ()
     (interactive)
@@ -316,5 +302,32 @@
   ;; upstream version is outdated so we use this
   (cl-defmethod org-project-capture-current-project ((_backend org-project-capture-project-backend))
     (project-name (project-current))))
+
+
+(use-package org-caldav
+  :if (my/context-private-p)
+  :general
+  (leader-def
+    "xs" 'org-caldav-sync)
+
+  :custom
+  (org-caldav-url "https://drive.krentzlin.me/remote.php/dav/calendars/david")
+  (org-caldav-files nil)
+  (org-icalendar-timezone "Europe/Berlin")
+  (org-icalendar-include-todo 'all)
+  (org-caldav-sync-todo t)
+  (org-caldav-todo-percent-states '((0 "TODO")
+                                     (0 "EVT")
+                                     (0 "PROJ")
+                                     (2 "DOING")
+                                     (100 "DONE")))
+  :config
+  (setq org-caldav-calendars
+    `((:calendar-id "personal"
+        :inbox ,(concat my/org-path "/caldav_calendar.org")
+        :files (,(concat my/org-path "/calendar.org")))
+       (:calendar-id "aufgaben"
+         :inbox ,(concat my/org-path "/caldav_tasks.org")
+         :files (,(concat my/org-path "/tasks.org"))))))
 
 (provide 'org-gtd)

@@ -33,7 +33,9 @@
     "on" '(:ignore t :which-key "notes")
     "onn" 'my/open-notes-path
     "ond" 'my/open-managed-documents-path)
-  :hook (dired-mode . denote-dired-mode)
+  :hook
+  ((dired-mode . denote-dired-mode)
+    (denote-mode-hook . (lambda () (corfu-mode -1))))
   :bind
   (:map dired-mode-map
     ("C-c C-d C-i" . denote-dired-link-marked-notes)

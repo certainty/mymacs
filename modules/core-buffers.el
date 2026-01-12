@@ -64,15 +64,41 @@
   (uniquify-after-kill-buffer-p t)
   (uniquify-ignore-buffers-re "^\\*"))
 
-;;;; Popper - Popup buffer management
+;;; Tame the windows with shackle and popper
+
+(use-package shackle
+  :hook after-init
+  :preface
+  (defun my/window-rule! (&rest args)
+    (add-to-list 'shackle-rules args))
+
+  :custom
+  (shackle-rules
+    '(
+       ;; Lisp / Ruby REPLs
+       ;;(sly-mrepl-mode :align right :size 0.4 :select t)
+       ;;(inferior-ruby-mode :align right :size 0.4 :select t)
+
+       ;; vterm (main terminal, not popups)
+       ("\\*vterm\\*" :align bottom :size 0.3 :select t)
+       ("\\*Help\\*" :align right :size 0.35 :select nil)
+       ("\\*info\\*" :align right :size 0.35 :select t)
+       ("\\*compilation\\*" :align bottom :size 0.3 :select t)
+       ("\\*Org Capture\\*" :align bottom :size 0.3 :select t))))
+
 (use-package popper
   :hook after-init
+  :preface
+  (defun my/with-popper! (config)
+    (add-to-list 'popper-reference-buffers config))
+
   :general
   (leader-def
-    "b`" 'popper-toggle
-    "b~" 'popper-cycle
-    "bT" 'popper-toggle-type
-    "bP" 'popper-kill-latest-popup)
+    "bp" '(:ignore t :which-key "Popper")
+    "bp" 'popper-toggle
+    "bpc" 'popper-cycle
+    "bpT" 'popper-toggle-type
+    "bpk" 'popper-kill-latest-popup)
   :custom
   (popper-reference-buffers
     '("\\*Messages\\*"
@@ -92,15 +118,9 @@
 
 (with-eval-after-load 'general
   (leader-def
-    "bb" 'consult-buffer
-    "bB" 'switch-to-buffer
-    "bk" 'kill-buffer
     "bd" 'my-kill-current-buffer
     "bD" 'my-delete-current-buffer-file
-    "bn" 'next-buffer
-    "bp" 'previous-buffer
-    "bN" 'evil-buffer-new
-    "bs" 'save-buffer
+    "bs" 'consult-buffer
     "bS" 'save-some-buffers
     "br" 'revert-buffer
     "bR" 'my/rename-file-and-buffer
