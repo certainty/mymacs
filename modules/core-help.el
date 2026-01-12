@@ -94,6 +94,11 @@
          (scala-ts-mode . ("Scala"))))
     (zeal-at-point-docsets '("Go" "Ruby" "Scala"))))
 
+(use-package devdocs
+  :commands (devdocs-lookup devdocs-search)
+  :custom
+  (devdocs-data-dir (expand-file-name "data/devdocs" user-emacs-directory)))
+
 (use-package helpful
   :bind
   (([remap describe-function] . helpful-callable)
@@ -141,6 +146,8 @@
     "shlr" 'my/ruby-doc
     "shls" 'my/scala-doc
     "shg" 'my/web-search
+    "shD" 'devdocs-lookup
+    "shS" 'devdocs-search
     ;; Which-key
     "sh?" 'which-key-show-top-level
     "shW" 'which-key-show-major-mode)
