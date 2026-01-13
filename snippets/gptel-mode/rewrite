@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: rewrite
+# key: rewrite
+# --
+Rewrite the following with these constraints: ${1:constraints}.
+If constraints conflict, ask clarifying questions.
+
+Output format: ${2:desired format}
+
+Text/code:
+$0

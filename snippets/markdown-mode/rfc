@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: rfc
+# key: rfc
+# --
+# RFC: ${1:Title}
+
+- Status: ${2:Draft}
+- Date: %(format-time-string "%Y-%m-%d")
+
+## Summary
+$0
+
+## Motivation
+## Design
+## Alternatives
+## Risks

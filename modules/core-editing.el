@@ -128,6 +128,11 @@
 ;; ----------------------------
 (use-package yasnippet
   :hook (after-init . yas-global-mode)
+  :general
+  (leader-def
+    "xs" 'yas-insert-snippet)
+  :custom
+  (yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory)))
   :config
   (yas-reload-all))
 

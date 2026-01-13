@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: given
+# key: given
+# --
+given ${1:Name}: ${2:Type} with
+  $0

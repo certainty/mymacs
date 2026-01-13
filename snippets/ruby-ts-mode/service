@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: service
+# key: service
+# --
+class ${1:Service}
+  def initialize(${2:args})
+  end
+
+  def call
+    $0
+  end
+end

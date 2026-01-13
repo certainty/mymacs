@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: specs2 specification
+# key: specs2
+# --
+class ${1:SpecName} extends org.specs2.mutable.Specification {
+  "${2:description}" >> {
+    $0
+  }
+}

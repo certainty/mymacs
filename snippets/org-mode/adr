@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: adr
+# key: adr
+# --
+* ADR: ${1:Title}
+:PROPERTIES:
+:Status: ${2:Proposed}
+:Date: %(format-time-string "%Y-%m-%d")
+:END:
+
+** Context
+$0
+
+** Decision
+
+** Consequences

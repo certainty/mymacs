@@ -1,0 +1,43 @@
+# -*- mode: snippet -*-
+# name: SKILL.md
+# key: skill
+# --
+# SKILL.md
+
+# ${1:Skill Name}
+
+## Purpose
+${2:When to use this skill and what it optimizes for.}
+
+## Trigger
+- ${3:Signals or situations that should invoke this skill}
+
+## Inputs
+- ${4:Required inputs}
+- ${5:Optional inputs}
+
+## Outputs
+- ${6:Expected outputs and format}
+
+## Workflow
+1) ${7:Clarify goal and constraints}
+2) ${8:Assemble context and inputs}
+3) ${9:Execute the task}
+4) ${10:Verify against requirements}
+
+## Prompt Template
+```
+Role: ${11:Role}
+Task: ${12:Instruction}
+Context: ${13:Relevant context}
+Inputs: ${14:Inputs}
+Output format: ${15:Exact format}
+Quality bar: ${16:What "good" means}
+Constraints: ${17:Limits, do-not-do}
+```
+
+## Edge Cases
+- ${18:Common pitfalls and how to handle them}
+
+## Validation
+- ${19:How to verify success}

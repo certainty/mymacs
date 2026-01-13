@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: for comprehension
+# key: forcomp
+# --
+for {
+  ${1:x} <- ${2:xs}
+} yield ${0}

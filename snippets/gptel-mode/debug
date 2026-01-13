@@ -1,0 +1,22 @@
+# -*- mode: snippet -*-
+# name: debug
+# key: debug
+# --
+Help debug this issue. Ask clarifying questions if needed.
+
+Output format:
+- Likely root causes
+- Next diagnostic steps
+- Proposed fix
+
+Expected:
+$1
+
+Actual:
+$2
+
+Repro steps:
+$3
+
+Context:
+$0

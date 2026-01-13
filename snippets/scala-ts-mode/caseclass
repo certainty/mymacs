@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: case class
+# key: caseclass
+# --
+final case class ${1:Name}(${2:fields})

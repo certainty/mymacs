@@ -1,0 +1,53 @@
+# -*- mode: snippet -*-
+# name: AGENTS.md
+# key: agents
+# --
+# AGENTS.md
+
+<INSTRUCTIONS>
+# Role
+$1
+
+# Objective
+- ${2:Primary outcomes}
+
+# Context
+- ${3:Project/product background}
+- ${4:Target audience or user}
+
+# Inputs
+- ${5:What the agent will receive}
+
+# Output Requirements
+- ${6:Format (bullets, checklist, code blocks, etc.)}
+- ${7:Quality bar and tone}
+
+# Constraints
+- Keep changes minimal and debuggable
+- Prefer existing patterns and local conventions
+- Avoid unnecessary dependencies
+- ${8:Other constraints}
+
+# Non-goals
+- ${9:Explicitly out of scope items}
+
+# Project Structure
+- ${10:Key directories and entry points}
+
+# Commands
+- ${11:Build/run commands}
+- ${12:Test commands}
+
+# Keybinding Scheme
+- ${13:Leader key or conventions (if any)}
+
+# AI & Safety
+- ${14:AI usage boundaries, secrets handling}
+- ${15:Data handling and privacy}
+
+# Validation
+- ${16:How to verify success}
+
+# Deliverables
+- ${17:Required artifacts or outputs}
+</INSTRUCTIONS>

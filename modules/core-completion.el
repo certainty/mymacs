@@ -110,6 +110,10 @@
   (with-eval-after-load 'corfu
     (add-to-list 'corfu-margin-formatters 'kind-icon-margin-formatter)))
 
+(use-package cape
+  :after corfu
+  :config
+  (add-to-list 'completion-at-point-functions #'cape-yasnippet))
 
 (provide 'core-completion)
 ;;; core-completion.el ends here

@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# name: review
+# key: review
+# --
+Review the following for bugs, edge cases, and missing tests.
+If something is ambiguous, ask clarifying questions first.
+
+Output format:
+- Issues (ordered by severity, include file/line if possible)
+- Missing tests
+- Questions
+
+Context:
+$1
+
+Code:
+$0

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: minitest class
+# key: mt_class
+# --
+class ${1:Thing}Test < Minitest::Test
+  $0
+end

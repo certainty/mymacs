@@ -1,16 +1,17 @@
+# -*- mode: snippet -*-
 # name: letter
 # key: letter
 # --
-#+TITLE: Letter to ${1:${RECIPIENT_NAME}}
-#+DATE: `(format-time-string "%Y-%m-%d")`
+#+TITLE: Letter to ${1:Recipient Name}
+#+DATE: %(format-time-string "%Y-%m-%d")
 
-#+RECIPIENT_NAME: ${RECIPIENT_NAME}
-#+RECIPIENT_STREET: ${RECIPIENT_STREET}
-#+RECIPIENT_ZIP: ${RECIPIENT_ZIP}
-#+RECIPIENT_CITY: ${RECIPIENT_CITY}
-#+RECIPIENT_COUNTRY: ${RECIPIENT_COUNTRY}
+#+RECIPIENT_NAME: $1
+#+RECIPIENT_STREET: ${2:Street}
+#+RECIPIENT_ZIP: ${3:ZIP}
+#+RECIPIENT_CITY: ${4:City}
+#+RECIPIENT_COUNTRY: ${5:Country}
 
-#+SUBJECT: $2
+#+SUBJECT: ${6:Subject}
 
 * Letter
 
@@ -19,5 +20,5 @@ Sehr geehrte Damen und Herren,
 $0
 
 
-Mit freundlichen Grŭßen
+Mit freundlichen Gruessen
 David Krentzlin

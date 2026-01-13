@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: minitest test
+# key: mt_test
+# --
+def test_${1:does_something}
+  $0
+end

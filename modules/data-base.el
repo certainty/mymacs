@@ -56,13 +56,26 @@
     "=" 'my/json-pretty-print-buffer))
 
 ;;;; YAML enhancements (already configured in my-ruby.el)
+(add-to-list 'auto-mode-alist '("\\.gotmpl\\'" . yaml-ts-mode))
+
 (with-eval-after-load 'yaml-ts-mode
+
   (defun my/yaml-mode-setup ()
     "Setup for YAML buffers."
     (setq-local yaml-indent-offset 2)
     (eglot-ensure))
 
   (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-setup))
+
+(use-package mmm-mode
+  :config
+  (setq mmm-global-mode 'maybe)
+  (mmm-add-classes
+    '((yaml-gotmpl
+        :submode fundamental-mode
+        :front "{{-?\\s-*"
+        :back "\\s-*-?}}")))
+  (mmm-add-mode-ext-class 'yaml-ts-mode "\\.gotmpl\\'" 'yaml-gotmpl))
 
 (provide 'data-base)
 ;;; data-base.el ends here
