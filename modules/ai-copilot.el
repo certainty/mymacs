@@ -9,8 +9,8 @@
     "aci" 'copilot-install-server
     "acp" 'copilot-panel-complete
     "acl" 'copilot-login
-    "acx" 'copilot-logout)
-  (:keymaps 'copilot-mode-map
+    "acx" 'copilot-logout
+    :keymaps 'copilot-mode-map
     "M-y" 'copilot-accept-completion
     "M-Y" 'copilot-accept-completion-by-word
     "C-M-y" 'copilot-accept-completion-by-line

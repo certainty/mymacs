@@ -17,25 +17,31 @@
   :config
   (defun my/gptel--openrouter-backend ()
     (when-let ((api-key (my/gptel--openrouter-key)))
-      (gptel-make-openai "OpenRouter"
-        :protocol "https"
+      (gptel-make-openai "OpenRouter"               ;Any name you want
         :host "openrouter.ai"
         :endpoint "/api/v1/chat/completions"
-        :key api-key
         :stream t
-        :header (lambda ()
-                  `(("Authorization" . ,(concat "Bearer " api-key))
-                    ("HTTP-Referer" . "https://github.com/dkrentzlin/mymacs")
-                    ("X-Title" . "MYMACS")))
-        :models '("openrouter/anthropic/claude-3.5-sonnet"
-                   "openrouter/openai/gpt-4o-mini"))))
+        :key api-key
+        :models '(
+                   openai/gpt-5.1-codex
+                   openai/gpt-5.1-codex-mini
+                   openai/gpt-5.2-chat
+                   openai/gpt-4o-mini
+                   openai/gpt-5-nano
+
+                   anthropic/claude-opus-4.5
+                   anthropic/claude-sonnet-4
+                   anthropic/claude-haiku-4.5
+                   anthropic/claude-3.5-haiku
+                   google/gemini-3-flash-preview
+                   google/gemini-2.5-pro
+                   qwen/qwen3-coder-plus))))
 
   (defun my/gptel--ollama-backend ()
     (when (executable-find "ollama")
       (gptel-make-ollama "Ollama"
         :host (or (getenv "OLLAMA_HOST") "localhost")
         :stream t
-        :chat-model "llama3"
         :models '("llama3" "llama3.1" "phi3" "mistral"))))
 
   (defun my/gptel--select-backend ()
@@ -45,10 +51,10 @@
           gptel-backend (gptel-make-gh-copilot "Copilot")))
       ((my/context-private-p)
         (let ((openrouter (my/gptel--openrouter-backend))
-              (ollama (my/gptel--ollama-backend)))
+               (ollama (my/gptel--ollama-backend)))
           (when openrouter
             (setopt gptel-backend openrouter
-              gptel-model "openrouter/anthropic/claude-3.5-sonnet"))
+              gptel-model "gpt-5-nano"))
           (unless gptel-backend
             (when ollama
               (setopt gptel-backend ollama

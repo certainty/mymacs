@@ -115,7 +115,7 @@
 (use-package magit
   :general
   (leader-def
-    "vm" 'magit-status
+    "vs" 'magit-status
     "vb" 'magit-blame-addition
     "vl" 'magit-log-buffer-file
     "vL" 'magit-log-all)

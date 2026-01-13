@@ -8,29 +8,6 @@
 
 ;;;; Consult - Enhanced commands
 (use-package consult
-  :bind (;; M-s bindings (search map)
-          ("M-s d" . consult-find)
-          ("M-s D" . consult-locate)
-          ("M-s g" . consult-grep)
-          ("M-s G" . consult-git-grep)
-          ("M-s r" . consult-ripgrep)
-          ("M-s l" . consult-line)
-          ("M-s L" . consult-line-multi)
-          ("M-s k" . consult-keep-lines)
-          ("M-s u" . consult-focus-lines)
-
-          ;; M-g bindings (goto map)
-          ("M-g B" . consult-bookmark)
-          ("M-g b" . consult-project-buffer)
-          ("M-g e" . consult-compile-error)
-          ("M-g f" . consult-flymake)
-          ("M-g g" . consult-goto-line)
-          ("M-g M-g" . consult-goto-line)
-          ("M-g o" . consult-outline)
-          ("M-g m" . consult-mark)
-          ("M-g k" . consult-global-mark)
-          ("M-g i" . consult-imenu)
-          ("M-g I" . consult-imenu-multi))
   :general
   (leader-def
     "fr" 'consult-recent-file
@@ -38,16 +15,16 @@
     "s!" 'consult-flymake
     "sC" 'consult-compile-error
     "sb" 'consult-buffer
-    "sB" 'consult-bookmark
+    "sB" 'consult-buffer-other-window
+    "sr" 'consult-bookmark
     "sm" 'consult-mark
     "sM" 'consult-global-mark
     "sl" 'consult-line
     "sL" 'consult-line-multi
-    "sr" 'consult-ripgrep
+    "sR" 'consult-ripgrep
     "si" 'consult-imenu
     "sI" 'consult-imenu-multi
-    "sO" 'consult-outline
-    )
+    "sO" 'consult-outline)
   :custom
   (consult-narrow-key "<")
   (consult-project-function (lambda (_) (project-root (project-current))))
