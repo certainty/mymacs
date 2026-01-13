@@ -83,11 +83,11 @@
     '(consult-omni-man
        consult-omni-wikipedia
        consult-omni-duckduckgo
-       consult-omni-dictionary
+       consult-omni-dict
        consult-omni-locate
        consult-omni-fd
        consult-omni-org-agenda
-       consult-omni-efeed
+       consult-omni-elfeed
        consult-omni-gptel
        consult-omni-notes
        consult-omni-calc))
@@ -95,6 +95,8 @@
   (setq consult-omni-multi-sources '("man"
                                       "Wikipedia"
                                       "DuckDuckGo API"
+                                      "Dictionary"
+                                      "elfeed"
                                       "Notes Search"
                                       "Org Agenda")))
 
