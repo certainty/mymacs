@@ -10,6 +10,10 @@
 (when (< emacs-major-version 30)
   (error "This configuration requires Emacs 30 or higher"))
 
+;; Loosen GC during startup for speed; reset in `init.el'.
+(setq gc-cons-threshold most-positive-fixnum
+  gc-cons-percentage 0.6)
+
 ;; Disable package.el in favor of straight.el
 (setq package-enable-at-startup nil)
 
@@ -25,8 +29,9 @@
 ;; Native compilation settings
 (when (and (fboundp 'native-comp-available-p)
         (native-comp-available-p))
-  (setq native-comp-async-report-warnings-errors nil
-    native-comp-deferred-compilation t
+  (setq native-comp-async-report-warnings-errors 'silent
+    native-comp-jit-compilation t
+    native-comp-async-jobs-number (max 2 (1- (num-processors)))
     native-comp-speed 2
     native-comp-prune-cache t))
 

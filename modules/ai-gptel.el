@@ -1,6 +1,9 @@
 ;; -*- lexical-binding: t; -*-
 
 
+(defun my/gptel--openrouter-key ()
+  (my/lookup-password :host "openrouter.ai" :user "apikey"))
+
 (use-package gptel
   :general
   (leader-def
@@ -12,13 +15,53 @@
     "aa." 'gptel-add
     "aaf" 'gptel-add-file)
   :config
+  (defun my/gptel--openrouter-backend ()
+    (when-let ((api-key (my/gptel--openrouter-key)))
+      (gptel-make-openai "OpenRouter"
+        :protocol "https"
+        :host "openrouter.ai"
+        :endpoint "/api/v1/chat/completions"
+        :key api-key
+        :stream t
+        :header (lambda ()
+                  `(("Authorization" . ,(concat "Bearer " api-key))
+                    ("HTTP-Referer" . "https://github.com/dkrentzlin/mymacs")
+                    ("X-Title" . "MYMACS")))
+        :models '("openrouter/anthropic/claude-3.5-sonnet"
+                   "openrouter/openai/gpt-4o-mini"))))
+
+  (defun my/gptel--ollama-backend ()
+    (when (executable-find "ollama")
+      (gptel-make-ollama "Ollama"
+        :host (or (getenv "OLLAMA_HOST") "localhost")
+        :stream t
+        :chat-model "llama3"
+        :models '("llama3" "llama3.1" "phi3" "mistral"))))
+
+  (defun my/gptel--select-backend ()
+    (cond
+      ((my/context-work-p)
+        (setopt gptel-model "claude-sonnet-4"
+          gptel-backend (gptel-make-gh-copilot "Copilot")))
+      ((my/context-private-p)
+        (let ((openrouter (my/gptel--openrouter-backend))
+              (ollama (my/gptel--ollama-backend)))
+          (when openrouter
+            (setopt gptel-backend openrouter
+              gptel-model "openrouter/anthropic/claude-3.5-sonnet"))
+          (unless gptel-backend
+            (when ollama
+              (setopt gptel-backend ollama
+                gptel-model "llama3")))
+          (unless gptel-backend
+            (message "gptel: no private backend configured. Add an OpenRouter token to secrets/authinfo.gpg or ensure Ollama is running."))))))
+
   (setopt gptel-expert-commands t
     gptel-default-mode 'org-mode
     gptel-org-branching-context t
     gptel-include-reasoning t)
 
-  (setopt gptel-model 'claude-sonnet-4
-    gptel-backend (gptel-make-gh-copilot "Copilot"))
+  (my/gptel--select-backend)
 
   (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
   (add-hook 'gptel-post-response-functions 'gptel-end-of-response)

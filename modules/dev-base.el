@@ -17,7 +17,7 @@
   :straight (:type built-in)
   :commands (eglot eglot-ensure)
   :custom
-  (eglot-report-progress t)
+  (eglot-report-progress nil)
   (eglot-extend-to-xref t)
   (eglot-autoreconnect 5)
   (eldoc-echo-area-use-multiline-p 1)
@@ -57,6 +57,8 @@
 (use-package treesit-auto
   :hook (after-init . global-treesit-auto-mode)
   :custom
+  (treesit-extra-load-path
+    (list (expand-file-name "tree-sitter" user-emacs-directory)))
   (treesit-font-lock-level 5)
   (treesit-auto-install 'prompt)
   :config

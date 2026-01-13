@@ -27,6 +27,11 @@
 (setopt use-package-always-defer t)
 (setopt use-package-always-ensure t)
 
+(add-hook 'emacs-startup-hook
+  (lambda ()
+    (setq gc-cons-threshold 100000000
+      gc-cons-percentage 0.1)))
+
 ;; let's use pinned versions
 ;; (setq straight-profiles
 ;;   '((nil . "default.el")
@@ -90,8 +95,9 @@
 (require 'tools-terminal)
 (require 'tools-rss)
 
+(require 'ai-gptel)
+
 (when (my/context-work-p)
-  (require 'ai-gptel)
   (require 'ai-copilot))
 
 (provide 'init)
