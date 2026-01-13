@@ -9,7 +9,7 @@
   :straight (:type built-in)
   :general
   (leader-def
-    "vv" 'project-vc-dir
+    "vc" 'project-vc-dir
     "ve" 'vc-edif
     "v." 'vc-dir)
 
@@ -115,7 +115,7 @@
 (use-package magit
   :general
   (leader-def
-    "vs" 'magit-status
+    "vm" 'magit-status
     "vb" 'magit-blame-addition
     "vl" 'magit-log-buffer-file
     "vL" 'magit-log-all)
