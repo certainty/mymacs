@@ -113,7 +113,10 @@
 (use-package cape
   :after corfu
   :config
-  (add-to-list 'completion-at-point-functions #'cape-yasnippet))
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
+  (add-to-list 'completion-at-point-functions #'cape-symbol))
 
 (provide 'core-completion)
 ;;; core-completion.el ends here

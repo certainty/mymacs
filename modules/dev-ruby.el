@@ -24,7 +24,11 @@
     "tt" 'ruby-test-run
     "ts" 'ruby-test-run-at-point)
   :custom
-  (ruby-insert-encoding-magic-comment nil))
+  (ruby-insert-encoding-magic-comment nil)
+  :config
+  (with-eval-after-load 'which-key
+    (which-key-add-keymap-based-replacements ruby-ts-mode-map
+      "SPC m t" "test")))
 
 ;;;; Ruby Test Runner
 (defun ruby-test-run ()
