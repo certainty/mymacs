@@ -102,15 +102,6 @@
          )
        ))
 
-  ;; Agenda
-  (org-agenda-files
-    (list
-      (concat org-directory "/log.org")
-      (concat org-directory "/tasks.org")
-      (concat org-directory "/caldav_tasks.org")
-      (concat org-directory "/calendar.org")
-      (concat org-directory "/caldav_calendar.org")))
-
   (org-agenda-current-time-string
     "◀── now ─────────────────────────────────────────────────")
 
@@ -258,6 +249,19 @@
     (interactive)
     (let ((default-directory org-directory))
       (call-interactively #'grep)))
+
+  ;; Agenda
+  (setopt org-agenda-files
+    (list
+      (concat org-directory "/log.org")
+      (concat org-directory "/tasks.org")))
+
+  (when (my/context-private-p)
+    (add-to-list 'org-agenda-files (concat org-directory "/caldav_tasks.org"))
+    (add-to-list 'org-agenda-files  (concat org-directory "/calendar.org"))
+    (add-to-list 'org-agenda-files  (concat org-directory "/caldav_calendar.org")))
+
+
 
   ;; embark
   (with-eval-after-load 'embark

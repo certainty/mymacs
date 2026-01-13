@@ -41,7 +41,8 @@
     "sB" 'consult-bookmark
     "sm" 'consult-mark
     "sM" 'consult-global-mark
-    "ss" 'consult-line
+    "sl" 'consult-line
+    "sL" 'consult-line-multi
     "sr" 'consult-ripgrep
     "si" 'consult-imenu
     "sI" 'consult-imenu-multi
@@ -60,6 +61,44 @@
     consult--source-recent-file consult--source-project-recent-file
     :preview-key '(:debounce 0.4 any)))
 
+(defun my/consult-omni ()
+  "Run consult-omni."
+  (interactive)
+  (call-interactively #'consult-omni))
+
+(use-package consult-omni
+  :straight (consult-omni :type git :host github :repo "armindarvish/consult-omni" :branch "main" :files (:defaults "sources/*.el"))
+  :general
+  (leader-def
+    "ss" 'my/consult-omni)
+
+  :custom
+  (consult-omni-default-browse-function #'eww-browse-url)
+  (consult-omni-default-preview-function #'eww-browse-url)
+  (consult-omni-alternate-browse-function #'browse-url)
+  :config
+  (require 'consult-omni-sources)
+  (require 'consult-omni-embark)
+  (setq consult-omni-sources-modules-to-load
+    '(consult-omni-man
+       consult-omni-wikipedia
+       consult-omni-duckduckgo
+       consult-omni-dictionary
+       consult-omni-locate
+       consult-omni-fd
+       consult-omni-org-agenda
+       consult-omni-efeed
+       consult-omni-gptel
+       consult-omni-notes
+       consult-omni-calc))
+  (consult-omni-sources-load-modules)
+  (setq consult-omni-multi-sources '("man"
+                                      "Wikipedia"
+                                      "DuckDuckGo API"
+                                      "Notes Search"
+                                      "Org Agenda")))
+
+
 (use-package embark-consult
   :after embark
   :hook
@@ -72,6 +111,12 @@
   (wgrep-change-readonly-file nil)
   :config
   (setq wgrep-enable-key "i"))
+
+(use-package eww
+  :straight (:type built-in)
+  :bind
+  (:map eww-mode-map
+    ("C-c C-o" . eww-browse-with-external-browser)))
 
 ;;;  P-Search
 ;;;; P-search - Powerful project-wide search
