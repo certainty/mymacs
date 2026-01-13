@@ -22,6 +22,10 @@
   (vc-make-backup-files nil)
   (delete-auto-save-files t))
 
+(use-package saveplace
+  :straight (:type built-in)
+  :hook (after-init . save-place-mode))
+
 (use-package recentf
   :straight (:type built-in)
   :hook after-init

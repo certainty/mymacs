@@ -12,7 +12,7 @@ Set explicitly via environment variable MYMACS_CONTEXT or detected automatically
 
 (defun my/detect-context ()
   "Detect whether we're in work or private environment.
-Checks MYEMACS_CONTEXT environment variable first, then falls back to OS detection."
+Checks MYMACS_CONTEXT environment variable first, then falls back to OS detection."
   (let ((env-context (getenv "MYMACS_CONTEXT")))
     (cond
       (env-context (intern (downcase env-context)))
@@ -93,7 +93,7 @@ Checks MYEMACS_CONTEXT environment variable first, then falls back to OS detecti
   :type 'string
   :group 'mymacs)
 
-(defcustom my/elfeed-directory "~/Document/Local/Archive/Elfeed"
+(defcustom my/elfeed-directory "~/Documents/Local/Archive/Elfeed"
   "Path to the elfeed db directory."
   :type 'string
   :group 'mymacs)

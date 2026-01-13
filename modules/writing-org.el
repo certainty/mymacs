@@ -85,14 +85,11 @@
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
 
 
-                                        ; export
+  ;; export
   (require 'ox-latex)
   (setq org-latex-pdf-process
     '("pdflatex -interaction nonstopmode -output-directory %o %f"
-       "pdflatex -interaction nonstopmode -output-directory %o %f"))
-  :init
-  (my/with-popper! "\\*Org \\(Select\\|Note\\)\\*" )
-  (my/window-rule! "\\*Org \\(Select\\|Note\\)\\*" :align bottom :size 0.35 :select nil))
+       "pdflatex -interaction nonstopmode -output-directory %o %f")))
 
 ;; use org-modern
 (use-package org-modern

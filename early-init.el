@@ -24,6 +24,7 @@
 
 ;; set background early to keep it dark
 (push '(background-color . "black") default-frame-alist)
+(push '(foreground-color . "white") default-frame-alist)
 
 
 ;; Native compilation settings

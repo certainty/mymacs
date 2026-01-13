@@ -39,7 +39,7 @@
     "cd" 'xref-find-definitions
     "cD" 'xref-find-references
     "ci" 'eglot-find-implementation
-    "ct" 'eglot-find-typeDefinition
+    "ct" 'eglot-find-type-definition
     "cR" 'eglot-reconnect
     "cQ" 'eglot-shutdown
     "cS" 'eglot-shutdown-all)
@@ -51,7 +51,7 @@
     ("M-g e r" . eglot-rename)
     ("M-g e i" . eglot-find-implementation)
     ("M-g e D" . eglot-find-declaration)
-    ("M-g e t" . eglot-find-typeDefinition)))
+    ("M-g e t" . eglot-find-type-definition)))
 
 ;;; Treesitter
 (use-package treesit-auto

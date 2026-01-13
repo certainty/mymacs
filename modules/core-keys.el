@@ -33,12 +33,12 @@
 (use-package general
   :demand t
   :config
-
   (general-create-definer leader-def
     :states '(normal visual)
     :keymaps 'mymacs-mode-map
     :prefix "SPC"
-    :non-normal-prefix "C-SPC")
+    :non-normal-prefix "C-SPC"
+    :global-prefix "C-c")
 
   (general-create-definer local-leader-def
     :states '(normal visual)

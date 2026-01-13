@@ -108,6 +108,8 @@
        compilation-mode))
   (popper-display-control 'user)
   :config
+  (global-set-key (kbd "C-c b p p") #'popper-toggle)
+  (global-set-key (kbd "C-c p") #'popper-toggle)
   (popper-echo-mode 1)
   (diminish 'popper-mode))
 

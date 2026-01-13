@@ -11,7 +11,7 @@
   :straight (:type built-in)
   :init
   (setq auth-sources
-    '((:source "~/.emacs.d/secrets/authinfo.gpg")))
+    `((:source ,(expand-file-name "secrets/authinfo.gpg" user-emacs-directory))))
   (setq epa-pinentry-mode 'ask)
   (setq epg-pinentry-mode 'ask)
   (setenv "GPG_AGENT_INFO" nil) ;force pinentry in emacs

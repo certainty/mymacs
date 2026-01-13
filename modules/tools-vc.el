@@ -112,6 +112,16 @@
 
   (agitate-log-edit-informative-mode))
 
+(use-package magit
+  :general
+  (leader-def
+    "vs" 'magit-status
+    "vb" 'magit-blame-addition
+    "vl" 'magit-log-buffer-file
+    "vL" 'magit-log-all)
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
+  (magit-bury-buffer-function #'magit-restore-window-configuration))
 
 
 (use-package diff-hl
