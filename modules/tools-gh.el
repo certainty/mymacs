@@ -16,12 +16,16 @@
     "sg" '(:ignore t :which-key "github")
     "sgr" 'my/consult-gh-search-repos
     "sgc" 'my/consult-gh-search-code
-    "sgp" 'my/consult-gh-search-prs
+    "sgp" '(:ignore t :which-key "prs")
+    "sgpp" 'my/consult-gh-search-prs-open
+    "sgpm" 'my/consult-gh-search-prs-closed
     "sgR" 'my/consult-gh-review-queue
     "sgg" '(:ignore t :which-key "global")
     "sggr" 'my/consult-gh-search-repos-global
     "sggc" 'my/consult-gh-search-code-global
-    "sggp" 'my/consult-gh-search-prs-global
+    "sggp" '(:ignore t :which-key "prs")
+    "sggpp" 'my/consult-gh-search-prs-open-global
+    "sggpm" 'my/consult-gh-search-prs-closed-global
     "sggR" 'my/consult-gh-review-queue-global)
 
   :custom
@@ -43,6 +47,10 @@
     "List of GitHub organizations/users to prioritize in prompts."
     :type '(repeat string)
     :group 'mymacs)
+  (defcustom my/gh-pr-search-sort-args '("--sort" "created" "--order" "desc")
+    "Extra args appended to PR searches."
+    :type '(repeat string)
+    :group 'mymacs)
   (defvar my/gh-last-org nil)
 
   (defun my/gh--read-org ()
@@ -53,7 +61,18 @@
       choice))
 
   (defun my/gh--org-prefill ()
-    (format "org:%s#" (my/gh--read-org)))
+    (format "org:%s" (my/gh--read-org)))
+
+  (defun my/gh--input-with-args (query args)
+    "Build consult-gh input from QUERY and ARGS."
+    (let ((query (string-trim (or query ""))))
+      (cond
+       ((and args (string= query ""))
+        (format "-- %s" (mapconcat #'identity args " ")))
+       ((and args (not (string= query "")))
+        (format "%s -- %s" query (mapconcat #'identity args " ")))
+       ((string= query "") "")
+       (t (concat query " ")))))
 
   (defun my/gh--repo-path (reponame)
     "Return canonical path for REPONAME (OWNER/REPO) under `my/repositories-path`."
@@ -119,7 +138,7 @@
   (defun my/consult-gh-search-repos ()
     "Search GitHub repos limited to internal organizations."
     (interactive)
-    (consult-gh-search-repos (my/gh--org-prefill)))
+    (consult-gh-search-repos (my/gh--input-with-args (my/gh--org-prefill) nil)))
 
   (defun my/consult-gh-search-repos-global ()
     "Search GitHub repos globally."
@@ -129,34 +148,60 @@
   (defun my/consult-gh-search-code ()
     "Search GitHub code via consult-gh."
     (interactive)
-    (consult-gh-search-code (my/gh--org-prefill)))
+    (consult-gh-search-code (my/gh--input-with-args (my/gh--org-prefill) nil)))
 
   (defun my/consult-gh-search-code-global ()
     "Search GitHub code globally."
     (interactive)
     (consult-gh-search-code))
 
-  (defun my/consult-gh-search-prs ()
-    "Search GitHub PRs via consult-gh."
+  (defun my/consult-gh-search-prs-open ()
+    "Search open GitHub PRs via consult-gh."
     (interactive)
-    (consult-gh-search-prs (my/gh--org-prefill)))
+    (consult-gh-search-prs
+     (my/gh--input-with-args (my/gh--org-prefill)
+                             (append '("--state" "open")
+                                     my/gh-pr-search-sort-args))))
 
-  (defun my/consult-gh-search-prs-global ()
-    "Search GitHub PRs globally."
+  (defun my/consult-gh-search-prs-closed ()
+    "Search merged/closed GitHub PRs via consult-gh."
     (interactive)
-    (consult-gh-search-prs))
+    (consult-gh-search-prs
+     (my/gh--input-with-args (my/gh--org-prefill)
+                             (append '("--state" "closed")
+                                     my/gh-pr-search-sort-args))))
+
+  (defun my/consult-gh-search-prs-open-global ()
+    "Search open GitHub PRs globally."
+    (interactive)
+    (consult-gh-search-prs
+     (my/gh--input-with-args ""
+                             (append '("--state" "open")
+                                     my/gh-pr-search-sort-args))))
+
+  (defun my/consult-gh-search-prs-closed-global ()
+    "Search merged/closed GitHub PRs globally."
+    (interactive)
+    (consult-gh-search-prs
+     (my/gh--input-with-args ""
+                             (append '("--state" "closed")
+                                     my/gh-pr-search-sort-args))))
 
   (defun my/consult-gh-review-queue ()
     "List PRs requesting your review."
     (interactive)
-    (let ((consult-gh-search-prs-args '("search" "prs" "--review-requested" "@me")))
-      (consult-gh-search-prs (my/gh--org-prefill))))
+    (consult-gh-search-prs
+     (my/gh--input-with-args (my/gh--org-prefill)
+                             (append '("--review-requested" "@me" "--state" "open")
+                                     my/gh-pr-search-sort-args))))
 
   (defun my/consult-gh-review-queue-global ()
     "List PRs requesting your review (global)."
     (interactive)
-    (let ((consult-gh-search-prs-args '("search" "prs" "--review-requested" "@me")))
-      (consult-gh-search-prs)))
+    (consult-gh-search-prs
+     (my/gh--input-with-args ""
+                             (append '("--review-requested" "@me" "--state" "open")
+                                     my/gh-pr-search-sort-args))))
 
   (add-hook 'consult-gh-repo-post-clone-hook #'my/gh--maybe-dired-after-clone)
 
