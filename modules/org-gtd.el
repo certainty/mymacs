@@ -278,7 +278,7 @@
     (add-to-list 'org-agenda-files (concat org-directory "/calendar.org"))
     (add-to-list 'org-agenda-files (concat org-directory "/caldav_calendar.org")))
 
-  (when my/context-work-p
+  (when (my/context-work-p)
     (add-to-list 'org-agenda-files (concat org-directory "/pr-review.org")))
 
   :init

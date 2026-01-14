@@ -42,10 +42,12 @@
     "List of GitHub organizations/users to prioritize in prompts."
     :type '(repeat string)
     :group 'mymacs)
+
   (defcustom my/gh-pr-search-sort-args '("--sort" "created" "--order" "desc")
     "Extra args appended to PR searches."
     :type '(repeat string)
     :group 'mymacs)
+
   (defvar my/gh-last-org nil)
 
   (defun my/gh--read-org ()
