@@ -169,25 +169,25 @@
               (org-agenda-log-mode-items '(closed clock))
               (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp "CLOSED"))
               (org-agenda-prefix-format "   %?-2i %?-12c %?-2t%s ")))
-          (tags "CATEGORY=\"decision\"|TODO=\"DECISION\""
-            ((org-agenda-overriding-header "\n🧠 Decisions (last 7 days)\n")
-              (org-agenda-span 7)
-              (org-agenda-start-day "-6d")
-              (org-agenda-prefix-format "   %?-2i %?-12c %?-2t%s ")
-              (org-agenda-remove-tags nil)))
-          (tags-todo "+CATEGORY=\"project\"|+TODO=\"PROJ\""
-            ((org-agenda-overriding-header "\n📋 Open Projects\n")
-              (org-agenda-remove-tags nil)
-              (org-tags-match-list-sublevels nil)
-              (org-agenda-show-inherited-tags t)
-              (org-agenda-prefix-format "  %?-2i %s ")
-              (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-              (org-agenda-todo-keyword-format "")))
-          (todo "*"
-            ((org-agenda-overriding-header "\n📝 Open Tasks to Refile\n")
-              (org-agenda-prefix-format "   %?-2i %?-12c %?-2t%s ")
-              (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-              (org-agenda-span 'week)))))
+           (tags "CATEGORY=\"decision\"|TODO=\"DECISION\""
+             ((org-agenda-overriding-header "\n🧠 Decisions (last 7 days)\n")
+               (org-agenda-span 7)
+               (org-agenda-start-day "-6d")
+               (org-agenda-prefix-format "   %?-2i %?-12c %?-2t%s ")
+               (org-agenda-remove-tags nil)))
+           (tags-todo "+CATEGORY=\"project\"|+TODO=\"PROJ\""
+             ((org-agenda-overriding-header "\n📋 Open Projects\n")
+               (org-agenda-remove-tags nil)
+               (org-tags-match-list-sublevels nil)
+               (org-agenda-show-inherited-tags t)
+               (org-agenda-prefix-format "  %?-2i %s ")
+               (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+               (org-agenda-todo-keyword-format "")))
+           (todo "*"
+             ((org-agenda-overriding-header "\n📝 Open Tasks to Refile\n")
+               (org-agenda-prefix-format "   %?-2i %?-12c %?-2t%s ")
+               (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+               (org-agenda-span 'week)))))
 
        ("l" "Done Log (last 14 days)"
          ((agenda ""
@@ -277,6 +277,9 @@
     (add-to-list 'org-agenda-files (concat org-directory "/caldav_tasks.org"))
     (add-to-list 'org-agenda-files (concat org-directory "/calendar.org"))
     (add-to-list 'org-agenda-files (concat org-directory "/caldav_calendar.org")))
+
+  (when my/context-work-p
+    (add-to-list 'org-agenda-files (concat org-directory "/pr-review.org")))
 
   :init
   (with-eval-after-load 'embark

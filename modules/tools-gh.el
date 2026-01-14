@@ -106,6 +106,43 @@
       (or (get-text-property 0 :repo raw)
         (car (split-string (string-trim raw) "[[:space:]]+" t)))))
 
+  (defun my/gh--pr-review-file ()
+    "Return the path for the PR review Org file."
+    (expand-file-name "pr-review.org"
+      (if (and (boundp 'org-directory) (stringp org-directory))
+        org-directory
+        (expand-file-name my/org-path))))
+
+  (defun my/gh--inactive-timestamp ()
+    (format "[%s]" (format-time-string "%Y-%m-%d %a %H:%M")))
+
+  (defun my/gh--ensure-file (file)
+    (let ((dir (file-name-directory file)))
+      (unless (file-exists-p dir)
+        (make-directory dir t))
+      (unless (file-exists-p file)
+        (with-temp-buffer
+          (write-file file)))))
+
+  (defun my/gh--pr-export-entry (cand)
+    "Build an Org entry for PR CAND."
+    (let* ((raw (string-trim (substring-no-properties (format "%s" cand))))
+            (repo (or (and (stringp cand) (get-text-property 0 :repo cand))
+                    (car (seq-filter (lambda (part) (string-match-p "/" part))
+                           (reverse (split-string raw "[[:space:]]+" t))))))
+            (number (or (and (stringp cand) (get-text-property 0 :number cand))
+                      (when (string-match "\\`\\s-*\\([0-9]+\\):" raw)
+                        (match-string 1 raw))))
+            (title (or (and (stringp cand) (get-text-property 0 :title cand))
+                     (when (string-match "\\`\\s-*\\([0-9]+\\):\\(.*?\\)\\s-+\\(OPEN\\|CLOSED\\|MERGED\\|DRAFT\\)\\s-+" raw)
+                       (string-trim (match-string 2 raw)))
+                     (string-trim raw)))
+            (title (or title (and repo number (format "%s#%s" repo number)) "PR"))
+            (url (or (and (stringp cand) (get-text-property 0 :url cand))
+                   (and repo number (format "https://github.com/%s/pull/%s" repo number)))))
+      (format "* TODO Review PR: %s :review:\n:PROPERTIES:\n:REPO: %s\n:URL: %s\n:CAPTURED: %s\n:END:\n"
+        title (or repo "") (or url "") (my/gh--inactive-timestamp))))
+
   (defun my/gh-clone-permanent (cand)
     "Clone selected repo CAND to the canonical repos path."
     (interactive "sRepo (owner/repo): ")
@@ -216,20 +253,40 @@
     "Embark keymap for consult-gh PR candidates.")
 
   (defun my/consult-gh-pr-export-org (cand)
-    "Export PR CAND to an Org TODO heading in the current buffer."
-    (interactive (list (or (and (boundp 'vertico-last-input) vertico-last-input) (thing-at-point 'line t))))
-    (let* ((repo (get-text-property 0 :repo cand))
-            (title (or (get-text-property 0 :title cand) (string-trim (or (get-text-property 0 :title cand) (substring-no-properties cand)))))
-            (url (or (get-text-property 0 :url cand)
-                   (when (string-match "\\(https?://[^ ]+\\)" cand) (match-string 1 cand)))))
-      (unless (derived-mode-p 'org-mode)
-        (user-error "Run this action from an Org buffer"))
-      (let ((heading (format "* TODO Review PR: %s\n:PROPERTIES:\n:REPO: %s\n:URL: %s\n:END:\n"
-                       title (or repo "") (or url ""))))
-        (save-excursion
-          (goto-char (point-max))
-          (insert heading))
-        (message "Added PR to Org TODO: %s" title))))
+    "Export PR CAND to the PR review Org file."
+    (interactive (list (or (and (boundp 'vertico-last-input) vertico-last-input)
+                         (thing-at-point 'line t))))
+    (require 'org)
+    (require 'seq)
+    (let* ((file (my/gh--pr-review-file))
+            (cands (if (and (listp cand) (seq-every-p #'stringp cand))
+                     cand
+                     (list cand)))
+            (entries (delq nil (mapcar #'my/gh--pr-export-entry cands)))
+            (buffer (find-file-noselect file))
+            (start-marker (make-marker)))
+      (unless entries
+        (user-error "No PR candidates to export"))
+      (my/gh--ensure-file file)
+      (with-current-buffer buffer
+        (unless (derived-mode-p 'org-mode)
+          (org-mode))
+        (goto-char (point-max))
+        (unless (bolp)
+          (insert "\n"))
+        (set-marker start-marker (point))
+        (dolist (entry entries)
+          (unless (bolp)
+            (insert "\n"))
+          (insert entry "\n"))
+        (save-buffer))
+      (pop-to-buffer buffer)
+      (goto-char (marker-position start-marker))
+      (org-back-to-heading t)
+      (message "Added %d PR%s to %s"
+        (length entries)
+        (if (= (length entries) 1) "" "s")
+        file)))
 
   :config
   (use-package consult-gh-embark
@@ -240,7 +297,8 @@
   (add-hook 'consult-gh-repo-post-clone-hook #'my/gh--maybe-dired-after-clone)
   (with-eval-after-load 'embark
     (add-to-list 'embark-keymap-alist '(consult-gh-repos . my/embark-consult-gh-repo-map))
-    (add-to-list 'embark-keymap-alist '(consult-gh-prs . my/embark-consult-gh-pr-map))))
+    (add-to-list 'embark-keymap-alist '(consult-gh-prs . my/embark-consult-gh-pr-map))
+    (add-to-list 'embark-multitarget-actions 'my/consult-gh-pr-export-org)))
 
 (provide 'tools-gh)
 ;;; tools-gh.el ends here
