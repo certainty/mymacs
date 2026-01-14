@@ -5,11 +5,6 @@
 ;;
 ;;; Code:
 
-(use-package consult-gh-embark
-  :after consult-gh
-  :config
-  (consult-gh-embark-mode 1))
-
 (use-package consult-gh
   :general
   (leader-def
@@ -67,12 +62,12 @@
     "Build consult-gh input from QUERY and ARGS."
     (let ((query (string-trim (or query ""))))
       (cond
-       ((and args (string= query ""))
-        (format "-- %s" (mapconcat #'identity args " ")))
-       ((and args (not (string= query "")))
-        (format "%s -- %s" query (mapconcat #'identity args " ")))
-       ((string= query "") "")
-       (t (concat query " ")))))
+        ((and args (string= query ""))
+          (format "-- %s" (mapconcat #'identity args " ")))
+        ((and args (not (string= query "")))
+          (format "%s -- %s" query (mapconcat #'identity args " ")))
+        ((string= query "") "")
+        (t (concat query " ")))))
 
   (defun my/gh--repo-path (reponame)
     "Return canonical path for REPONAME (OWNER/REPO) under `my/repositories-path`."
@@ -127,9 +122,9 @@
     "Clone selected repo CAND to a temporary directory."
     (interactive "sRepo (owner/repo): ")
     (let* ((reponame (my/gh--repo-from-cand cand))
-           (target (my/gh--temp-repo-path reponame))
-           (dir (my/gh--ensure-dir target))
-           (name (file-name-nondirectory target)))
+            (target (my/gh--temp-repo-path reponame))
+            (dir (my/gh--ensure-dir target))
+            (name (file-name-nondirectory target)))
       (setq my/gh--last-clone-target target)
       (consult-gh--repo-clone reponame name dir)
       (message "Cloning %s to %s..." reponame target)
@@ -159,52 +154,49 @@
     "Search open GitHub PRs via consult-gh."
     (interactive)
     (consult-gh-search-prs
-     (my/gh--input-with-args (my/gh--org-prefill)
-                             (append '("--state" "open")
-                                     my/gh-pr-search-sort-args))))
+      (my/gh--input-with-args (my/gh--org-prefill)
+        (append '("--state" "open")
+          my/gh-pr-search-sort-args))))
 
   (defun my/consult-gh-search-prs-closed ()
     "Search merged/closed GitHub PRs via consult-gh."
     (interactive)
     (consult-gh-search-prs
-     (my/gh--input-with-args (my/gh--org-prefill)
-                             (append '("--state" "closed")
-                                     my/gh-pr-search-sort-args))))
+      (my/gh--input-with-args (my/gh--org-prefill)
+        (append '("--state" "closed")
+          my/gh-pr-search-sort-args))))
 
   (defun my/consult-gh-search-prs-open-global ()
     "Search open GitHub PRs globally."
     (interactive)
     (consult-gh-search-prs
-     (my/gh--input-with-args ""
-                             (append '("--state" "open")
-                                     my/gh-pr-search-sort-args))))
+      (my/gh--input-with-args ""
+        (append '("--state" "open")
+          my/gh-pr-search-sort-args))))
 
   (defun my/consult-gh-search-prs-closed-global ()
     "Search merged/closed GitHub PRs globally."
     (interactive)
     (consult-gh-search-prs
-     (my/gh--input-with-args ""
-                             (append '("--state" "closed")
-                                     my/gh-pr-search-sort-args))))
+      (my/gh--input-with-args ""
+        (append '("--state" "closed")
+          my/gh-pr-search-sort-args))))
 
   (defun my/consult-gh-review-queue ()
     "List PRs requesting your review."
     (interactive)
     (consult-gh-search-prs
-     (my/gh--input-with-args (my/gh--org-prefill)
-                             (append '("--review-requested" "@me" "--state" "open")
-                                     my/gh-pr-search-sort-args))))
+      (my/gh--input-with-args (my/gh--org-prefill)
+        (append '("--review-requested" "@me" "--state" "open")
+          my/gh-pr-search-sort-args))))
 
   (defun my/consult-gh-review-queue-global ()
     "List PRs requesting your review (global)."
     (interactive)
     (consult-gh-search-prs
-     (my/gh--input-with-args ""
-                             (append '("--review-requested" "@me" "--state" "open")
-                                     my/gh-pr-search-sort-args))))
-
-  (add-hook 'consult-gh-repo-post-clone-hook #'my/gh--maybe-dired-after-clone)
-
+      (my/gh--input-with-args ""
+        (append '("--review-requested" "@me" "--state" "open")
+          my/gh-pr-search-sort-args))))
 
   (defvar my/embark-consult-gh-repo-map
     (let ((map (make-sparse-keymap)))
@@ -217,15 +209,11 @@
 
   (defvar my/embark-consult-gh-pr-map
     (let ((map (make-sparse-keymap)))
-      (define-key map (kbd "o") #'consult-gh-pr-browse-url)
-      (define-key map (kbd "v") #'consult-gh-pr-view)
-      (define-key map (kbd "e") #'my/consult-gh-pr-export-org)
+      (define-key map (kbd "o") 'consult-gh-embark-open-in-default-browser)
+      (define-key map (kbd "v") 'consult-gh-embark-default-action)
+      (define-key map (kbd "e") 'my/consult-gh-pr-export-org)
       map)
     "Embark keymap for consult-gh PR candidates.")
-
-  (with-eval-after-load 'embark
-    (add-to-list 'embark-keymap-alist '(consult-gh-repos . my/embark-consult-gh-repo-map))
-    (add-to-list 'embark-keymap-alist '(consult-gh-prs . my/embark-consult-gh-pr-map)))
 
   (defun my/consult-gh-pr-export-org (cand)
     "Export PR CAND to an Org TODO heading in the current buffer."
@@ -241,7 +229,18 @@
         (save-excursion
           (goto-char (point-max))
           (insert heading))
-        (message "Added PR to Org TODO: %s" title)))))
+        (message "Added PR to Org TODO: %s" title))))
+
+  :config
+  (use-package consult-gh-embark
+    :init
+    (consult-gh-embark-mode 1))
+
+  :init
+  (add-hook 'consult-gh-repo-post-clone-hook #'my/gh--maybe-dired-after-clone)
+  (with-eval-after-load 'embark
+    (add-to-list 'embark-keymap-alist '(consult-gh-repos . my/embark-consult-gh-repo-map))
+    (add-to-list 'embark-keymap-alist '(consult-gh-prs . my/embark-consult-gh-pr-map))))
 
 (provide 'tools-gh)
 ;;; tools-gh.el ends here
