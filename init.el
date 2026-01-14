@@ -94,6 +94,7 @@
 (require 'tools-secrets)
 (require 'tools-terminal)
 (require 'tools-rss)
+(require 'tools-gh)
 
 (require 'ai-gptel)
 

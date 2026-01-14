@@ -98,6 +98,11 @@ Checks MYMACS_CONTEXT environment variable first, then falls back to OS detectio
   :type 'string
   :group 'mymacs)
 
+(defcustom my/repositories-path "~/Repositories"
+  "Base path for cloned repositories. Hosts and org/repo paths are mirrored under this root."
+  :type 'string
+  :group 'mymacs)
+
 (define-minor-mode mymacs-mode
   "Minor mode for MYMACS, which gives a home for my customizations and keybindings."
   :global t
