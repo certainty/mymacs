@@ -41,12 +41,10 @@
     ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords)
     ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
   :custom
-  (denote-directory (list my/notes-path
-                      my/managed-documents-path))
-  (denote-known-keywords '("emacs" "philosophy" "common-lisp" "personal" "code" "idee" "reference" "auto" "versicherung" "finanzen"))
+  (denote-directory (list my/notes-path my/managed-documents-path))
 
   ;; File naming
-  (denote-file-type nil) ; Use .org by default
+  (denote-file-type nil)                ; Use .org by default
   (denote-prompts '(title keywords))
   (denote-sort-keywords t)
   (denote-infer-keywords t)
@@ -60,6 +58,19 @@
   (denote-link-button-action #'find-file)
 
   :config
+  (setopt denote-known-keywords '("draft" "idea" "dump"))
+
+  (when (my/context-private-p)
+    ;; append private keywords
+    (setopt denote-known-keywords
+      (append denote-known-keywords
+        '("emacs" "philosophy" "common-lisp" "personal" "code" "idee" "reference" "auto" "versicherung" "finanzen"))))
+
+  (when (my/context-work-p)
+    (setopt denote-kknown-keywords
+      (append denote-known-keywords
+        '("project" "meeting" "rfc" "adr" "runbook" "status" "api" "messaging" "bfx" "1on1"))))
+
   (denote-rename-buffer-mode 1)
 
   (defun my/open-notes-path ()
@@ -95,11 +106,28 @@
   (interactive)
   (my/search-in-directory my/notes-path))
 
+(defun my/consult-notes ()
+  "Consult notes using consult-denote."
+  (interactive)
+  (let ((default-directory (expand-file-name my/notes-path)))
+    (call-interactively #'consult-denote-find)))
+
+(defun my/consult-grep-notes ()
+  "Consult notes using consult-denote."
+  (interactive)
+  (let ((default-directory (expand-file-name my/notes-path)))
+    (call-interactively #'consult-denote-grep)))
+
+(defun my/search-notes ()
+  "Search in notes directory using ripgrep"
+  (interactive)
+  (let ((default-directory (expand-file-name my/notes-path)))
+    (call-interactively #'consult-denote-grep)))
+
 (defun my/search-documents ()
   "Search in documents directory using p-search."
   (interactive)
   (my/search-in-directory my/managed-documents-path))
-
 
 (defun my/search-org ()
   "Search in org directory using p-search."
@@ -109,8 +137,8 @@
 (leader-def
   "sn" '(:ignore t :which-key "notes")
   "snn" 'denote-find
-  "snf" 'consult-denote-find
-  "sng" 'consult-denote-grep
+  "snf" 'my/consult-notes
+  "sng" 'my/consult-grep-notes
   "sN" 'my/search-notes
   "sd" 'my/search-documents
   "so" 'my/search-org)
