@@ -98,7 +98,18 @@
 
 
 (use-package embark
+  :preface
+  (defvar my/embark-prefix-map (make-sparse-keymap)
+    "Keymap for Embark C-. prefix.")
   :general
+  (:states '(normal insert visual motion emacs)
+    "C-." 'my/embark-prefix-map
+    "C-h B" 'embark-bindings)
+  (:keymaps 'my/embark-prefix-map
+    "," 'embark-dwim
+    "." 'embark-act
+    "a" 'embark-act-all
+    "m" 'embark-select)
   (leader-def
     "." '(:ignore t :which-key "embark")
     ".." 'embark-dwim
@@ -107,6 +118,9 @@
     ".m" 'embark-select)
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
+  (keymap-set global-map "C-." my/embark-prefix-map)
+  (with-eval-after-load 'vertico
+    (keymap-set vertico-map "C-." my/embark-prefix-map))
   :config
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
