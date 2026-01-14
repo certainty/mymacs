@@ -65,7 +65,6 @@
        consult-omni-fd
        consult-omni-org-agenda
        consult-omni-elfeed
-       consult-omni-gptel
        consult-omni-notes
        consult-omni-calc))
   (consult-omni-sources-load-modules)
