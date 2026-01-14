@@ -94,11 +94,11 @@
 (require 'tools-secrets)
 (require 'tools-terminal)
 (require 'tools-rss)
-(require 'tools-gh)
 
 (require 'ai-gptel)
 
 (when (my/context-work-p)
+  (require 'tools-gh)
   (require 'ai-copilot))
 
 (provide 'init)
