@@ -98,14 +98,13 @@
 
 
 (use-package embark
-  :bind
-  (("C-." . embark-act)
-    ("C-;" . embark-dwim)
-    ("C-h B" . embark-bindings))
   :general
   (leader-def
-    "." 'embark-act
-    "," 'embark-dwim)
+    "." '(:ignore t :which-key "embark")
+    ".." 'embark-dwim
+    ".," 'embark-act
+    ".a" 'embark-act-all
+    ".m" 'embark-select)
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
   :config

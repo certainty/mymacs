@@ -43,11 +43,30 @@
   (interactive)
   (call-interactively #'consult-omni))
 
+(defun my/consult-omni-web ()
+  "Search the web (engines/wiki) via consult-omni."
+  (interactive)
+  (consult-omni-multi nil "Web: " '("DuckDuckGo API" "Wikipedia") nil nil :group 'domain))
+
+(defun my/consult-omni-local ()
+  "Search local files and content via consult-omni."
+  (interactive)
+  (consult-omni-multi nil "Local: " '("fd" "locate" "ripgrep") nil))
+
+(defun my/consult-omni-rtfm ()
+  "Search reference material (man, notes, dictionaries, etc.) via consult-omni."
+  (interactive)
+  (consult-omni-multi nil "RTFM: " '("man" "Dictionary" "Notes Search" "Wikipedia") nil))
+
 (use-package consult-omni
   :straight (consult-omni :type git :host github :repo "armindarvish/consult-omni" :branch "main" :files (:defaults "sources/*.el"))
   :general
   (leader-def
     "ss" 'my/consult-omni)
+  (leader-def
+    "sw" 'my/consult-omni-web
+    "sf" 'my/consult-omni-local
+    "sr" 'my/consult-omni-rtfm)
 
   :custom
   (consult-omni-default-browse-function #'eww-browse-url)
@@ -63,6 +82,7 @@
        consult-omni-dict
        consult-omni-locate
        consult-omni-fd
+       consult-omni-ripgrep
        consult-omni-org-agenda
        consult-omni-elfeed
        consult-omni-notes
