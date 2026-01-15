@@ -93,6 +93,35 @@
                 'pmd-id project-id
                 'consult--candidate data)))
 
+(defun pmd--project-data-from-cand (cand)
+  "Return project data from completion CAND."
+  (cond
+    ((hash-table-p cand) cand)
+    ((stringp cand)
+     (or (get-text-property 0 'pmd-data cand)
+         (user-error "No project data available")))
+    (t
+     (user-error "No project data available"))))
+
+(defun pmd--project-msteams-url (data)
+  "Return the Microsoft Teams channel URL for project DATA."
+  (when-let ((msteams (gethash "msteams" data)))
+    (when (hash-table-p msteams)
+      (pmd--string (gethash "channel_url" msteams)))))
+
+(defun pmd--project-repo-url (data)
+  "Return the repository URL for project DATA."
+  (when-let ((git (gethash "git" data)))
+    (when (hash-table-p git)
+      (let ((server (pmd--string (gethash "server_url" git)))
+            (account (pmd--string (gethash "account" git)))
+            (repo (pmd--string (gethash "repo" git))))
+        (when (and server account repo)
+          (format "%s/%s/%s"
+                  (string-remove-suffix "/" server)
+                  account
+                  repo))))))
+
 (defun pmd--projects-candidates ()
   "Return sorted project completion candidates."
   (let* ((projects (pmd--fetch-json pmd--projects-json-url))
@@ -116,6 +145,25 @@
 (defun pmd--browse-project (data)
   "Open project DATA in the browser."
   (browse-url (pmd--project-url data)))
+
+(defun pmd--project-browse-msteams (cand)
+  "Open the Teams channel for project CAND."
+  (interactive "sProject: ")
+  (let* ((data (pmd--project-data-from-cand cand))
+         (url (pmd--project-msteams-url data)))
+    (unless url
+      (user-error "No Teams channel URL for project"))
+    (browse-url url)))
+
+(defun pmd--project-copy-repo-url (cand)
+  "Copy the repository URL for project CAND."
+  (interactive "sProject: ")
+  (let* ((data (pmd--project-data-from-cand cand))
+         (url (pmd--project-repo-url data)))
+    (unless url
+      (user-error "No repository URL for project"))
+    (kill-new url)
+    (message "Copied repo URL: %s" url)))
 
 (defun pmd--servicegroup-display (servicegroup-id data)
   "Return display string for SERVICEGROUP-ID using DATA."
@@ -211,6 +259,15 @@
                                  :lookup #'consult--lookup-candidate)))
     (when project
       (pmd--browse-project project))))
+
+(with-eval-after-load 'embark
+  (defvar pmd-project-embark-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map (kbd "t") #'pmd--project-browse-msteams)
+      (define-key map (kbd "y") #'pmd--project-copy-repo-url)
+      map)
+    "Embark actions for PMD project candidates.")
+  (add-to-list 'embark-keymap-alist '(pmd-project . pmd-project-embark-map)))
 
 ;;;###autoload
 (defun +pmd-servicegroups ()
