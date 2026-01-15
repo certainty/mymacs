@@ -98,19 +98,17 @@
 
 (use-package embark
   :preface
-  (defvar my/embark-prefix-map (make-sparse-keymap)
-    "Keymap for Embark C-. prefix.")
-
   :general
   (:states '(normal insert visual motion emacs)
-    "C-." my/embark-prefix-map
+    "C-." 'embark-act
+    "C-," 'embark-dwim
     "C-h B" 'embark-bindings)
 
-  (:keymaps 'my/embark-prefix-map
-    "," 'embark-dwim
-    "." 'embark-act
-    "a" 'embark-act-all
-    "m" 'embark-select)
+  (:keymaps 'minibuffer-local-map
+    "C-c C-c" 'embark-collect
+    "C-c C-e" 'embark-export
+    "C-c C-m" 'embark-select
+    "C-c C-a" 'embark-act-all)
 
   (leader-def
     "." '(:ignore t :which-key "embark")
@@ -119,12 +117,14 @@
     ".a" 'embark-act-all
     ".m" 'embark-select)
 
-
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
-  (keymap-set global-map "C-." my/embark-prefix-map)
+  (keymap-set global-map "C-." 'embark-act)
+  (keymap-set global-map "C-," 'embark-dwim)
+
   (with-eval-after-load 'vertico
-    (keymap-set vertico-map "C-." my/embark-prefix-map))
+    (keymap-set vertico-map "C-." 'embark-act)
+    (keymap-set vertico-map "C-," 'embark-dwim))
 
   :custom
   (embark-indicators
