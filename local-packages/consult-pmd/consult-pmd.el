@@ -39,76 +39,9 @@
 (defvar pmd--projects-cache nil
   "Cache of project metadata keyed by project id.")
 
-(defconst pmd--project-fields
-  '((name . "Name")
-    (service_group . "Service group")
-    (team . "Team")
-    (product_lifecycle . "Lifecycle")
-    (org_unit . "Org unit"))
-  "Fields available for project filtering.")
-
-(defconst pmd--servicegroup-fields
-  '((name . "Name")
-    (current_lifecycle . "Lifecycle")
-    (heads . "Heads")
-    (org_units . "Org units")
-    (cost_centres . "Cost centres"))
-  "Fields available for service group filtering.")
-
-(defconst pmd--team-fields
-  '((name . "Name")
-    (org_unit . "Org unit")
-    (head . "Head")
-    (contacts . "Contacts")
-    (cost_centre . "Cost centre"))
-  "Fields available for team filtering.")
-
 (defun pmd--metadata-url (endpoint id)
   "Return metadata URL for ENDPOINT and ID."
   (format "%s/%s/%s" pmd--base-url endpoint id))
-
-(defun pmd--field-label (fields field)
-  "Return display label for FIELD in FIELDS."
-  (or (cdr (assq field fields)) (symbol-name field)))
-
-(defun pmd--select-field (fields prompt)
-  "Select a field from FIELDS using PROMPT."
-  (let* ((labels (mapcar #'cdr fields))
-         (default (or (cdr (assq 'name fields)) (car labels)))
-         (choice (completing-read prompt labels nil t nil nil default)))
-    (or (car (rassoc choice fields)) 'name)))
-
-(defun pmd--candidate-display (cand)
-  "Return display string for candidate CAND."
-  (or (get-text-property 0 'display cand) cand))
-
-(defun pmd--sort-candidates (candidates)
-  "Sort CANDIDATES by display string."
-  (sort candidates
-        (lambda (left right)
-          (string-lessp (pmd--candidate-display left)
-                        (pmd--candidate-display right)))))
-
-(defun pmd--make-candidate (display data id &optional search index)
-  "Build a candidate string with DISPLAY, DATA, and ID.
-When SEARCH is non-nil, it is used for matching and DISPLAY is shown."
-  (let* ((display (or display ""))
-         (search (when search (string-trim search)))
-         (raw (if search
-                  (progn
-                    (unless (fboundp 'consult--tofu-encode)
-                      (require 'consult))
-                    (concat search (consult--tofu-encode (or index 0))))
-                display)))
-    (when (string-empty-p raw)
-      (setq raw (consult--tofu-encode (or index 0))))
-    (let ((cand (copy-sequence raw)))
-      (add-text-properties 0 (length cand)
-                           `(pmd-data ,data pmd-id ,id consult--candidate ,data)
-                           cand)
-      (when search
-        (put-text-property 0 (length cand) 'display display cand))
-      cand)))
 
 (defun pmd--fetch-json (url)
   "Fetch JSON from URL and return parsed data."
@@ -169,25 +102,13 @@ When SEARCH is non-nil, it is used for matching and DISPLAY is shown."
         (format "%s (%s)" project-id name)
       project-id)))
 
-(defun pmd--project-candidate (project-id data &optional search index)
+(defun pmd--project-candidate (project-id data)
   "Build a completion candidate for PROJECT-ID using DATA."
-  (pmd--make-candidate (pmd--project-display project-id data)
-                       data
-                       project-id
-                       search
-                       index))
-
-(defun pmd--project-field-value (data field)
-  "Return DATA value for project FIELD as a string."
-  (pcase field
-    ('name (or (pmd--string (gethash "name" data))
-               (pmd--string (gethash "id" data))
-               ""))
-    ('service_group (or (pmd--string (gethash "service_group" data)) ""))
-    ('team (or (pmd--string (gethash "team" data)) ""))
-    ('product_lifecycle (or (pmd--string (gethash "product_lifecycle" data)) ""))
-    ('org_unit (or (pmd--string (gethash "org_unit" data)) ""))
-    (_ "")))
+  (let ((display (pmd--project-display project-id data)))
+    (propertize display
+                'pmd-data data
+                'pmd-id project-id
+                'consult--candidate data)))
 
 (defun pmd--candidate-id (cand)
   "Return candidate id extracted from CAND."
@@ -259,27 +180,19 @@ When SEARCH is non-nil, it is used for matching and DISPLAY is shown."
         (when (and account repo)
           (format "%s/%s" account repo))))))
 
-(defun pmd--projects-candidates (&optional field)
-  "Return sorted project completion candidates.
-When FIELD is non-nil, match candidates by FIELD values."
+(defun pmd--projects-candidates ()
+  "Return sorted project completion candidates."
   (let* ((projects (pmd--fetch-json pmd--projects-json-url))
-         (candidates nil)
-         (index 0))
+         (candidates nil))
     (setq pmd--projects-cache projects)
     (maphash
      (lambda (key data)
        (let ((project-id (or (pmd--string (gethash "id" data))
                              (pmd--string key))))
          (when project-id
-           (setq index (1+ index))
-           (push (pmd--project-candidate
-                  project-id
-                  data
-                  (when field (pmd--project-field-value data field))
-                  index)
-                 candidates))))
+           (push (pmd--project-candidate project-id data) candidates))))
      projects)
-    (pmd--sort-candidates candidates)))
+    (sort candidates #'string-lessp)))
 
 (defun pmd--project-url (data)
   "Return the project URL for DATA."
@@ -354,46 +267,26 @@ When FIELD is non-nil, match candidates by FIELD values."
         (format "%s (%s)" servicegroup-id name)
       servicegroup-id)))
 
-(defun pmd--servicegroup-candidate (servicegroup-id data &optional search index)
+(defun pmd--servicegroup-candidate (servicegroup-id data)
   "Build a completion candidate for SERVICEGROUP-ID using DATA."
-  (pmd--make-candidate (pmd--servicegroup-display servicegroup-id data)
-                       data
-                       servicegroup-id
-                       search
-                       index))
+  (let ((display (pmd--servicegroup-display servicegroup-id data)))
+    (propertize display
+                'pmd-data data
+                'pmd-id servicegroup-id
+                'consult--candidate data)))
 
-(defun pmd--servicegroup-field-value (data field)
-  "Return DATA value for service group FIELD as a string."
-  (pcase field
-    ('name (or (pmd--string (gethash "name" data))
-               (pmd--string (gethash "id" data))
-               ""))
-    ('current_lifecycle (or (pmd--string (gethash "current_lifecycle" data)) ""))
-    ('heads (or (pmd--list-string (gethash "heads" data)) ""))
-    ('org_units (or (pmd--org-units-string (gethash "org_units" data)) ""))
-    ('cost_centres (or (pmd--list-string (gethash "cost_centres" data)) ""))
-    (_ "")))
-
-(defun pmd--servicegroups-candidates (&optional field)
-  "Return sorted service group completion candidates.
-When FIELD is non-nil, match candidates by FIELD values."
+(defun pmd--servicegroups-candidates ()
+  "Return sorted service group completion candidates."
   (let* ((servicegroups (pmd--fetch-json pmd--servicegroups-json-url))
-         (candidates nil)
-         (index 0))
+         (candidates nil))
     (maphash
      (lambda (key data)
        (let ((servicegroup-id (or (pmd--string (gethash "id" data))
                                   (pmd--string key))))
          (when servicegroup-id
-           (setq index (1+ index))
-           (push (pmd--servicegroup-candidate
-                  servicegroup-id
-                  data
-                  (when field (pmd--servicegroup-field-value data field))
-                  index)
-                 candidates))))
+           (push (pmd--servicegroup-candidate servicegroup-id data) candidates))))
      servicegroups)
-    (pmd--sort-candidates candidates)))
+    (sort candidates #'string-lessp)))
 
 (defun pmd--servicegroup-url (data)
   "Return the service group URL for DATA."
@@ -414,46 +307,26 @@ When FIELD is non-nil, match candidates by FIELD values."
         (format "%s (%s)" team-id name)
       team-id)))
 
-(defun pmd--team-candidate (team-id data &optional search index)
+(defun pmd--team-candidate (team-id data)
   "Build a completion candidate for TEAM-ID using DATA."
-  (pmd--make-candidate (pmd--team-display team-id data)
-                       data
-                       team-id
-                       search
-                       index))
+  (let ((display (pmd--team-display team-id data)))
+    (propertize display
+                'pmd-data data
+                'pmd-id team-id
+                'consult--candidate data)))
 
-(defun pmd--team-field-value (data field)
-  "Return DATA value for team FIELD as a string."
-  (pcase field
-    ('name (or (pmd--string (gethash "name" data))
-               (pmd--string (gethash "id" data))
-               ""))
-    ('org_unit (or (pmd--string (gethash "org_unit" data)) ""))
-    ('head (or (pmd--string (gethash "head" data)) ""))
-    ('contacts (or (pmd--list-string (gethash "contacts" data)) ""))
-    ('cost_centre (or (pmd--string (gethash "cost_centre" data)) ""))
-    (_ "")))
-
-(defun pmd--teams-candidates (&optional field)
-  "Return sorted team completion candidates.
-When FIELD is non-nil, match candidates by FIELD values."
+(defun pmd--teams-candidates ()
+  "Return sorted team completion candidates."
   (let* ((teams (pmd--fetch-json pmd--teams-json-url))
-         (candidates nil)
-         (index 0))
+         (candidates nil))
     (maphash
      (lambda (key data)
        (let ((team-id (or (pmd--string (gethash "id" data))
                           (pmd--string key))))
          (when team-id
-           (setq index (1+ index))
-           (push (pmd--team-candidate
-                  team-id
-                  data
-                  (when field (pmd--team-field-value data field))
-                  index)
-                 candidates))))
+           (push (pmd--team-candidate team-id data) candidates))))
      teams)
-    (pmd--sort-candidates candidates)))
+    (sort candidates #'string-lessp)))
 
 (defun pmd--team-url (data)
   "Return the team URL for DATA."
@@ -467,19 +340,13 @@ When FIELD is non-nil, match candidates by FIELD values."
   (browse-url (pmd--team-url data)))
 
 ;;;###autoload
-(defun +pmd-projects (arg)
+(defun +pmd-projects ()
   "Select a project via consult and open it in the browser."
-  (interactive "P")
+  (interactive)
   (require 'consult)
-  (let* ((field (when arg
-                  (pmd--select-field pmd--project-fields "Project field: ")))
-         (prompt (if field
-                     (format "Project (%s): "
-                             (pmd--field-label pmd--project-fields field))
-                   "Project: "))
-         (candidates (pmd--projects-candidates field))
+  (let* ((candidates (pmd--projects-candidates))
          (project (consult--read candidates
-                                 :prompt prompt
+                                 :prompt "Project: "
                                  :sort nil
                                  :require-match t
                                  :category 'pmd-project
@@ -511,19 +378,13 @@ When FIELD is non-nil, match candidates by FIELD values."
   (add-to-list 'embark-keymap-alist '(pmd-team . pmd-team-embark-map)))
 
 ;;;###autoload
-(defun +pmd-servicegroups (arg)
+(defun +pmd-servicegroups ()
   "Select a service group via consult and open it in the browser."
-  (interactive "P")
+  (interactive)
   (require 'consult)
-  (let* ((field (when arg
-                  (pmd--select-field pmd--servicegroup-fields "Service group field: ")))
-         (prompt (if field
-                     (format "Service group (%s): "
-                             (pmd--field-label pmd--servicegroup-fields field))
-                   "Service group: "))
-         (candidates (pmd--servicegroups-candidates field))
+  (let* ((candidates (pmd--servicegroups-candidates))
          (servicegroup (consult--read candidates
-                                      :prompt prompt
+                                      :prompt "Service group: "
                                       :sort nil
                                       :require-match t
                                       :category 'pmd-servicegroup
@@ -532,19 +393,13 @@ When FIELD is non-nil, match candidates by FIELD values."
       (pmd--browse-servicegroup servicegroup))))
 
 ;;;###autoload
-(defun +pmd-teams (arg)
+(defun +pmd-teams ()
   "Select a team via consult and open it in the browser."
-  (interactive "P")
+  (interactive)
   (require 'consult)
-  (let* ((field (when arg
-                  (pmd--select-field pmd--team-fields "Team field: ")))
-         (prompt (if field
-                     (format "Team (%s): "
-                             (pmd--field-label pmd--team-fields field))
-                   "Team: "))
-         (candidates (pmd--teams-candidates field))
+  (let* ((candidates (pmd--teams-candidates))
          (team (consult--read candidates
-                              :prompt prompt
+                              :prompt "Team: "
                               :sort nil
                               :require-match t
                               :category 'pmd-team
