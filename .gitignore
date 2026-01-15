@@ -29,3 +29,4 @@ org-caldav*
 data/devdocs/*
 places
 places
+/forge-database.sqlite
