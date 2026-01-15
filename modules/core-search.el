@@ -30,6 +30,9 @@
   (consult-project-function (lambda (_) (project-root (project-current))))
 
   :config
+  (setq consult-narrow-key "C-<")
+  (keymap-set consult-narrow-map (concat consult-narrow-key " ?") #'consult-narrow-help)
+
   (consult-customize
     consult-theme :preview-key '(:debounce 0.2 any)
     consult-ripgrep consult-git-grep consult-grep

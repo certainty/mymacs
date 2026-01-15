@@ -98,12 +98,20 @@
 (require 'ai-gptel)
 
 (when (my/context-work-p)
+
   (use-package consult-pmd
     :straight `(consult-pmd
                  :type nil
                  :local-repo ,(expand-file-name "local-packages/consult-pmd" user-emacs-directory)
                  :files ("*.el"))
-    :commands (+pmd-projects +pmd-servicegroups +pmd-teams))
+    :commands (+pmd-projects +pmd-servicegroups +pmd-teams)
+    :general
+    (leader-def
+      "sp" '(:ignore t :which-key "pmd")
+      "spp" '+pmd-projects
+      "sps" '+pmd-servicegroups
+      "spt" '+pmd-teams))
+
   (require 'tools-gh)
   (require 'ai-copilot))
 
