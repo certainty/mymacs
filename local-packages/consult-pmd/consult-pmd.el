@@ -60,8 +60,8 @@
         (unless (re-search-forward "\r?\n\r?\n" nil t)
           (error "PMD response headers not found"))
         (json-parse-buffer :object-type 'hash-table
-          :array-type 'list
-          :null-object nil))
+                           :array-type 'list
+                           :null-object nil))
       (when (buffer-live-p buffer)
         (kill-buffer buffer)))))
 
@@ -88,10 +88,10 @@
   "Return org unit VALUES as a comma-separated string."
   (when (listp values)
     (let ((items
-            (delq nil (mapcar (lambda (item)
-                                (when (hash-table-p item)
-                                  (pmd--string (gethash "org_unit" item))))
-                        values))))
+           (delq nil (mapcar (lambda (item)
+                               (when (hash-table-p item)
+                                 (pmd--string (gethash "org_unit" item))))
+                             values))))
       (when items
         (string-join items ", ")))))
 
@@ -99,7 +99,7 @@
   "Return display string for PROJECT-ID using DATA."
   (let ((name (pmd--string (gethash "name" data))))
     (if (and name (not (string-empty-p name)))
-      (format "%s (%s)" project-id name)
+        (format "%s (%s)" project-id name)
       project-id)))
 
 (defun pmd--project-candidate (project-id data)
@@ -163,8 +163,8 @@
   (when-let ((git (gethash "git" data)))
     (when (hash-table-p git)
       (let ((server (pmd--string (gethash "server_url" git)))
-             (account (pmd--string (gethash "account" git)))
-             (repo (pmd--string (gethash "repo" git))))
+            (account (pmd--string (gethash "account" git)))
+            (repo (pmd--string (gethash "repo" git))))
         (when (and server account repo)
           (format "%s/%s/%s"
                   (string-remove-suffix "/" server)
@@ -189,9 +189,9 @@
      (lambda (key data)
        (let ((project-id (or (pmd--string (gethash "id" data))
                              (pmd--string key))))
-          (when project-id
-            (push (pmd--project-candidate project-id data) candidates))))
-      projects)
+         (when project-id
+           (push (pmd--project-candidate project-id data) candidates))))
+     projects)
     (sort candidates #'string-lessp)))
 
 (defun pmd--project-url (data)
@@ -214,7 +214,7 @@
       (user-error "No Teams channel URL for project"))
     (browse-url url)))
 
-(defun +pmd-copy-project-repo-url (cand)
+(defun +pmd-copy-project-url (cand)
   "Copy the repository URL for project CAND."
   (interactive "sProject: ")
   (let* ((data (pmd--project-data-from-cand cand))
@@ -239,33 +239,53 @@
          (url (pmd--project-url data)))
     (pmd--copy-to-kill-ring "project metadata URL" url)))
 
+(defun +pmd-copy-servicegroup-metadata-url (cand)
+  "Copy the service group metadata URL for service group CAND."
+  (interactive "sService group: ")
+  (let ((servicegroup-id (pmd--candidate-id cand)))
+    (unless servicegroup-id
+      (user-error "No service group id available"))
+    (pmd--copy-to-kill-ring
+     "service group metadata URL"
+     (pmd--metadata-url pmd--servicegroups-endpoint servicegroup-id))))
+
+(defun +pmd-copy-team-metadata-url (cand)
+  "Copy the team metadata URL for team CAND."
+  (interactive "sTeam: ")
+  (let ((team-id (pmd--candidate-id cand)))
+    (unless team-id
+      (user-error "No team id available"))
+    (pmd--copy-to-kill-ring
+     "team metadata URL"
+     (pmd--metadata-url pmd--teams-endpoint team-id))))
+
 (defun pmd--servicegroup-display (servicegroup-id data)
   "Return display string for SERVICEGROUP-ID using DATA."
   (let ((name (pmd--string (gethash "name" data))))
     (if (and name (not (string-empty-p name))
-          (not (string= (downcase name) (downcase servicegroup-id))))
-      (format "%s (%s)" servicegroup-id name)
+             (not (string= (downcase name) (downcase servicegroup-id))))
+        (format "%s (%s)" servicegroup-id name)
       servicegroup-id)))
 
 (defun pmd--servicegroup-candidate (servicegroup-id data)
   "Build a completion candidate for SERVICEGROUP-ID using DATA."
   (let ((display (pmd--servicegroup-display servicegroup-id data)))
     (propertize display
-      'pmd-data data
-      'pmd-id servicegroup-id
-      'consult--candidate data)))
+                'pmd-data data
+                'pmd-id servicegroup-id
+                'consult--candidate data)))
 
 (defun pmd--servicegroups-candidates ()
   "Return sorted service group completion candidates."
   (let* ((servicegroups (pmd--fetch-json pmd--servicegroups-json-url))
-          (candidates nil))
+         (candidates nil))
     (maphash
-      (lambda (key data)
-        (let ((servicegroup-id (or (pmd--string (gethash "id" data))
-                                 (pmd--string key))))
-          (when servicegroup-id
-            (push (pmd--servicegroup-candidate servicegroup-id data) candidates))))
-      servicegroups)
+     (lambda (key data)
+       (let ((servicegroup-id (or (pmd--string (gethash "id" data))
+                                  (pmd--string key))))
+         (when servicegroup-id
+           (push (pmd--servicegroup-candidate servicegroup-id data) candidates))))
+     servicegroups)
     (sort candidates #'string-lessp)))
 
 (defun pmd--servicegroup-url (data)
@@ -283,29 +303,29 @@
   "Return display string for TEAM-ID using DATA."
   (let ((name (pmd--string (gethash "name" data))))
     (if (and name (not (string-empty-p name))
-          (not (string= (downcase name) (downcase team-id))))
-      (format "%s (%s)" team-id name)
+             (not (string= (downcase name) (downcase team-id))))
+        (format "%s (%s)" team-id name)
       team-id)))
 
 (defun pmd--team-candidate (team-id data)
   "Build a completion candidate for TEAM-ID using DATA."
   (let ((display (pmd--team-display team-id data)))
     (propertize display
-      'pmd-data data
-      'pmd-id team-id
-      'consult--candidate data)))
+                'pmd-data data
+                'pmd-id team-id
+                'consult--candidate data)))
 
 (defun pmd--teams-candidates ()
   "Return sorted team completion candidates."
   (let* ((teams (pmd--fetch-json pmd--teams-json-url))
-          (candidates nil))
+         (candidates nil))
     (maphash
-      (lambda (key data)
-        (let ((team-id (or (pmd--string (gethash "id" data))
-                         (pmd--string key))))
-          (when team-id
-            (push (pmd--team-candidate team-id data) candidates))))
-      teams)
+     (lambda (key data)
+       (let ((team-id (or (pmd--string (gethash "id" data))
+                          (pmd--string key))))
+         (when team-id
+           (push (pmd--team-candidate team-id data) candidates))))
+     teams)
     (sort candidates #'string-lessp)))
 
 (defun pmd--team-url (data)
@@ -325,12 +345,12 @@
   (interactive)
   (require 'consult)
   (let* ((candidates (pmd--projects-candidates))
-          (project (consult--read candidates
-                     :prompt "Project: "
-                     :sort nil
-                     :require-match t
-                     :category 'pmd-project
-                     :lookup #'consult--lookup-candidate)))
+         (project (consult--read candidates
+                                 :prompt "Project: "
+                                 :sort nil
+                                 :require-match t
+                                 :category 'pmd-project
+                                 :lookup #'consult--lookup-candidate)))
     (when project
       (pmd--browse-project project))))
 
@@ -339,7 +359,7 @@
     (let ((map (make-sparse-keymap)))
       (define-key map (kbd "t") #'+pmd-browse-project-msteams)
       (define-key map (kbd "u") #'+pmd-copy-project-metadata-url)
-      (define-key map (kbd "y") #'+pmd-copy-project-repo-url)
+      (define-key map (kbd "y") #'+pmd-copy-project-url)
       (define-key map (kbd "s") #'+pmd-copy-project-repo-slug)
       map)
     "Embark actions for PMD project candidates.")
@@ -353,7 +373,9 @@
       (define-key map (kbd "u") #'+pmd-copy-team-metadata-url)
       map)
     "Embark actions for PMD team candidates.")
-  (add-to-list 'embark-keymap-alist '(pmd-project . pmd-project-embark-map)))
+  (add-to-list 'embark-keymap-alist '(pmd-project . pmd-project-embark-map))
+  (add-to-list 'embark-keymap-alist '(pmd-servicegroup . pmd-servicegroup-embark-map))
+  (add-to-list 'embark-keymap-alist '(pmd-team . pmd-team-embark-map)))
 
 ;;;###autoload
 (defun +pmd-servicegroups ()
@@ -361,12 +383,12 @@
   (interactive)
   (require 'consult)
   (let* ((candidates (pmd--servicegroups-candidates))
-          (servicegroup (consult--read candidates
-                          :prompt "Service group: "
-                          :sort nil
-                          :require-match t
-                          :category 'pmd-servicegroup
-                          :lookup #'consult--lookup-candidate)))
+         (servicegroup (consult--read candidates
+                                      :prompt "Service group: "
+                                      :sort nil
+                                      :require-match t
+                                      :category 'pmd-servicegroup
+                                      :lookup #'consult--lookup-candidate)))
     (when servicegroup
       (pmd--browse-servicegroup servicegroup))))
 
@@ -376,12 +398,12 @@
   (interactive)
   (require 'consult)
   (let* ((candidates (pmd--teams-candidates))
-          (team (consult--read candidates
-                  :prompt "Team: "
-                  :sort nil
-                  :require-match t
-                  :category 'pmd-team
-                  :lookup #'consult--lookup-candidate)))
+         (team (consult--read candidates
+                              :prompt "Team: "
+                              :sort nil
+                              :require-match t
+                              :category 'pmd-team
+                              :lookup #'consult--lookup-candidate)))
     (when team
       (pmd--browse-team team))))
 
@@ -393,14 +415,14 @@
         ((pmd--string (gethash "service_group" data)) :face 'marginalia-type)
         ((pmd--string (gethash "team" data)) :face 'marginalia-value)
         ((pmd--string (gethash "product_lifecycle" data))
-          :face 'marginalia-documentation)
+         :face 'marginalia-documentation)
         ((pmd--string (gethash "org_unit" data)) :face 'marginalia-key))))
   (defun pmd--annotate-servicegroup (cand)
     "Annotate service group CAND with metadata fields."
     (when-let ((data (get-text-property 0 'pmd-data cand)))
       (marginalia--fields
         ((pmd--string (gethash "current_lifecycle" data))
-          :face 'marginalia-documentation)
+         :face 'marginalia-documentation)
         ((pmd--list-string (gethash "heads" data)) :face 'marginalia-value)
         ((pmd--org-units-string (gethash "org_units" data)) :face 'marginalia-key)
         ((pmd--list-string (gethash "cost_centres" data)) :face 'marginalia-type))))
