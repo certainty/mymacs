@@ -6,19 +6,19 @@
   :general
   (leader-def
     "o" '(:ignore t :which-key "org")
-    "oa" 'my/personal-agenda
+    "oa" '+personal-agenda
     "oA" 'org-agenda
     "oc" 'org-capture
-    "ot" 'my/capture-task
-    "on" 'my/capture-note
-    "oe" 'my/capture-event
-    "od" 'my/capture-decision
+    "ot" '+capture-task
+    "on" '+capture-note
+    "oe" '+capture-event
+    "od" '+capture-decision
 
     "go" '(:ignore t :which-key "org")
-    "god" 'my/open-org-dir
-    "gop" 'my/goto-projects
-    "gol" 'my/goto-log
-    "goc" 'my/goto-contacts)
+    "god" '+browse-org
+    "gop" '+goto-projects
+    "gol" '+goto-log
+    "goc" '+goto-contacts)
 
   :custom
   (org-id-link-to-org-use-id t)
@@ -211,31 +211,31 @@
   :config
   (require 'org-id)
 
-  (defun my/personal-agenda ()
+  (defun +personal-agenda ()
     (interactive)
     (org-agenda nil "y"))
 
-  (defun my/capture-task ()
+  (defun +capture-task ()
     (interactive)
     (org-capture nil "t"))
 
-  (defun my/capture-note ()
+  (defun +capture-note ()
     (interactive)
     (org-capture nil "n"))
 
-  (defun my/capture-event ()
+  (defun +capture-event ()
     (interactive)
     (org-capture nil "e"))
 
-  (defun my/capture-project ()
+  (defun +capture-project ()
     (interactive)
     (org-capture nil "p"))
 
-  (defun my/capture-decision ()
+  (defun +capture-decision ()
     (interactive)
     (org-capture nil "d"))
 
-  (defun my/open-org-dir ()
+  (defun +browse-org ()
     (interactive)
     (dired my/org-path))
 
@@ -247,23 +247,23 @@
           (write-file file-path)))
       (find-file-other-window file-path)))
 
-  (defun my/goto-log ()
+  (defun +goto-log ()
     (interactive)
     (my/goto-special-org-file "log"))
 
-  (defun my/goto-projects ()
+  (defun +goto-projects ()
     (interactive)
     (my/goto-special-org-file "projects"))
 
-  (defun my/goto-contacts ()
+  (defun +goto-contacts ()
     (interactive)
     (my/goto-special-org-file "contacts"))
 
-  (defun my/org-ripgrep ()
+  (defun +org-ripgrep ()
     (interactive)
     (consult-ripgrep org-directory))
 
-  (defun my/org-grep ()
+  (defun +org-grep ()
     (interactive)
     (let ((default-directory org-directory))
       (call-interactively #'grep)))

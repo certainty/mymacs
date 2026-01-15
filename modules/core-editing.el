@@ -119,12 +119,23 @@
     ".a" 'embark-act-all
     ".m" 'embark-select)
 
+
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
   (keymap-set global-map "C-." my/embark-prefix-map)
   (with-eval-after-load 'vertico
     (keymap-set vertico-map "C-." my/embark-prefix-map))
+
+  :custom
+  (embark-indicators
+    '(embark-minimal-indicator
+       embark-highlight-indicator
+       embark-isearch-highlight-indicator))
+
   :config
+  (setq embark-prompter 'embark-completing-read-prompter)
+
+  :init
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
     '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
@@ -132,7 +143,6 @@
        (window-parameters (mode-line-format . none)))))
 
 (use-package embark-consult
-  :after (embark consult)
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 

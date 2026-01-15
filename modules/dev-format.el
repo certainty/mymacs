@@ -89,7 +89,7 @@ Possible values:
     (my/eglot-can-format-p)
     my/format-on-save-enabled))
 
-(defun my/toggle-format-on-save ()
+(defun +toggle-format-on-save ()
   "Toggle automatic formatting on save for the current buffer."
   (interactive)
   (setq-local my/format-on-save-enabled (not my/format-on-save-enabled))
@@ -99,6 +99,6 @@ Possible values:
 
 (with-eval-after-load 'general
   (leader-def
-    "tF" 'my/toggle-format-on-save))
+    "tF" '+toggle-format-on-save))
 
 (provide 'dev-format)

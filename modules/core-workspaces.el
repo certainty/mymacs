@@ -28,7 +28,9 @@
     '((project-find-file "Find file" ?f)
        (consult-ripgrep "Ripgrep" ?s)
        (project-dired "Dired" ?d)
+       (magit-project-status "Magit" ?m)
        (project-vc-dir "VC" ?v)
+       (forge-dispatch "Forge" ?g)
        (project-eshell "Eshell" ?e)))
 
   :preface

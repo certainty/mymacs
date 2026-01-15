@@ -6,25 +6,26 @@
 ;;
 ;;; Code:
 
-(defun my/kill-current-buffer ()
+(defun +kill-current ()
   "Kill the current buffer without prompting."
   (interactive)
   (kill-buffer (current-buffer)))
 
-(defun my/kill-other-buffers ()
+(defun +kill-other ()
   "Kill all buffers except the current one."
   (interactive)
   (mapc 'kill-buffer (delq (current-buffer) (buffer-list)))
   (message "Killed all other buffers"))
 
-(defun my/kill-all-buffers ()
+
+(defun +kill-all ()
   "Kill all buffers."
   (interactive)
   (when (yes-or-no-p "Kill all buffers? ")
     (mapc 'kill-buffer (buffer-list))
     (message "Killed all buffers")))
 
-(defun my/rename-file-and-buffer ()
+(defun +rename-file-and-buffer ()
   "Rename the current buffer and file it is visiting."
   (interactive)
   (let ((filename (buffer-file-name)))
@@ -37,7 +38,7 @@
             (rename-file filename new-name t)
             (set-visited-file-name new-name t t)))))))
 
-(defun my/delete-current-buffer-file ()
+(defun +delete-current-buffer-file ()
   "Delete the file associated with the current buffer and kill the buffer."
   (interactive)
   (let ((filename (buffer-file-name)))
@@ -53,7 +54,6 @@
   (interactive)
   (revert-buffer t t t)
   (message "Buffer reverted"))
-
 
 (use-package uniquify
   :straight (:type built-in)
@@ -115,15 +115,15 @@
 
 (with-eval-after-load 'general
   (leader-def
-    "bd" 'my/kill-current-buffer
-    "bD" 'my-delete-current-buffer-file
+    "bd" '+kill-current
+    "bD" '+delete-current-buffer-file
     "bS" 'save-some-buffers
     "br" 'revert-buffer
-    "bR" 'my/rename-file-and-buffer
+    "bR" '+rename-file-and-buffer
     "bi" 'ibuffer
     "bz" 'bury-buffer
-    "bK" 'my/kill-other-buffers
-    "bx" 'my/kill-all-buffers))
+    "bK" '+kill-other
+    "bx" '+kill-all))
 
 ;;;; Ibuffer - Advanced buffer list
 (use-package ibuffer
@@ -152,13 +152,12 @@
   :straight (:type built-in)
   :hook (after-init . global-so-long-mode))
 
-
 (use-package emacs
   :bind
   (:map mymacs-mode-map
-    ("C-g" . prot/keyboard-quit-dwim))
+    ("C-g" . +escape))
   :preface
-  (defun prot/keyboard-quit-dwim ()
+  (defun +escape ()
     "Do-What-I-Mean behaviour for a general `keyboard-quit'.
 
 The generic `keyboard-quit' does not do the expected thing when
@@ -181,7 +180,6 @@ The DWIM behaviour of this command is as follows:
         (abort-recursive-edit))
       (t
         (keyboard-quit)))))
-
 
 
 ;;; Windows

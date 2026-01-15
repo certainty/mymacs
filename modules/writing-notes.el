@@ -29,8 +29,8 @@
 
     "nff" 'denote-open-or-create
     "nfF" 'denote-open-or-create-with-command
-    "no" 'my/open-notes-path
-    "nO" 'my/open-managed-documents-path)
+    "no" '+browse-notes
+    "nO" '+browse-managed-documents)
   :hook
   ((dired-mode . denote-dired-mode)
     (denote-mode-hook . (lambda () (corfu-mode -1))))
@@ -73,11 +73,11 @@
 
   (denote-rename-buffer-mode 1)
 
-  (defun my/open-notes-path ()
+  (defun +browe-notes ()
     (interactive)
     (dired my/notes-path))
 
-  (defun my/open-managed-documents-path ()
+  (defun +browse-managed-documents ()
     (interactive)
     (dired my/managed-documents-path))
 
@@ -101,35 +101,29 @@
   (let ((default-directory (expand-file-name dir)))
     (call-interactively #'p-search)))
 
-(defun my/search-notes ()
-  "Search in notes directory using p-search."
-  (interactive)
-  (my/search-in-directory my/notes-path))
-
-(defun my/consult-notes ()
+(defun +consult-notes ()
   "Consult notes using consult-denote."
   (interactive)
   (let ((default-directory (expand-file-name my/notes-path)))
     (call-interactively #'consult-denote-find)))
 
-(defun my/consult-grep-notes ()
+(defun +consult-grep-notes ()
   "Consult notes using consult-denote."
   (interactive)
   (let ((default-directory (expand-file-name my/notes-path)))
     (call-interactively #'consult-denote-grep)))
 
-(defun my/search-notes ()
-  "Search in notes directory using ripgrep"
+(defun +psearch-notes ()
+  "Search in notes directory using psearch."
   (interactive)
-  (let ((default-directory (expand-file-name my/notes-path)))
-    (call-interactively #'consult-denote-grep)))
+  (my/search-in-directory my/notes-path))
 
-(defun my/search-documents ()
+(defun +psearch-documents ()
   "Search in documents directory using p-search."
   (interactive)
   (my/search-in-directory my/managed-documents-path))
 
-(defun my/search-org ()
+(defun +psearch-org ()
   "Search in org directory using p-search."
   (interactive)
   (my/search-in-directory my/org-path))
@@ -137,11 +131,12 @@
 (leader-def
   "sn" '(:ignore t :which-key "notes")
   "snn" 'denote-find
-  "snf" 'my/consult-notes
-  "sng" 'my/consult-grep-notes
-  "sN" 'my/search-notes
-  "sd" 'my/search-documents
-  "so" 'my/search-org)
+  "snf" '+consult-notes
+  "sng" '+consult-grep-notes
+
+  "sN" '+psearch-notes
+  "sd" '+psearch-documents
+  "so" '+psearch-org)
 
 (provide 'writing-notes)
 ;;; writing-notes.el ends here

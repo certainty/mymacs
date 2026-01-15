@@ -1,22 +1,5 @@
 ;;; core-completion.el --- Completion -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2025 David Krentzlin
-;;
-;; Author: David Krentzlin <david.krentzlin@new-work.se>
-;; Maintainer: David Krentzlin <david.krentzlin@new-work.se>
-;; Created: December 17, 2025
-;; Modified: December 17, 2025
-;; Version: 0.0.1
-;; Keywords: Symbol’s value as variable is void: finder-known-keywords
-;; Homepage: https://github.com/david-krentzlin/core-completion
-;; Package-Requires: ((emacs "24.3"))
-;;
-;; This file is not part of GNU Emacs.
-;;
-;;; Commentary:
-;;
-;;  Description
-;;
 ;;; Code:
 
 ;;; Minibuffer
@@ -42,7 +25,7 @@
   :custom
   (completion-styles '(orderless basic))
   (orderless-matching-styles
-    '(orderless-literal orderless-regexp orderless-initialism orderless-flex))
+    '(orderless-flex orderless-regexp orderless-initialism))
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles partial-completion orderless)))))
 
@@ -60,6 +43,9 @@
 
 ;;; In-Buffer
 (use-package corfu
+  :hook
+  (after-init . global-corfu-mode)
+  (corfu-mode . corfu-popupinfo-mode)
   :general
   (:keymaps 'corfu-map
     "C-y" 'corfu-insert
@@ -68,9 +54,6 @@
     "S-TAB" 'corfu-previous
     "<backtab>" 'corfu-previous
     "C-SPC" 'corfu-show)
-  :hook
-  (after-init . global-corfu-mode)
-  (corfu-mode . corfu-popupinfo-mode)
   :custom
   (corfu-auto t)
   (corfu-quit-no-match 'separator)
@@ -86,12 +69,14 @@
   :config
   ;; Keep Corfu available in Org, but only on manual trigger.
   (add-hook 'org-mode-hook (lambda () (setq-local corfu-auto nil)))
+
   (with-eval-after-load 'savehist
     (use-package corfu-history
       :straight (:type built-in)
       :hook corfu-mode)
     (corfu-history-mode 1)
     (add-to-list 'savehist-additional-variables 'corfu-history))
+
   (diminish 'corfu-mode))
 
 (use-package nerd-icons-corfu
@@ -113,8 +98,7 @@
     (add-to-list 'corfu-margin-formatters 'kind-icon-margin-formatter)))
 
 (use-package cape
-  :after corfu
-  :config
+  :init
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-keyword)

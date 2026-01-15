@@ -54,6 +54,7 @@
     "b" '(:ignore t :which-key "buffers")
     "s" '(:ignore t :which-key "search")
     "g" '(:ignore t :which-key "goto")
+    "m" '(:ignore t :which-key "mode")
     "o" '(:ignore t :which-key "org")
     "p" '(:ignore t :which-key "project")
     "t" '(:ignore t :which-key "toggle")
