@@ -45,6 +45,17 @@
   (interactive)
   (message "Emacs startup time: %s" (emacs-init-time)))
 
+(defun my/authinfo-path ()
+  "Return the path to the authinfo.gpg file."
+  (let ((ctx my/context))
+    (cond
+      ((eq ctx 'work)
+        (expand-file-name "secrets/authinfo.work.gpg" user-emacs-directory))
+      ((eq ctx 'private)
+        (expand-file-name "secrets/authinfo.private.gpg" user-emacs-directory))
+      (t
+        (error "Unknown context: %s" ctx)))))
+
 ;;;; Config Keybindings
 (with-eval-after-load 'general
   (leader-def

@@ -123,7 +123,6 @@
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
   (magit-bury-buffer-function #'magit-restore-window-configuration))
 
-
 (use-package diff-hl
   :hook
   (after-init . global-diff-hl-mode))

@@ -98,7 +98,7 @@ Checks MYMACS_CONTEXT environment variable first, then falls back to OS detectio
   :type 'string
   :group 'mymacs)
 
-(defcustom my/repositories-path "~/Repositories"
+(defcustom my/repositories-path "~/Code"
   "Base path for cloned repositories. Hosts and org/repo paths are mirrored under this root."
   :type 'string
   :group 'mymacs)

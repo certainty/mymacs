@@ -35,6 +35,7 @@
   (consult-gh-default-interactive-command #'consult-gh-transient)
   (consult-gh-prioritize-local-folder nil)
   (consult-gh-group-dashboard-by :reason)
+  (consult-gh-group-repos-by t)
   (my/gh-organizations '("new-work" "xing-com" "onlyfy" "david-krentzlin"))
 
   :preface
@@ -58,7 +59,7 @@
       choice))
 
   (defun my/gh--org-prefill ()
-    (format "org:%s" (my/gh--read-org)))
+    (format "%s#" (my/gh--read-org)))
 
   (defun my/gh--input-with-args (query args)
     "Build consult-gh input from QUERY and ARGS."
@@ -172,7 +173,7 @@
   (defun my/consult-gh-search-repos ()
     "Search GitHub repos limited to internal organizations."
     (interactive)
-    (consult-gh-search-repos (my/gh--input-with-args (my/gh--org-prefill) nil)))
+    (consult-gh-repo-list (my/gh--org-prefill)))
 
   (defun my/consult-gh-search-repos-global ()
     "Search GitHub repos globally."
@@ -291,6 +292,8 @@
         file)))
 
   :config
+  (setopt consult-gh-default-save-directory my/gh-organizations)
+
   (use-package consult-gh-embark
     :init
     (consult-gh-embark-mode 1))
@@ -298,8 +301,8 @@
   :init
   (add-hook 'consult-gh-repo-post-clone-hook #'my/gh--maybe-dired-after-clone)
   (with-eval-after-load 'embark
-    (add-to-list 'embark-keymap-alist '(consult-gh-repos . my/embark-consult-gh-repo-map))
-    (add-to-list 'embark-keymap-alist '(consult-gh-prs . my/embark-consult-gh-pr-map))
+                                        ;(add-to-list 'embark-keymap-alist '(consult-gh-repos . my/embark-consult-gh-repo-map))
+                                        ;(add-to-list 'embark-keymap-alist '(consult-gh-prs . my/embark-consult-gh-pr-map))
     (add-to-list 'embark-multitarget-actions 'my/consult-gh-pr-export-org)))
 
 (provide 'tools-gh)
