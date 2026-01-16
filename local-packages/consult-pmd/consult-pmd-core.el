@@ -156,12 +156,25 @@ This propertizes the `DISPLAY' string with properties to retrieve `ID' and `DATA
       (when-let ((data (pmd--candidate-data cand)))
         (pmd--string (gethash field data))))))
 
-
 ;;; nice display for candidate
 (require 'nerd-icons)
 
 (defun pmd--icon-octocat (caption)
   "Return CAPTION prefixed with an octicon."
   (concat (nerd-icons-faicon "nf-fa-github") " " caption))
+
+
+;;; make sure embark finds the correct target and we can restore the ID
+(with-eval-after-load 'embark
+  (defun pmd--embark-target ()
+    "Embark target finder for PMD candidates in Vertico. "
+    (when (and (boundp 'vertico--input) vertico--input
+            (fboundp 'vertico--candidate))
+      (when (eq vertico--input t) (vertico--exhibit))
+      (when-let* ((cand (vertico--candidate))
+                   (type (get-text-property 0 'pmd-type cand))
+                   (id (get-text-property 0 'pmd-id cand)))
+        `(,type ,id . nil))))
+  (add-to-list 'embark-target-finders #'pmd--embark-target))
 
 (provide 'consult-pmd-core)

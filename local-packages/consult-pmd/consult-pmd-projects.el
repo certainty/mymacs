@@ -39,6 +39,7 @@
   "Consult project metadata projects."
   (interactive)
   (let ((candidates (pmd--projects-candidates)))
+    (pmd--peek candidates)
     (when-let ((project-id (consult--read
                              candidates
                              :prompt "PMD Projects: "
@@ -73,7 +74,6 @@
   (defun pmd--projects-repository-url (project-id)
     "Returns the full repository URL for `PROJECT'"
     (when-let ((data (pmd--recover-entity pmd--project-type project-id)))
-      (message "Data: %S" data)
       (let* ((server-url (pmd--dig data "git" "server_url"))
               (account (pmd--dig data "git" "account"))
               (repo (pmd--dig data "git" "repo")))
@@ -81,6 +81,7 @@
 
   (defun pmd--projects-repository-slug (project-id)
     "Returns the repository slug for `PROJECT'"
+    (message "trying to recover repo slug for project id: %s" project-id)
     (when-let ((data (pmd--recover-entity pmd--project-type project-id)))
       (let* ((account (pmd--dig data "git" "account"))
               (repo (pmd--dig data "git" "repo")))
@@ -109,17 +110,25 @@
                  (teams-channel (pmd--dig data "msteams" "channel_url")))
       (browse-url teams-channel)))
 
+  (defun +pmd-open-teams-alerting-channel (project-id)
+    (interactive "sProject ID: ")
+    (when-let* ((data (pmd--recover-entity pmd--project-type project-id))
+                 (alerting-channel (pmd--dig data "alerting" "msteams_channel_url")))
+      (browse-url alerting-channel)))
+
   (defvar-keymap pmd-projects-embark-map
     "r" '+pmd-open-repository
     "R" '+pmd-copy-repo-url
     "s" '+pmd-copy-repo-slug
-    "t" '+pmd-open-teams-channel)
+    "t" '+pmd-open-teams-channel
+    "a" '+pmd-open-teams-alerting-channel)
 
   (with-eval-after-load 'consult-gh
     (defun +pmd-search-github-repo (project-id)
       (interactive "sProject ID: ")
       (when-let ((repo-slug (pmd--projects-repository-slug project-id)))
         (consult-gh-search-code nil repo-slug)))
+
     (defun +pmd-browse-github-repo (project-id)
       (interactive "sProject ID: ")
       (when-let ((repo-slug (pmd--projects-repository-slug project-id)))

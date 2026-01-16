@@ -73,6 +73,7 @@
       (kill-new email)
       (message "Copied email: %s" email)))
 
+
   (add-to-list 'embark-keymap-alist `(,pmd--people-type . pmd-people-embark-map)))
 
 

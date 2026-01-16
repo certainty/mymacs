@@ -63,4 +63,60 @@
 
   (add-to-list 'marginalia-annotators `(,pmd--team-type pmd--teams-annotate)))
 
+(with-eval-after-load 'embark
+  (defun pmd--team-channel-url (team-id)
+    "Return the PMD team channel URL for TEAM-ID."
+    (let* ((data (pmd--recover-entity pmd--team-type team-id)))
+      (pmd--dig data "msteams" "channel_url")))
+
+  (defun +pmd-open-team-channel (team-id)
+    "Open the PMD team channel in the browser."
+    (interactive)
+    (when-let ((url (pmd--team-channel-url team-id)))
+      (browse-url url)))
+
+  (defun +pmd-copy-team-channel-url (team-id)
+    "Copy the PMD team channel URL to the clipboard."
+    (interactive)
+    (when-let ((url (pmd--team-channel-url team-id)))
+      (kill-new url)
+      (message "Copied team channel URL to clipboard.")))
+
+  (defun +pmd-open-team-alerting-channel (team-id)
+    "Open the PMD team alerting channel in the browser."
+    (when-let* ((data (pmd--recover-entity pmd--team-type team-id))
+                 (alerting-url (pmd--string (pmd--dig data "alerting" "msteams_channel_url"))))
+      (browse-url alerting-url)))
+
+  (defun +pmd-copy-team-email (team-id)
+    "Copy the email address of TEAM-ID to the clipboard."
+    (when-let* ((data (pmd--recover-entity pmd--team-type team-id))
+                 (email (pmd--string (gethash "email" data))))
+      (kill-new email)
+      (message "Copied email: %s" email)))
+
+  (defun +pmd-copy-team-alerting-channel (team-id)
+    "Open the PMD team alerting channel in the browser."
+    (when-let* ((data (pmd--recover-entity pmd--team-type team-id))
+                 (alerting-url (pmd--string (pmd--dig data "alerting" "msteams_channel_url"))))
+      (kill-new alerting-url)
+      (message "Copied alerting channel URL to clipboard.")))
+
+  (defun +pmd-open-team-confluence (team-id)
+    "Open the Confluence page of TEAM-ID in the browser."
+    (when-let* ((data (pmd--recover-entity pmd--team-type team-id))
+                 (confluence-key (pmd--string (pmd--dig data "confluence" "key"))))
+      (browse-url (format "https://new-work.atlassian.net/wiki/spaces/%s"))))
+
+  (defvar-keymap pmd-teams-embark-map
+    :doc "Keymap for PMD teams metadata embark actions."
+    "t" '+pmd-open-team-channel
+    "T" '+pmd-copy-team-channel-url
+    "e" '+pmd-copy-team-email
+    "c" '+pmd-open-team-confluence
+    "a" '+pmd-open-team-alerting-channel
+    "A" '+pmd-copy-team-alerting-channel)
+
+  (add-to-list 'embark-keymap-alist `(,pmd--team-type . pmd-teams-embark-map)))
+
 (provide 'consult-pmd-teams)
