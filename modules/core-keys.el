@@ -26,7 +26,7 @@
 
 (use-package evil-surround
   :after evil
-  :hook (evil-mode . global-evil-surround-mode))
+  :hook (after-init . global-evil-surround-mode))
 
 (use-package evil-collection
   :demand t

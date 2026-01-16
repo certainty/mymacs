@@ -1,5 +1,6 @@
 ;;; consult-pmd.el --- Project metadata lookup -*- lexical-binding: t; -*-
 ;;
+;; Package-Requires: ((emacs "30.0"))
 ;;; Commentary:
 ;; Consult helpers for internal project metadata.
 ;; Author: David Krentzlin
@@ -7,230 +8,23 @@
 ;;
 ;;; Code:
 
-(eval-when-compile
-  (require 'marginalia))
+(require 'consult-pmd-core)
+(require 'consult-pmd-projects)
 
-(require 'subr-x)
-(require 'consult)
+;;; Embark utilities
+(with-eval-after-load 'embark
+  (defun pmd--embark-target ()
+    "Embark target finder for PMD candidates in Vertico.
+Returns the project id as the target value."
+    (when (and (boundp 'vertico--input) vertico--input
+            (fboundp 'vertico--candidate))
+      (when (eq vertico--input t) (vertico--exhibit))
+      (when-let* ((cand (vertico--candidate))
+                   (entity (pmd--candidate-type cand))
+                   (id (pmd--candidate-id cand)))
+        `(,entity ,id . nil))))
 
-;; (defcustom pmd-project-group-field "team"
-;;   "Field to use for grouping projects in completion."
-;;   :type '(choice (const :tag "Team" "team")
-;;            (const :tag "Service Group" "service_group")
-;;            (const :tag "Org Unit" "org_unit")
-;;            (const :tag "Product Lifecycle" "product_lifecycle"))
-;;   :group 'consult-pmd)
-
-;; (defconst pmd--projects-endpoint "projects"
-;;   "Projects endpoint for project metadata.")
-
-;; (defconst pmd--servicegroups-endpoint "service_groups"
-;;   "Service groups endpoint for project metadata.")
-
-;; (defconst pmd--teams-endpoint "teams"
-;;   "Teams endpoint for project metadata.")
-
-
-;; (defconst pmd--projects-json-url
-;;   (format "%s/%s?format=json" pmd-base-url pmd--projects-endpoint)
-;;   "Projects JSON endpoint.")
-
-;; (defconst pmd--servicegroups-json-url
-;;   (format "%s/%s?format=json" pmd-base-url pmd--servicegroups-endpoint)
-;;   "Service groups JSON endpoint.")
-
-;; (defconst pmd--teams-json-url
-;;   (format "%s/%s?format=json" pmd-base-url pmd--teams-endpoint)
-;;   "Teams JSON endpoint.")
-
-;; (defvar pmd--projects-cache nil
-;;   "Cache of project metadata keyed by project id.")
-
-;;; PMD Service integration
-
-(defcustom pmd-base-url "https://project-metadata.nwse.io"
-  "Base URL for project metadata."
-  :type 'string
-  :group 'consult-pmd)
-
-(defcustom pmd-api-key "dea"
-  "API key for project metadata. This is simply the team id. It's not a SECRET."
-  :type 'string
-  :group 'consult-pmd)
-
-(defun pmd--keyword->string (key)
-  "Convert keyword KEY to string without leading colon."
-  (format "%s" (substring (symbol-name key) 1)))
-
-(defun pmd--plist->lol (plist)
-  "Convert PLIST to a list of lists."
-  (cl-loop for (key value) on plist by #'cddr
-    collect (list (pmd--keyword->string key) value)))
-
-(cl-defun pmd--make-url (path &rest params)
-  "Make a URL for `PATH' with `PARAMS'. `PARAMS' is a plist containting key-value pairs."
-  (let ((base-url (string-remove-suffix "/" pmd-base-url))
-         (url-params (pmd--plist->lol params)))
-    (if url-params
-      (format "%s/%s?%s" base-url path (url-build-query-string url-params))
-      (format "%s/%s" base-url path))))
-
-(defun pmd--api-request (path &rest params)
-  "Make an API request to `PATH' with `PARAMS' and return parsed JSON.
-If `PARAMS' does not contain :format \"json\" it will be added. "
-
-  (let ((url-params (if (plist-member params :format)
-                      params
-                      (append params '(:format "json")))))
-    (require 'url)
-    (require 'json)
-    (let ((url-request-extra-headers
-            `(("X-PMD-API-KEY" . ,pmd-api-key))))
-      (let ((buffer (url-retrieve-synchronously (apply #'pmd--make-url path url-params) t t 10)))
-        (unless buffer
-          (user-error "PMD request failed"))
-        (unwind-protect
-          (with-current-buffer buffer
-            (goto-char (point-min))
-            (let ((status (when (re-search-forward "^HTTP/[^ ]+ \\([0-9]+\\)" nil t)
-                            (string-to-number (match-string 1)))))
-              (unless (and status (<= 200 status 299))
-                (error "PMD request failed (HTTP %s)" (or status "unknown"))))
-            (unless (re-search-forward "\r?\n\r?\n" nil t)
-              (error "PMD response headers not found"))
-            (json-parse-buffer :object-type 'hash-table
-              :array-type 'list
-              :null-object nil))
-          (when (buffer-live-p buffer)
-            (kill-buffer buffer)))))))
-
-;;; helper functions
-(defun pmd--string (value)
-  "Return `VALUE' as a string, or nil."
-  (cond
-    ((null value) nil)
-    ((stringp value) value)
-    (t (format "%s" value))))
-
-(defun pmd--list-string (values)
-  "Return VALUES as a comma-separated string."
-  (when (listp values)
-    (let ((items (delq nil (mapcar #'pmd--string values))))
-      (when items
-        (string-join items ", ")))))
-
-(defun pmd--present-p (value)
-  "Return t if `VALUE' is non-nil and non-empty string."
-  (and value
-    (or (not (stringp value))
-      (not (string-empty-p value)))))
-
-(defun pmd--peek (value)
-  "Prints the `VALUE' and returns it. This is used for debugging."
-  (message "PMD Peek: %S" value)
-  value)
-
-(cl-defun pmd--dig (hsh &rest keys)
-  "Dig into a nested hash table `HSH' using `KEYS' and return the value or nil."
-  (let ((current hsh))
-    (dolist (key keys)
-      (when (and (hash-table-p current)
-              (gethash key current))
-        (setq current (gethash key current))))
-    (if (hash-table-p current) ;; not a leaf node
-      nil
-      current)))
-
-(cl-defun pmd--slice-hash (hsh &rest keys)
-  "Return a new hash table with only the `KEYS' from `HSH'."
-  (let ((new-hsh (make-hash-table :test (hash-table-test hsh))))
-    (dolist (key keys)
-      (when (gethash key hsh)
-        (puthash key (gethash key hsh) new-hsh)))
-    new-hsh))
-
-;;; General helpers to build completion candidates
-(cl-defun pmd--completion-candidate (display id data)
-  "Build a completion condidate using the provided `DISPLAY', `ID' and `DATA'."
-  (propertize display
-    'pmd-data data
-    'pmd-id id
-    'consult--candidate data))
-
-(cl-defun pmd--candidate-data (cand)
-  "Return candidate data from completion `CAND'."
-  (let ((data (get-text-property 0 'pmd-data cand)))
-    (or data
-      (user-error "No candidate data available"))))
-
-(cl-defun pmd--candidate-id (cand)
-  "Return candidate id extracted from completion `CAND'."
-  (let ((id (get-text-property 0 'pmd-id cand)))
-    (or id
-      (user-error "No candidate id available"))))
-
-(defun pmd--grouping-fn (field)
-  "Return a grouping function for FIELD."
-  (lambda  (cand transform)
-    (if transform (substring cand)
-      (when-let ((data (pmd--candidate-data cand)))
-        (pmd--string (gethash field data))))))
-
-;;; PMD Projects
-(defconst pmd--project-data-fields
-  '("id" "name" "service_group" "service_type" "documentation" "complexity_score" "maintainability_score" "team" "org_unit" "product_lifecycle" "git" "msteams")
-  "Fields to include in project completion candidate data.")
-
-(defun pmd--projects-fetch-all()
-  "Fetch all projects from PMD."
-  (pmd--api-request "projects" :format "json"))
-
-(cl-defun pmd--projects-fetch-candidates ()
-  "Create completion candidates for all projects.
-The candidates are already sorted.
-See also `pmd--completion-candidate' for details on the associated data of each candidate."
-  (let ((projects-data (pmd--projects-fetch-all)))
-    (cl-loop
-      with candidates = nil
-      for project-key being the hash-keys of projects-data
-      do (let* ((project-data (apply #'pmd--slice-hash (gethash project-key projects-data) pmd--project-data-fields))
-                 (project-id (pmd--dig project-data "id"))
-                 (project-name (pmd--dig project-data "name"))
-                 (display (if (pmd--present-p project-name) project-name project-id)))
-           (push (pmd--completion-candidate display project-id project-data) candidates))
-      finally (return (sort candidates #'string-lessp)))))
-
-;;;###autoload
-(defun +pmd-projects ()
-  "Select a project via consult and open it in the browser."
-  (interactive)
-  (let* ((candidates (pmd--projects-fetch-candidates))
-          (project (consult--read candidates
-                     :prompt "Project: "
-                     :sort nil
-                     :require-match t
-                     :category 'pmd-project
-                     :group (pmd--grouping-fn "service_group")
-                     :lookup #'consult--lookup-candidate)))
-    (when project
-      (let ((id (pmd--candidate-id project)))
-        (browse-url (pmd--make-url (format "projects/%s" id)))))))
-
-(defun pmd--projects-annotate (cand)
-  "Annotate project CAND with metadata fields."
-  (when-let ((data (pmd--candidate-data cand)))
-    (marginalia--fields
-      ((pmd--string (gethash "team" data)) :face 'marginalia-value)
-      ((pmd--string (gethash "service_group" data)) :face 'marginalia-type)
-      ((pmd--string (gethash "org_unit" data)) :face 'marginalia-symbol)
-      ((pmd--string (gethash "product_lifecycle" data)) :face 'marginalia-documentation))))
-
-(with-eval-after-load 'marginalia
-  (add-to-list 'marginalia-annotators '(pmd-project pmd--projects-annotate)))
-
-(defun +test-things ()
-  (interactive)
-  (pmd--peek (pmd--projects-fetch-candidates)))
+  (add-to-list 'embark-target-finders #'pmd--embark-target))
 
 ;; (defun pmd--project-candidate (project-id data)
 ;;   "Build a completion candidate for PROJECT-ID using DATA."
