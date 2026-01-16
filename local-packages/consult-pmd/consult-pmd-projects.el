@@ -81,7 +81,6 @@
 
   (defun pmd--projects-repository-slug (project-id)
     "Returns the repository slug for `PROJECT'"
-    (message "trying to recover repo slug for project id: %s" project-id)
     (when-let ((data (pmd--recover-entity pmd--project-type project-id)))
       (let* ((account (pmd--dig data "git" "account"))
               (repo (pmd--dig data "git" "repo")))
