@@ -156,4 +156,12 @@ This propertizes the `DISPLAY' string with properties to retrieve `ID' and `DATA
       (when-let ((data (pmd--candidate-data cand)))
         (pmd--string (gethash field data))))))
 
+
+;;; nice display for candidate
+(require 'nerd-icons)
+
+(defun pmd--icon-octocat (caption)
+  "Return CAPTION prefixed with an octicon."
+  (concat (nerd-icons-faicon "nf-fa-github") " " caption))
+
 (provide 'consult-pmd-core)

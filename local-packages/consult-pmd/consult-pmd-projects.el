@@ -1,4 +1,4 @@
-;;; consult-pmd.el --- Project metadata lookup -*- lexical-binding: t; -*-
+;;; consult-pmd-projects.el --- Project metadata lookup -*- lexical-binding: t; -*-
 ;;
 ;;; Commentary:
 ;; Consult helpers for internal project metadata.
@@ -14,7 +14,7 @@
 (defvar pmd--projects-history nil
   "History for PMD projects completion.")
 
-(defun pmd--display (data)
+(defun pmd--projects-display (data)
   "Return a display string for project metadata DATA."
   (let ((name (pmd--string (gethash "name" data)))
          (id (pmd--string (gethash "id" data))))
@@ -29,7 +29,7 @@
          (candidates '()))
     (maphash
       (lambda (id value)
-        (push (pmd--completion-candidate (pmd--display value) 'pmd-project id) candidates))
+        (push (pmd--completion-candidate (pmd--projects-display value) pmd--project-type id) candidates))
       projects)
     (sort candidates #'string-lessp)))
 
@@ -42,9 +42,10 @@
     (when-let ((project-id (consult--read
                              candidates
                              :prompt "PMD Projects: "
-                             :category 'pmd-project
+                             :category pmd--project-type
                              :history 'pmd--projects-history
                              :require-match t
+                             :lookup #'consult--lookup-candidate
                              :group (pmd--grouping-fn "service_group")
                              :sort nil)))
       (browse-url (pmd--make-url (format "projects/%s" project-id))))))
@@ -56,13 +57,17 @@
   (defun pmd--projects-annotate (cand)
     "Annotate project CAND with metadata fields."
     (when-let ((data (pmd--candidate-data cand)))
-      (marginalia--fields
-        ((pmd--string (gethash "team" data)) :face 'marginalia-value)
-        ((pmd--string (gethash "service_group" data)) :face 'marginalia-type)
-        ((pmd--string (gethash "org_unit" data)) :face 'marginalia-symbol)
-        ((pmd--string (gethash "product_lifecycle" data)) :face 'marginalia-documentation))))
+      (let ((contacts (pmd--list-string (pmd--dig data "people" "contact")))
+             (head (pmd--string (pmd--dig data "people" "head"))))
+        (marginalia--fields
+          ((pmd--string (gethash "team" data)) :face 'marginalia-value :width 18)
+          ((pmd--string (gethash "service_group" data)) :face 'marginalia-type :width 20)
+          ((pmd--string (gethash "org_unit" data)) :face 'marginalia-symbol :width 10)
+          ((pmd--string (gethash "product_lifecycle" data)) :face 'marginalia-documentation :width 20)
+          (head :face 'marginalia-on :width 20)
+          (contacts :face 'marginalia-documentation)))))
 
-  (add-to-list 'marginalia-annotators '(pmd-project pmd--projects-annotate)))
+  (add-to-list 'marginalia-annotators `(,pmd--project-type pmd--projects-annotate)))
 
 (with-eval-after-load 'embark
   (defun pmd--projects-repository-url (project-id)
@@ -119,8 +124,10 @@
       (interactive "sProject ID: ")
       (when-let ((repo-slug (pmd--projects-repository-slug project-id)))
         (consult-gh-dired repo-slug)))
+
     (keymap-set pmd-projects-embark-map "g" '+pmd-search-github-repo)
     (keymap-set pmd-projects-embark-map "e" '+pmd-browse-github-repo))
+
   (add-to-list 'embark-keymap-alist '(pmd-project . pmd-projects-embark-map)))
 
 

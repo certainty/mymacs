@@ -110,7 +110,8 @@
       "sp" '(:ignore t :which-key "pmd")
       "spp" '+pmd-projects
       "sps" '+pmd-servicegroups
-      "spt" '+pmd-teams))
+      "spt" '+pmd-teams
+      "spe" '+pmd-people))
 
   (require 'tools-gh)
   (require 'ai-copilot))

@@ -10,6 +10,9 @@
 
 (require 'consult-pmd-core)
 (require 'consult-pmd-projects)
+(require 'consult-pmd-teams)
+(require 'consult-pmd-servicegroups)
+(require 'consult-pmd-people)
 
 ;;; Embark utilities
 (with-eval-after-load 'embark
