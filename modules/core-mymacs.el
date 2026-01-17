@@ -56,10 +56,15 @@
       (t
         (error "Unknown context: %s" ctx)))))
 
+(defun +find-auth-info ()
+  (interactive)
+  (find-file (my/authinfo-path)))
+
 ;;;; Config Keybindings
 (with-eval-after-load 'general
   (leader-def
     "gc" '(:ignore t :which-key "config")
+    "gca" '+find-auth-info
     "gcf" '+find-config-file
     "gcd" '+browse-config
     "gci" '+find-init-file

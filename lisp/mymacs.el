@@ -34,31 +34,18 @@ Checks MYMACS_CONTEXT environment variable first, then falls back to OS detectio
       (funcall (plist-get (car result) :secret))
       nil)))
 
-(add-hook 'emacs-startup-hook
-  (lambda ()
-    (message "MYMACS loaded in %s context" my/context)))
-
-(cl-defun my/display-buffer-right (identifier &optional (size 0.3))
-  "Simplified interface to manage where buffers are displayed"
-  (add-to-list 'display-buffer-alist
-    `(,identifier
-       (display-buffer-reuse-window display-buffer-in-side-window)
-       (reusable-frames . visible)
-       (side . right)
-       (window-hight . ,size))))
-
 ;;; config
-(defcustom my/font "Terminess Nerd Font Mono"
+(defcustom my/font "Iosevka Nerd Font Mono"
   "Fixed pitch font"
   :type 'string
   :group 'mymacs)
 
-(defcustom my/pitch-font "Terminess Nerd Font Propo"
+(defcustom my/pitch-font "Iosevka Nerd Font Propo"
   "Variable pitch font"
   :type 'string
   :group 'mymacs)
 
-(defcustom my/font-size 104
+(defcustom my/font-size 102
   "Default font size to use"
   :type 'integer
   :group 'mymacs)
@@ -108,6 +95,8 @@ Checks MYMACS_CONTEXT environment variable first, then falls back to OS detectio
   :global t
   :lighter " λ"
   :keymap (make-sparse-keymap))
+
+(add-hook 'after-init-hook (lambda () (mymacs-mode 1)))
 
 (provide 'mymacs)
 ;;; mymacs.el ends here

@@ -46,7 +46,7 @@
 
 (use-package evil-surround
   :after evil
-  :hook (after-init global-evil-surround-mode))
+  :hook (after-init . global-evil-surround-mode))
 
 (use-package evil-exchange
   :after evil
@@ -61,8 +61,6 @@
                         (evil-snipe-override-mode 1)))
   :config
   (diminish 'evil-snipe-mode)
-  (evil-snipe-mode 1)
-  (evil-snipe-override-mode 1)
 
   :custom
   (evil-snipe-scope 'visible)
@@ -82,7 +80,6 @@
 
 ;;;; Evil Args - Arguments text object
 (use-package evil-args
-  :after general
   :general
   (:keymaps 'evil-inner-text-objects-map
     "a" 'evil-inner-arg)
@@ -97,7 +94,6 @@
     "]," 'evil-forward-arg))
 
 (use-package embark
-  :preface
   :general
   (:states '(normal insert visual motion emacs)
     "C-." 'embark-act
@@ -161,8 +157,6 @@
   (yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory)))
   :config
   (yas-reload-all))
-
-
 
 (provide 'core-editing)
 ;;; core-editing.el ends here

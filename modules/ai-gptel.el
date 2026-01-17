@@ -1,5 +1,3 @@
-;; -*- lexical-binding: t; -*-
-
 (use-package gptel
   :general
   (leader-def

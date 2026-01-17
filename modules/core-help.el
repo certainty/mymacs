@@ -8,17 +8,17 @@
 ;;
 ;;; Code:
 
-(defun my/info-display-manual ()
+(defun +emacs-manual ()
   "Display Emacs manual."
   (interactive)
   (info "emacs"))
 
-(defun my/info-elisp-manual ()
+(defun +elisp-manual ()
   "Display Emacs Lisp manual."
   (interactive)
   (info "elisp"))
 
-(defun my/describe-face-at-point ()
+(defun +describe-face-at-point ()
   "Describe the face at point."
   (interactive)
   (let ((face (get-text-property (point) 'face)))
@@ -37,7 +37,7 @@
       (special-mode))
     (pop-to-buffer buf)))
 
-(defun my/go-doc (query)
+(defun +go-doc (query)
   "Show Go docs for QUERY using `go doc`."
   (interactive (list (read-string "Go doc: " (thing-at-point 'symbol))))
   (let ((buf (get-buffer-create "*Go Doc*")))
@@ -51,7 +51,7 @@
           (pop-to-buffer buf))
         (message "go doc failed for %s" query)))))
 
-(defun my/ruby-doc (query)
+(defun +ruby-doc (query)
   "Show Ruby docs for QUERY using `ri`."
   (interactive (list (read-string "Ruby doc (ri): " (thing-at-point 'symbol))))
   (let ((buf (get-buffer-create "*Ruby Doc*")))
@@ -65,21 +65,12 @@
           (pop-to-buffer buf))
         (message "ri failed for %s" query)))))
 
-(defun my/scala-doc (query)
+(defun +scala-doc (query)
   "Search Scala docs for QUERY via Zeal docsets."
   (interactive (list (read-string "Scala doc: " (thing-at-point 'symbol))))
   (if (fboundp 'zeal-at-point-search)
     (zeal-at-point-search query)
     (user-error "Zeal is not available on this system")))
-
-(defvar my/web-search-provider "https://duckduckgo.com/?q=%s"
-  "URL template for web search queries.")
-
-(defun my/web-search (query)
-  "Search the web for QUERY in the default browser."
-  (interactive
-    (list (read-string "Web search: " (thing-at-point 'symbol))))
-  (browse-url (format my/web-search-provider (url-hexify-string query))))
 
 (when (eq system-type 'gnu/linux)
   (use-package zeal-at-point
@@ -128,9 +119,8 @@
 
     "shw" 'woman
     "shi" 'info
-    "shI" 'info-display-manual
-    "she" 'my/info-elisp-manual
-    "shE" 'my/info-display-manual
+    "she" '+emacs-manual
+    "shE" '+elisp-manual
 
     "shP" 'describe-package
     "shC" 'describe-char
@@ -138,14 +128,13 @@
     "shx" 'describe-syntax
 
     "shd" '(:ignore t :which-key "describe")
-    "shdf" 'my/describe-face-at-point
+    "shdf" '+describe-face-at-point
     "shdF" 'describe-face
     "shdp" 'describe-text-properties
     "shl" '(:ignore t :which-key "language")
-    "shlg" 'my/go-doc
-    "shlr" 'my/ruby-doc
-    "shls" 'my/scala-doc
-    "shg" 'my/web-search
+    "shlg" '+go-doc
+    "shlr" '+ruby-doc
+    "shls" '+scala-doc
     "shD" 'devdocs-lookup
     "shS" 'devdocs-search
     ;; Which-key

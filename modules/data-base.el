@@ -37,7 +37,7 @@
 
 ;;;; JSON Mode (already configured in my-web.el, but add enhancements)
 (with-eval-after-load 'json-ts-mode
-  (defun my/json-pretty-print-buffer ()
+  (defun +json-pretty-print-buffer ()
     "Pretty print the current JSON buffer."
     (interactive)
     (save-excursion
@@ -53,10 +53,10 @@
 
   (local-leader-def
     :keymaps 'json-ts-mode-map
-    "=" 'my/json-pretty-print-buffer))
+    "=" '+json-pretty-print-buffer))
 
 ;;;; YAML enhancements (already configured in my-ruby.el)
-(add-to-list 'auto-mode-alist '("\\.gotmpl\\'" . yaml-ts-mode))
+(add-to-list 'auto-mode-alist '("yaml\\.gotmpl\\'" . yaml-ts-mode))
 
 (with-eval-after-load 'yaml-ts-mode
 
@@ -75,7 +75,7 @@
         :submode fundamental-mode
         :front "{{-?\\s-*"
         :back "\\s-*-?}}")))
-  (mmm-add-mode-ext-class 'yaml-ts-mode "\\.gotmpl\\'" 'yaml-gotmpl))
+  (mmm-add-mode-ext-class 'yaml-ts-mode "yaml\\.gotmpl\\'" 'yaml-gotmpl))
 
 (provide 'data-base)
 ;;; data-base.el ends here

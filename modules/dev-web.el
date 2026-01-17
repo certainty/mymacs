@@ -1,10 +1,5 @@
 ;;; dev-web.el --- Web development configuration -*- lexical-binding: t -*-
 
-;;; Commentary:
-;; HTML, CSS
-
-;;; Code:
-
 ;;;; HTML
 (use-package html-ts-mode
   :straight (:type built-in)

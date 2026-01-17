@@ -22,6 +22,6 @@
            scheme-mode)
           . lispyville-mode)
   :config
-  (lispyville-set-key-theme '(operators additional slurp/barf-cp wrap additional-insert commentary additional-movement escape)))
+  (lispyville-set-key-theme '(operators additional slurp/barf-cp additional-insert commentary additional-movement escape)))
 
 (provide 'dev-lispy)

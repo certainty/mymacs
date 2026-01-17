@@ -27,22 +27,6 @@
 (setopt use-package-always-defer t)
 (setopt use-package-always-ensure t)
 
-(add-hook 'emacs-startup-hook
-  (lambda ()
-    (setq gc-cons-threshold 100000000
-      gc-cons-percentage 0.1)))
-
-;; let's use pinned versions
-;; (setq straight-profiles
-;;   '((nil . "default.el")
-;;      (pinned . "pinned.el")))
-
-;; ;; make sure we load pinned versions
-;; (autoload #'straight-x-pull-all "straight-x")
-;; (autoload #'straight-x-freeze-versions "straight-x")
-;; (defalias 'straight-pull-all #'straight-x-pull-all)
-;; (defalias 'straight-freeze-versions #'straight-x-freeze-versions)
-
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
 
@@ -98,7 +82,6 @@
 (require 'ai-gptel)
 
 (when (my/context-work-p)
-
   (use-package consult-pmd
     :straight `(consult-pmd
                  :type nil

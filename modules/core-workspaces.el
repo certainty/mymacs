@@ -12,7 +12,7 @@
   :general
   (leader-def
     "/" 'consult-ripgrep
-    "*" 'my/ripgrep-symbol
+    "*" '+find-symbol
     "SPC" 'project-find-file
     "pp" 'project-switch-project
     "pB" 'project-switch-to-buffer
@@ -34,7 +34,7 @@
        (project-eshell "Eshell" ?e)))
 
   :preface
-  (defun my/ripgrep-symbol ()
+  (defun +find-symbol ()
     "Search for symbol at point in project using ripgrep."
     (interactive)
     (consult-ripgrep (project-root (project-current t))
@@ -69,7 +69,7 @@
 (with-eval-after-load 'consult
   (consult-customize consult--source-buffer :hidden t :default nil)
   (defvar consult--source-workspace
-    (list :name     "Workspace Buffers"
+    (list :name  "Workspace Buffers"
       :narrow   ?w
       :history  'buffer-name-history
       :category 'buffer

@@ -138,6 +138,7 @@ Functions are called with one argument: either 'light or 'dark.")
   :general
   (leader-def
     "tf" '(:ignore t :which-key "font")
+    "tfa" 'text-scale-adjust
     "tff" '(my/toggle-font-bigger :which-key "bigger")
     "tfp" '(my/toggle-font-presentation :which-key "presentation"))
   :custom

@@ -12,7 +12,7 @@
   (org-auto-align-tags t)
   (org-catch-invisible-edits 'smart)
   (org-cycle-separator-lines 0)
-  (org-ellipsis "…")
+  (org-ellipsis "[...]")
   (org-fontify-quote-and-verse-blocks t)
   (org-hide-emphasis-markers t)
   (org-hide-leading-stars t)
@@ -83,7 +83,6 @@
   (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-
 
   ;; export
   (require 'ox-latex)

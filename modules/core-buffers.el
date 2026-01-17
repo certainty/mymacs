@@ -49,12 +49,6 @@
         (kill-buffer (current-buffer))
         (message "File '%s' deleted" filename)))))
 
-(defun my/revert-buffer-no-confirm ()
-  "Revert buffer without confirmation."
-  (interactive)
-  (revert-buffer t t t)
-  (message "Buffer reverted"))
-
 (use-package uniquify
   :straight (:type built-in)
   :custom
@@ -108,8 +102,7 @@
        compilation-mode))
   (popper-display-control 'user)
   :config
-  (global-set-key (kbd "C-c b p p") #'popper-toggle)
-  (global-set-key (kbd "C-c p") #'popper-toggle)
+  (global-set-key (kbd "C-/") #'popper-toggle)
   (popper-echo-mode 1)
   (diminish 'popper-mode))
 

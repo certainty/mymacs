@@ -10,7 +10,6 @@
 
 (use-package emacs
   :init
-  ;; my local installations like mise will be found here
   (add-to-list 'exec-path (expand-file-name "~/.local/bin")))
 
 (use-package exec-path-from-shell
@@ -43,7 +42,6 @@
     (mise-activate))
   (message "Environment reloaded"))
 
-;;; MISE setup
 (use-package mise
   :straight (:host github :repo "liuyinz/mise.el")
   :hook (after-init . global-mise-mode)

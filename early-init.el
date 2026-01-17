@@ -10,9 +10,22 @@
 (when (< emacs-major-version 30)
   (error "This configuration requires Emacs 30 or higher"))
 
-;; Loosen GC during startup for speed; reset in `init.el'.
-(setq gc-cons-threshold most-positive-fixnum
-  gc-cons-percentage 0.6)
+(defvar my/original-gc-threshold gc-cons-threshold)
+(defvar my/original-gc-percentage gc-cons-percentage)
+
+(defun my/losen-gc ()
+  ;; Loosen GC during startup for speed; reset in `init.el'.
+  (setq gc-cons-threshold most-positive-fixnum
+    gc-cons-percentage 0.6))
+
+(defun my/reset-gc (&rest _)
+  (interactive)
+  (setq gc-cons-threshold my/original-gc-threshold)
+  (setq gc-cons-percentage my/original-gc-percentage)
+  (message "Emacs loaded (gc reset)"))
+
+(my/losen-gc)
+(add-hook 'emacs-startup-hook 'my/reset-gc)
 
 ;; Disable package.el in favor of straight.el
 (setq package-enable-at-startup nil)
@@ -37,4 +50,5 @@
     native-comp-prune-cache t))
 
 (provide 'early-init)
+
 ;;; early-init.el ends here

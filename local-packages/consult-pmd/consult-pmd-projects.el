@@ -39,7 +39,6 @@
   "Consult project metadata projects."
   (interactive)
   (let ((candidates (pmd--projects-candidates)))
-    (pmd--peek candidates)
     (when-let ((project-id (consult--read
                              candidates
                              :prompt "PMD Projects: "
@@ -137,7 +136,6 @@
     (keymap-set pmd-projects-embark-map "e" '+pmd-browse-github-repo))
 
   (add-to-list 'embark-keymap-alist '(pmd-project . pmd-projects-embark-map)))
-
 
 
 (provide 'consult-pmd-projects)

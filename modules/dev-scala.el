@@ -27,10 +27,16 @@
     "to" 'sbt-do-test-only
     "tq" 'sbt-do-test-quick
 
+    "a" 'eglot-code-actions
+    "r" '(:ignore t :which-key "refactor")
+    "rr" 'eglot-rename
+    "g" '(:ignore t :which-key "goto")
+    "gi" 'eglot-find-implementation
+    "gt" 'eglot-find-type-definition
+    "gd" 'eglot-find-declaration
 
     "h" '(:ignore t :which-key "help")
-    "hh" 'eldoc-doc-buffer
-    "ht" 'eglot-type-hierarchy)
+    "hh" 'eldoc-doc-buffer)
   :custom
   (scala-ts-mode-indent-offset 2))
 

@@ -7,6 +7,10 @@
 
 ;;;; Denote - Note-taking system
 (use-package denote
+  :hook
+  ((dired-mode . denote-dired-mode)
+    (denote-mode-hook . (lambda () (corfu-mode -1))))
+
   :general
   (leader-def
     "n" '(:ignore t :which-key "notes")
@@ -31,17 +35,25 @@
     "nfF" 'denote-open-or-create-with-command
     "no" '+browse-notes
     "nO" '+browse-managed-documents)
-  :hook
-  ((dired-mode . denote-dired-mode)
-    (denote-mode-hook . (lambda () (corfu-mode -1))))
+
+  :preface
+  (defun +browse-notes ()
+    (interactive)
+    (dired my/notes-path))
+
+  (defun +browse-managed-documents ()
+    (interactive)
+    (dired my/managed-documents-path))
+
   :bind
   (:map dired-mode-map
     ("C-c C-d C-i" . denote-dired-link-marked-notes)
     ("C-c C-d C-r" . denote-dired-rename-files)
     ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords)
     ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
+
   :custom
-  (denote-directory (list my/notes-path my/managed-documents-path))
+  (denote-directory (list my/notes-path))
 
   ;; File naming
   (denote-file-type nil)                ; Use .org by default
@@ -73,19 +85,31 @@
 
   (denote-rename-buffer-mode 1)
 
-  (defun +browe-notes ()
-    (interactive)
-    (dired my/notes-path))
-
-  (defun +browse-managed-documents ()
-    (interactive)
-    (dired my/managed-documents-path))
-
 
   (defalias 'denote-new 'denote)
   (defalias 'denote-find 'denote-open-or-create))
 
 (use-package consult-denote)
+
+(use-package denote-silo
+  :commands ( denote-silo-create-note
+              denote-silo-open-or-create
+              denote-silo-select-silo-then-command
+              denote-silo-dired
+              denote-silo-cd )
+  :general
+  (leader-def
+    "ns" '(:ignore t :which-key "silo")
+    "nss" 'denote-silo-cd
+    "nse" 'denote-silo-dired
+    "nsc" 'denote-silo-create-note
+    "nsn" 'denote-silo-open-or-create
+    "nsx" 'denote-silo-select-silo-then-command)
+
+  :config
+  (setq denote-silo-directories
+    (list denote-directory
+      my/managed-documents-path)))
 
 ;;;; Org Roam style backlinks for Denote
 (with-eval-after-load 'denote

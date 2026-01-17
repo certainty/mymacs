@@ -34,18 +34,16 @@
 
 (use-package nerd-icons-completion
   :after (marginalia nerd-icons)
-  :hook after-init
-  :config
-  (nerd-icons-completion-mode)
-
-  :init
-  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
+  :hook
+  ((after-init . nerd-icons-completion-mode)
+    (marginalia-mode . 'nerd-icons-completion-marginalia-setup)))
 
 ;;; In-Buffer
 (use-package corfu
   :hook
-  (after-init . global-corfu-mode)
-  (corfu-mode . corfu-popupinfo-mode)
+  ((after-init . global-corfu-mode)
+    (corfu-mode . corfu-popupinfo-mode)
+    (org-mode . (lambda () (setq-local corfu-auto nil))))
   :general
   (:keymaps 'corfu-map
     "C-y" 'corfu-insert
@@ -67,9 +65,6 @@
   (corfu-popupinfo-delay '(1.25 . 0.5))
 
   :config
-  ;; Keep Corfu available in Org, but only on manual trigger.
-  (add-hook 'org-mode-hook (lambda () (setq-local corfu-auto nil)))
-
   (with-eval-after-load 'savehist
     (use-package corfu-history
       :straight (:type built-in)

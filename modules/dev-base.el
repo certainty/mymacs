@@ -10,6 +10,7 @@
   :init
   (my/window-rule! eldoc-mode :align bottom :size 0.3 :select nil)
   (my/with-popper! 'eldoc-mode)
+
   (my/window-rule! "\\*\\(Backtrace\\|Compile-log\\|Messages\\|Warnings\\)\\*" :align bottom :size 0.3 :select nil)
   (my/with-popper! "\\*\\(Backtrace\\|Compile-log\\|Messages\\|Warnings\\)\\*"))
 
@@ -90,8 +91,7 @@
 ;;;; Consult-Flymake - Consult integration for flymake
 (use-package consult-flymake
   :straight (:type built-in)
-  :after (consult flymake)
-  :defer t)
+  :after (consult flymake))
 
 
 ;;; Global dev related settings

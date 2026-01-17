@@ -8,6 +8,9 @@
 (use-package adoc-mode
   :mode (("\\.adoc\\'" . adoc-mode)
           ("\\.asciidoc\\'" . adoc-mode))
+  :hook
+  (adoc-mode . visual-line-mode)
+  (adoc-mode . l-visual-fill-column-mode)
   :general
   (local-leader-def
     :keymaps 'adoc-mode-map
@@ -20,10 +23,5 @@
     "ii" 'adoc-insert-image)
   :custom
   (adoc-fontify-code-blocks-natively t))
-
-(add-hook 'adoc-mode-hook
-  (lambda ()
-    (visual-line-mode 1)
-    (visual-fill-column-mode 1)))
 
 (provide 'writing-asciidoc)

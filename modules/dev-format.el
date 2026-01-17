@@ -44,44 +44,44 @@ Possible values:
   (when (and (fboundp 'eglot-managed-p) (eglot-managed-p))
     (eglot-server-capable :documentFormattingProvider)))
 
-(defun my/format-with-eglot ()
+(defun +format-with-eglot ()
   "Format buffer using Eglot. Return t if formatting was requested."
   (interactive)
   (when (my/eglot-can-format-p)
     (eglot-format-buffer)
     t))
 
-(defun my/format-with-external ()
+(defun +format-with-external ()
   "Format buffer using the external formatter."
   (interactive)
   (when (and my/external-formatter (functionp my/external-formatter))
     (funcall my/external-formatter)
     t))
 
-(defun my/format-buffer ()
+(defun +format-buffer ()
   "Format the current buffer according to `my/format-policy`."
   (interactive)
   (pcase my/format-policy
     ('eglot
-      (unless (my/format-with-eglot)
+      (unless (+format-with-eglot)
         (user-error "Eglot formatting not available")))
     ('external
-      (unless (my/format-with-external)
+      (unless (+format-with-external)
         (user-error "No external formatter configured")))
     ('dwim
       (or
-        (my/format-with-external)
-        (my/format-with-eglot)
+        (+format-with-external)
+        (+format-with-eglot)
         (my/format-buffer-with-indent-region)))
     (_ (user-error "Unknown format policy: %s" my/format-policy))))
 
-(defun my/format-on-save ()
+(defun +format-on-save ()
   "Format on save if it's enabled."
   (interactive)
   (and my/format-on-save-enabled
-    (my/format-buffer)))
+    (+format-buffer)))
 
-(defun my/format-debug ()
+(defun +format-debug ()
   "Show debug information for the current format settings."
   (interactive)
   (message "policy=%s eglot=%s on-save=%s"
@@ -95,10 +95,20 @@ Possible values:
   (setq-local my/format-on-save-enabled (not my/format-on-save-enabled))
   (message "format on save is %s" (if my/format-on-save-enabled "enabled" "disabled")))
 
-(add-hook 'before-save-hook #'my/format-on-save nil)
+(defun +disable-format-on-save ()
+  "Disable format on-save for the current buffer"
+  (interactive)
+  (setq-local my/format-on-save-enabled nil))
+
+(defun +enable-format-on-save ()
+  "Enable format on-save for the current buffer"
+  (interactive)
+  (setq-local my/format-on-save-enabled t))
+
+(add-hook 'before-save-hook #'+format-on-save nil)
 
 (with-eval-after-load 'general
   (leader-def
-    "tF" '+toggle-format-on-save))
+    "to" '+toggle-format-on-save))
 
 (provide 'dev-format)

@@ -20,7 +20,8 @@
   :general
   (local-leader-def
     :keymaps 'emacs-lisp-mode-map
-    "te" '("eldoc" . my/toggle-eldoc-buffer)
+    "d" '(:ignore t :which-key "doc")
+    "de" '+toggle-eldoc-buffer
     "e" '(:ignore t :which-key "eval")
     "eb" 'eval-buffer
     "ed" 'eval-defun
@@ -31,7 +32,8 @@
     "hf" 'describe-function
     "hv" 'describe-variable
     "hk" 'describe-key
-    "hp" 'describe-package)
+    "hp" 'describe-package
+    "t" 'ert)
   :custom
   (eldoc-echo-area-use-multiline-p t)
   (eldoc-echo-area-display-truncation-message nil)
@@ -40,7 +42,7 @@
   (setq eldoc-idle-delay 0)
 
   :preface
-  (defun my/toggle-eldoc-buffer ()
+  (defun +toggle-eldoc-buffer ()
     (interactive)
     (let ((buf (get-buffer "*eldoc*")))
       (if buf

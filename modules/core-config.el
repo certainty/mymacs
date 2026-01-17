@@ -13,7 +13,6 @@
   (custom-file (expand-file-name "custom.el" user-emacs-directory))
 
   :init
-  (add-hook 'after-init-hook (lambda () (mymacs-mode 1)))
 
   (when (my/context-private-p)
     (setopt my/repositories-path "~/Code")

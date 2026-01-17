@@ -26,28 +26,18 @@
   (setq sly-contribs '(sly-fancy sly-stickers sly-scratch sly-mrepl sly-autodoc sly-trace-dialog))
   (setopt sly-common-lisp-set-style 'modern)
   :preface
-  (defun my/select-implementation ()
+  (defun +open-repl-select ()
     "Select the Common Lisp implementation to use."
     (interactive)
     (let ((current-prefix-arg '-))
       (call-interactively #'sly)))
 
-  (defun my/open-repl ()
+  (defun +open-repl ()
     "Open the Sly REPL."
     (interactive)
-    (require 'sly)
-    (if (sly-connected-p)
-      (sly-mrepl)
-      (sly nil nil t)
-      (cl-labels ((recurse (attempt)
-                    (sleep-for 1)
-                    (cond ((sly-connected-p) (sly-mrepl))
-                      ((> attempt 5) (error "Failed to start Slynk process."))
-                      (t (recurse (1+ attempt))))))
-        (recurse 1))))
+    (call-interactively #'sly))
 
-
-  (defun my/reload-project ()
+  (defun +reload-project ()
     "Restart the Sly session and reload a chosen system."
     (interactive)
     (sly-restart-inferior-lisp)
@@ -106,12 +96,12 @@
     "xS" 'sly-who-specializes
 
     "r" '(:ignore t :which-key "repl")
-    "rr" 'my/open-repl
-    "rc" 'my/select-implementation
+    "rr" '+open-repl
+    "rc" '+open-repl-select
     "rC" 'sly-mrepl-clear-repls
     "rl" 'sly-asdf-load-system
     "rR" 'sly-restart-inferior-lisp
-    "rp" 'my/reload-project
+    "rp" '+reload-project
     "rs" 'sly-mrepl-sync
 
     "s" '(:ignore t :which-key "stickers")
@@ -125,8 +115,7 @@
     "tt" 'sly-trace-dialog-toggle-trace
     "tT" 'sly-trace-dialog-toggle-complex-trace
     "td" 'sly-trace-dialog
-    "tu" 'sly-trace-dialog-untrace-all
-    ))
+    "tu" 'sly-trace-dialog-untrace-all))
 
 (use-package sly-asdf
   :after sly
