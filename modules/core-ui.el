@@ -150,7 +150,7 @@ Functions are called with one argument: either 'light or 'dark.")
          :default-height ,my/presentation-font-size)
        (t
          :default-family ,my/font
-         :default-weight regular
+         :default-weight medium
          :default-slant normal
          :default-height ,my/font-size
 

@@ -48,17 +48,17 @@ Checks MYMACS_CONTEXT environment variable first, then falls back to OS detectio
        (window-hight . ,size))))
 
 ;;; config
-(defcustom my/font "Iosevka Nerd Font Mono"
+(defcustom my/font "Terminess Nerd Font Mono"
   "Fixed pitch font"
   :type 'string
   :group 'mymacs)
 
-(defcustom my/pitch-font "Iosevka Nerd Font Propo"
+(defcustom my/pitch-font "Terminess Nerd Font Propo"
   "Variable pitch font"
   :type 'string
   :group 'mymacs)
 
-(defcustom my/font-size 110
+(defcustom my/font-size 104
   "Default font size to use"
   :type 'integer
   :group 'mymacs)
