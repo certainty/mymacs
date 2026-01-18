@@ -10,7 +10,7 @@
           ("\\.asciidoc\\'" . adoc-mode))
   :hook
   (adoc-mode . visual-line-mode)
-  (adoc-mode . l-visual-fill-column-mode)
+  (adoc-mode . visual-fill-column-mode)
   :general
   (local-leader-def
     :keymaps 'adoc-mode-map

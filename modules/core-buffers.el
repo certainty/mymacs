@@ -174,6 +174,27 @@ The DWIM behaviour of this command is as follows:
       (t
         (keyboard-quit)))))
 
+(use-package visual-fill-column-mode
+  :straight (:type built-in)
+  :general
+  (leader-def
+    "tc" '+center-window)
+  :custom
+  (visual-fill-column-width 250)
+  (visual-fill-column-inhibit-sensible-window-split t)
+  (visual-fill-column-fringes-outside-margins nil)
+
+  :init
+  (defun +center-window ()
+    (interactive)
+    (if (bound-and-true-p visual-fill-column-mode)
+      (progn
+        (setq-local visual-fill-column-center-text nil)
+        (visual-fill-column-mode -1))
+      (progn
+        (setq-local visual-fill-column-center-text t)
+        (visual-fill-column-mode 1)))))
+
 
 ;;; Windows
 (use-package ace-window
