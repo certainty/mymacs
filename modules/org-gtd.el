@@ -326,10 +326,13 @@
   (org-caldav-url "https://drive.krentzlin.me/remote.php/dav/calendars/david")
   (org-caldav-files nil)
   (org-icalendar-timezone "Europe/Berlin")
-  (org-icalendar-include-todo 'all)
+  (org-icalendar-include-todo '("TODO" "PROJ" "DOING" "DONE" "CANCELLED" "BLOCKED"))
   (org-caldav-sync-todo t)
   (org-caldav-todo-percent-states '((0 "TODO")
-                                     (100 "DONE")))
+                                     (0 "PROJ")
+                                     (50 "DOING")
+                                     (100 "DONE")
+                                     (100 "CANCELLED")))
   :config
   (setq org-caldav-calendars
     `((:calendar-id "personal"

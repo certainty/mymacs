@@ -182,7 +182,7 @@ The DWIM behaviour of this command is as follows:
   :custom
   (visual-fill-column-width 250)
   (visual-fill-column-inhibit-sensible-window-split t)
-  (visual-fill-column-fringes-outside-margins nil)
+  (visual-fill-column-fringes-outside-margins t)
 
   :init
   (defun +center-window ()
