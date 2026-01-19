@@ -11,7 +11,8 @@
   (leader-def
     "vc" 'project-vc-dir
     "ve" 'vc-edif
-    "v." 'vc-dir)
+    "v." 'vc-dir
+    "v" 'vc-next-action)
 
   (local-leader-def
     :keymaps 'vc-dir-mode-map
