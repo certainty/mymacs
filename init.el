@@ -34,6 +34,7 @@
 
 (require 'mymacs)
 
+;;; Core
 (require 'core-config)
 (require 'core-env)
 (require 'core-keys)
@@ -48,6 +49,7 @@
 (require 'core-workspaces)
 (require 'core-dashboard)
 
+;;; Dev
 (require 'dev-base)
 (require 'dev-format)
 (require 'dev-lispy)
@@ -64,6 +66,8 @@
   (require 'dev-scala))
 
 (require 'data-base)
+
+;; Writing
 (require 'writing-base)
 (require 'writing-markdown)
 (require 'writing-org)
@@ -72,14 +76,14 @@
 (when (my/context-work-p)
   (require 'writing-asciidoc))
 
+;;; GTD
 (require 'org-gtd)
 
+;;; Tools
 (require 'tools-vc)
 (require 'tools-secrets)
 (require 'tools-terminal)
 (require 'tools-rss)
-
-(require 'ai-gptel)
 
 (when (my/context-work-p)
   (use-package consult-pmd
@@ -96,7 +100,11 @@
       "spt" '+pmd-teams
       "spe" '+pmd-people))
 
-  (require 'tools-gh)
+  (require 'tools-gh))
+
+;;; AI
+(require 'ai-gptel)
+(when (my/context-work-p)
   (require 'ai-copilot))
 
 (provide 'init)
