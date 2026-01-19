@@ -206,9 +206,22 @@ The DWIM behaviour of this command is as follows:
     "ww" 'ace-window
     "wx" 'ace-swap-window))
 
+(defun +split-vertically ()
+  "Split the window to the right and focus it."
+  (interactive)
+  (split-window-right)
+  (windmove-right))
+
+(defun +split-horizontally ()
+  "Split the window below and focus it"
+  (interactive)
+  (split-window-below)
+  (windmove-down))
+
 (with-eval-after-load 'general
   (leader-def
-    "|" 'split-window-right
+    "|" '+split-vertically
+    "=" '+split-horizontally
     "wh" 'evil-window-left
     "wj" 'evil-window-down
     "wk" 'evil-window-up
