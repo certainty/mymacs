@@ -97,6 +97,10 @@ If `PARAMS' does not contain :format \"json\" it will be added. "
           (when (buffer-live-p buffer)
             (kill-buffer buffer)))))))
 
+(defun pmd--browse-url (path &rest params)
+  "Open the pmd with the provides `path' and url `params' in the browser."
+  (browse-url (apply #'pmd--make-url path params)))
+
 ;; It is surprisingly tricky to create completion candidates and reliably carry full object data associated
 ;; with those candidates around. While it works well if you stay within consult / vertico only with text-properties,
 ;; it gets surprisingly brittle when embark is involved. So the overall strategy we apply is that we store the

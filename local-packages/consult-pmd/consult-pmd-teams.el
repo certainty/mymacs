@@ -25,7 +25,7 @@
 (defun pmd--teams-candidates ()
   "Return a list of team candidates for completion, sorted by name"
   (message "Fetching team metadata...")
-  (let ((teams (pmd--fetch-entities pmd--team-type "teams" :format "json"))
+  (let ((teams (pmd--fetch-entities pmd--team-type "teams"))
          (candidates '()))
     (maphash
       (lambda (id value)
@@ -47,7 +47,7 @@
                           :group (pmd--grouping-fn "org_unit")
                           :lookup #'consult--lookup-candidate
                           :sort nil)))
-      (browse-url (pmd--make-url (format "teams/%s" team-id))))))
+      (pmd--browse-url (format "teams/%s" team-id)))))
 
 (eval-when-compile
   (require 'marginalia))

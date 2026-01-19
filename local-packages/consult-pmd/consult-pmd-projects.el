@@ -25,7 +25,7 @@
 (defun pmd--projects-candidates ()
   "Return a list of project candidates for completion, sorted by name"
   (message "Fetching project metadata...")
-  (let ((projects (pmd--fetch-entities pmd--project-type "projects" :format "json"))
+  (let ((projects (pmd--fetch-entities pmd--project-type "projects"))
          (candidates '()))
     (maphash
       (lambda (id value)
@@ -48,7 +48,7 @@
                              :lookup #'consult--lookup-candidate
                              :group (pmd--grouping-fn "service_group")
                              :sort nil)))
-      (browse-url (pmd--make-url (format "projects/%s" project-id))))))
+      (pmd--browse-url (format "projects/%s" project-id)))))
 
 (eval-when-compile
   (require 'marginalia))

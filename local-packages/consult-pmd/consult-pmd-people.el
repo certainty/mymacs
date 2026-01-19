@@ -25,7 +25,7 @@
 (defun pmd--people-candidates ()
   "Return a list of people candidates for completion, sorted by name"
   (message "Fetching people metadata...")
-  (let ((people (pmd--fetch-entities pmd--people-type "emails" :format "json"))
+  (let ((people (pmd--fetch-entities pmd--people-type "emails"))
          (candidates '()))
     (maphash
       (lambda (id value)
