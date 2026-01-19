@@ -127,5 +127,23 @@
   (p-search-case-fold-search t))
 
 
+;;; Easy access to web bookmarks
+
+(defun +quicklink ()
+  "Open a quick link defined via `my/quicklinks'."
+  (interactive)
+  (require 'consult)
+  (let* ((bookmark-names (mapcar #'car my/quicklinks)))
+    (when-let ((selection (consult--read
+                            bookmark-names
+                            :prompt "Select bookmark: "
+                            :sort nil)))
+      (let ((url (cdr (assoc selection  my/quicklinks))))
+        (when url
+          (browse-url url))))))
+
+(leader-def
+  "sq" '+quicklink)
+
 (provide 'core-search)
 ;;; core-search.el ends here

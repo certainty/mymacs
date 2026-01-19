@@ -39,6 +39,7 @@
   (add-to-list 'recentf-exclude "/\\.emacs\\.d/straight/")
   (add-to-list 'recentf-exclude "/\\.emacs\\.d/eln-cache/")
   (add-to-list 'recentf-exclude "\\.elc$")
+  (add-to-list 'recentf-exclude "^/private/var/.*")
   (add-to-list 'recentf-exclude "COMMIT_EDITMSG"))
 
 ;;;; Bookmarks

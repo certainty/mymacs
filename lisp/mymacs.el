@@ -90,6 +90,10 @@ Checks MYMACS_CONTEXT environment variable first, then falls back to OS detectio
   :type 'string
   :group 'mymacs)
 
+(defcustom my/quicklinks nil
+  "An alist of bookmarks where each element is of the form (`NAME' . `URL')"
+  :group 'mymacs)
+
 (define-minor-mode mymacs-mode
   "Minor mode for MYMACS, which gives a home for my customizations and keybindings."
   :global t
