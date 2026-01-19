@@ -60,66 +60,82 @@
       (let ((contacts (pmd--list-string (pmd--dig data "people" "contact")))
              (head (pmd--string (pmd--dig data "people" "head"))))
         (marginalia--fields
-          ((pmd--string (gethash "team" data)) :face 'marginalia-value :width 18)
-          ((pmd--string (gethash "service_group" data)) :face 'marginalia-type :width 20)
-          ((pmd--string (gethash "org_unit" data)) :face 'marginalia-symbol :width 10)
+          ((pmd--icon-team (gethash "team" data)) :face 'marginalia-value :width 18)
+          ((pmd--string (gethash "service_type" data)) :face 'marginalia-type :width 20)
+          ((pmd--string (gethash "org_unit" data)) :face 'marginalia-value :width 10)
           ((pmd--string (gethash "product_lifecycle" data)) :face 'marginalia-documentation :width 20)
           (head :face 'marginalia-on :width 20)
-          (contacts :face 'marginalia-documentation)))))
+          (contacts :face 'marginalia-documentation :truncate 60)
+          ((pmd--icon-tags (pmd--list-string (gethash "tags" data))) :face 'marginalia-identifier :width 20)))))
 
   (add-to-list 'marginalia-annotators `(,pmd--project-type pmd--projects-annotate)))
 
 (with-eval-after-load 'embark
-  (defun pmd--projects-repository-url (project-id)
+  (defun pmd--projects-repository-url (project)
     "Returns the full repository URL for `PROJECT'"
-    (when-let ((data (pmd--recover-entity pmd--project-type project-id)))
+    (when-let ((data (pmd--recover-entity pmd--project-type project)))
       (let* ((server-url (pmd--dig data "git" "server_url"))
               (account (pmd--dig data "git" "account"))
               (repo (pmd--dig data "git" "repo")))
         (format "%s/%s/%s" server-url account repo))))
 
-  (defun pmd--projects-repository-slug (project-id)
+  (defun pmd--projects-repository-slug (project)
     "Returns the repository slug for `PROJECT'"
-    (when-let ((data (pmd--recover-entity pmd--project-type project-id)))
+    (when-let ((data (pmd--recover-entity pmd--project-type project)))
       (let* ((account (pmd--dig data "git" "account"))
               (repo (pmd--dig data "git" "repo")))
         (format "%s/%s" account repo))))
 
-  (defun +pmd-copy-repo-url (project-id)
+  (defun +pmd-copy-repo-url (project)
+    "Copy the repository URL for `PROJECT' to clipboard."
     (interactive "sProject ID: ")
-    (when-let ((repo-url (pmd--projects-repository-url project-id)))
+    (when-let ((repo-url (pmd--projects-repository-url project)))
       (kill-new repo-url)
       (message "Copied repository URL: %s" repo-url)))
 
-  (defun +pmd-open-repository (project-id)
+  (defun +pmd-open-repository (project)
+    "Open the repository URL for `PROJECT' in browser."
     (interactive "sProject ID: ")
-    (when-let ((repo-url (pmd--projects-repository-url project-id)))
+    (when-let ((repo-url (pmd--projects-repository-url project)))
       (browse-url repo-url)))
 
-  (defun +pmd-copy-repo-slug (project-id)
+  (defun +pmd-copy-repo-slug (project)
+    "Copy the repository slug for `PROJECT' to clipboard."
     (interactive "sProject ID: ")
-    (when-let ((repo-slug (pmd--projects-repository-slug project-id)))
+    (when-let ((repo-slug (pmd--projects-repository-slug project)))
       (kill-new repo-slug)
       (message "Copied repository slug: %s" repo-slug)))
 
-  (defun +pmd-open-teams-channel (project-id)
+  (defun +pmd-open-teams-channel (project)
+    "Open the MS Teams channel for `PROJECT' in browser."
     (interactive "sProject ID: ")
-    (when-let* ((data (pmd--recover-entity pmd--project-type project-id))
+    (when-let* ((data (pmd--recover-entity pmd--project-type project))
                  (teams-channel (pmd--dig data "msteams" "channel_url")))
       (browse-url teams-channel)))
 
-  (defun +pmd-open-teams-alerting-channel (project-id)
+  (defun +pmd-open-teams-alerting-channel (project)
+    "Open the MS Teams alerting channel for `PROJECT' in browser."
     (interactive "sProject ID: ")
-    (when-let* ((data (pmd--recover-entity pmd--project-type project-id))
+    (when-let* ((data (pmd--recover-entity pmd--project-type project))
                  (alerting-channel (pmd--dig data "alerting" "msteams_channel_url")))
       (browse-url alerting-channel)))
+
+  (defun +pmd-open-project-documentation (project)
+    "Open the project documentation URL for `PROJECT' in browser."
+    (interactive "sProject ID: ")
+    (when-let* ((data (pmd--recover-entity pmd--project-type project))
+                 (doc-url (pmd--dig data "documentation")))
+      (if doc-url
+        (browse-url doc-url)
+        (message "No documentation URL found for project %s" project))))
 
   (defvar-keymap pmd-projects-embark-map
     "r" '+pmd-open-repository
     "R" '+pmd-copy-repo-url
     "s" '+pmd-copy-repo-slug
     "t" '+pmd-open-teams-channel
-    "a" '+pmd-open-teams-alerting-channel)
+    "a" '+pmd-open-teams-alerting-channel
+    "d" '+pmd-open-project-documentation)
 
   (with-eval-after-load 'consult-gh
     (defun +pmd-search-github-repo (project-id)
