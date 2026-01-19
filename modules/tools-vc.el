@@ -18,7 +18,8 @@
     "va" 'vc-annotate
     "vs" '(:ignore t :which-key "search")
     "vsl" 'vc-log-search
-    "vp" 'vc-push)
+    "vF" 'vc-update
+    "vP" 'vc-push)
 
   (local-leader-def
     :keymaps 'vc-dir-mode-map
