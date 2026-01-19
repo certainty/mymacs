@@ -190,9 +190,11 @@ The DWIM behaviour of this command is as follows:
     (if (bound-and-true-p visual-fill-column-mode)
       (progn
         (setq-local visual-fill-column-center-text nil)
+        (display-line-numbers-mode 1)
         (visual-fill-column-mode -1))
       (progn
         (setq-local visual-fill-column-center-text t)
+        (display-line-numbers-mode -1)
         (visual-fill-column-mode 1)))))
 
 
