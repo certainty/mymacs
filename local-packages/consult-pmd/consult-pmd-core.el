@@ -163,10 +163,37 @@ This propertizes the `DISPLAY' string with properties to retrieve `ID' and `DATA
 ;;; nice display for candidate
 (require 'nerd-icons)
 
-(defun pmd--icon-octocat (caption)
-  "Return CAPTION prefixed with an octicon."
-  (concat (nerd-icons-faicon "nf-fa-github") " " caption))
+(defun pmd--with-icon (icon caption)
+  "Return `CAPTION' prefixed with `ICON'."
+  ;; dispatch based on icon name prefix
+  (let ((fn
+          (cond
+            ((string-prefix-p "nf-fa-" icon) #'nerd-icons-faicon)
+            ((string-prefix-p "nf-oct-" icon) #'nerd-icons-octicon)
+            ((string-prefix-p "nf-dev-" icon) #'nerd-icons-devicon)
+            ((string-prefix-p "nf-cod-" icon)  #'nerd-icons-codicon)
+            ((string-prefix-p "nf-md-" icon) #'nerd-icons-mdicon))))
+    (concat (funcall fn icon :face 'nerd-icons-lred) " " (or (pmd--string caption) ""))))
 
+(defun pmd--icon-github (caption)
+  "Return `CAPTION' prefixed with an octicon."
+  (pmd--with-icon "nf-fa-github" caption))
+
+(defun pmd--icon-team (caption)
+  "Return `CAPTION' prefixed with a team icon."
+  (pmd--with-icon "nf-cod-organization" caption))
+
+(defun pmd--icon-mail (caption)
+  "Return `CAPTION' prefixed with a mail icon."
+  (pmd--with-icon "nf-cod-mail" caption))
+
+(defun pmd--icon-tags (caption)
+  "Return `CAPTION' prefixed with a tags icon."
+  (pmd--with-icon "nf-cod-tag" caption))
+
+(defun pmd--icon-head (caption)
+  "Return `CAPTION' prefixed with a head icon."
+  (pmd--with-icon "nf-md-head" caption))
 
 ;;; make sure embark finds the correct target and we can restore the ID
 (with-eval-after-load 'embark

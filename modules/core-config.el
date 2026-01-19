@@ -26,8 +26,7 @@
     (setopt user-mail-address "david.krentzlin@new-work.se"))
 
   (when (memq window-system '(mac ns))
-    (setopt my/pitch-font "Iosevka Aile")
-    (setopt my/font-size 130)
+    (setopt my/font-size 131)
     (setopt my/bigger-font-size 170)
     (setopt my/presentation-font-size 230)))
 

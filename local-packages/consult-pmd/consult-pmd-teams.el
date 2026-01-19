@@ -59,6 +59,7 @@
       (marginalia--fields
         ((pmd--string (gethash "head" data)) :face 'marginalia-string)
         ((pmd--string (gethash "email" data)) :face 'marginalia-type)
+        ((pmd--string (gethash "cost_centre" data)) :face 'marginalia-identifier)
         ((pmd--string (pmd--list-string (gethash "contacts" data))) :face 'marginalia-documentation))))
 
   (add-to-list 'marginalia-annotators `(,pmd--team-type pmd--teams-annotate)))

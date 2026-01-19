@@ -57,8 +57,8 @@
     "Annotate team CAND with metadata fields."
     (when-let ((data (pmd--candidate-data cand)))
       (marginalia--fields
-        ((pmd--string (gethash "email" data)) :face 'marginalia-string :width 40)
-        ((format "%s %s" (nerd-icons-faicon "nf-fa-github") (pmd--string (gethash "github_com" data)) :face 'marginalia-string)))))
+        ((pmd--icon-mail (gethash "email" data)) :face 'marginalia-string :width 40)
+        ((pmd--icon-github (gethash "github_com" data)) :face 'marginalia-string))))
 
   (add-to-list 'marginalia-annotators `(,pmd--people-type pmd--people-annotate)))
 
