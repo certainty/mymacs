@@ -9,10 +9,15 @@
   :straight (:type built-in)
   :general
   (leader-def
+    "vv" 'vc-next-action
     "vc" 'project-vc-dir
-    "ve" 'vc-edif
     "v." 'vc-dir
-    "v" 'vc-next-action)
+    "vi" 'vc-log-incoming
+    "vo" 'vc-log-outgoing
+    "vd" 'vc-root-diff
+    "va" 'vc-annotate
+    "vs" '(:ignore t :which-key "search")
+    "vsl" 'vc-log-search)
 
   (local-leader-def
     :keymaps 'vc-dir-mode-map
@@ -92,17 +97,17 @@
   ((diff-mode . agitate-diff-enable-outline-minor-mode))
   :general
   (leader-def
-    "vd" 'agitate-diff-buffer-or-file
-    "vb" 'agitate-vc-git-grep
+    "vD" 'agitate-diff-buffer-or-file
+    "vsg" 'agitate-vc-git-grep
     "vS" 'agitate-vc-git-show
     "vsf" 'agitate-vc-git-find-revision)
+
   (local-leader-def
     :keymaps 'vc-dir-mode-map
     "s" '(:ignore t :which-key "search")
     "ss" 'agitate-vc-git-grep
     "sS" 'agitate-vc-git-grep-symbol-at-point
     "sF" 'agitate-vc-git-find-revision
-    "sB" 'agitate-vc-git-blame
     "sC" 'agitate-vc-git-commit-search)
 
   :config
@@ -117,7 +122,7 @@
   :general
   (leader-def
     "vs" 'magit-status
-    "vb" 'magit-blame-addition
+    "vB" 'magit-blame-addition
     "vl" 'magit-log-buffer-file
     "vL" 'magit-log-all)
   :custom
