@@ -29,6 +29,7 @@
          ("Jira" . "https://new-work.atlassian.net/jira/software/c/projects/BFX/boards/1618")
          ("Confluence" . "https://new-work-se.atlassian.net/wiki/home")
          ("Workday" . "https://wd103.myworkday.com/xing/d/home.htmld")
+         ("NW1" . "https://github.com/new-work/new-work-one")
          ("Argo CD Preview" . "https://argocd.odyssey.preview.nwse.cloud")
          ("Argo CD Production" . "https://argocd.odyssey.production.nwse.cloud")
          ("Broker Secondary Production" . "https://central-messaging-broker-secondary-wkkgn.main.odyssey.production.nwse.cloud/")

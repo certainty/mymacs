@@ -20,6 +20,18 @@
     "gol" '+goto-log
     "goc" '+goto-contacts)
 
+  (local-leader-def
+    :keymaps 'org-mode-map
+    "a" '(:ignore t :which-key "archive")
+    "aa" 'org-archive-subtree-default
+    "aA" 'org-archive-to-archive-sibling
+    "c" '+collapse-all
+    "r" '(:ignore t :which-key "refile")
+    "rr" 'org-refile
+    "rR" 'org-refile-to-last-stored
+    "s" '(:ignore t :which-key "search")
+    "sg" '+org-ripgrep
+    "o" '+sort-all-by-todo)
   :custom
   (org-id-link-to-org-use-id t)
 
@@ -239,6 +251,18 @@
     (interactive)
     (dired my/org-path))
 
+  (defun +sort-all-by-todo ()
+    (interactive)
+    (mark-whole-buffer)
+    (org-sort-entries nil ?o)
+    (deactivate-mark))
+
+  (defun +collapse-all ()
+    (interactive)
+    ;; run org-cycle with universal argument to collapse all
+    (universal-argument)
+    (org-cycle))
+
   (defun my/goto-special-org-file (name)
     (interactive "sFile name (without .org): ")
     (let ((file-path (concat org-directory "/" name ".org")))
@@ -277,9 +301,6 @@
     (add-to-list 'org-agenda-files (concat org-directory "/caldav_tasks.org"))
     (add-to-list 'org-agenda-files (concat org-directory "/calendar.org"))
     (add-to-list 'org-agenda-files (concat org-directory "/caldav_calendar.org")))
-
-  (when (my/context-work-p)
-    (add-to-list 'org-agenda-files (concat org-directory "/pr-review.org")))
 
   :init
   (with-eval-after-load 'embark

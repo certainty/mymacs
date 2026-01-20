@@ -42,6 +42,8 @@
   :config
   (add-hook 'markdown-mode-hook
     (lambda ()
+      (+disable-format-on-save)
+      (eglot-ensure)
       (visual-line-mode 1)
       (visual-fill-column-mode 1))))
 
