@@ -7,7 +7,6 @@
 ;;
 ;;; Code:
 
-
 (use-package files
   :straight (:type built-in)
   :custom
@@ -62,7 +61,6 @@
     "e" 'dired-jump ; I'm just used to this
     "fD" 'dired)
   :custom
-  (dired-listing-switches "-alh --group-directories-first")
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
   (dired-dwim-target t)
@@ -71,7 +69,13 @@
   (dired-make-directory-clickable t)
   (dired-free-space nil)
   (dired-mouse-drag-files t)
-  (dired-no-confirm t))
+  (dired-no-confirm t)
+
+  :init
+  (when (my/context-work-p)
+    (setq dired-listing-switches "-alh --group-directories-first")
+    (setq insert-directory-program "/opt/homebrew/bin/gls")
+    (setq dired-use-ls-dired t)))
 
 (use-package diredfl
   :hook dired-mode)

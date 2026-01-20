@@ -15,14 +15,16 @@
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
   :demand t
+
   :custom
   (exec-path-from-shell-variables *my/required-environment-variables*)
   (exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-check-startup-files nil)
+
   :config
   (exec-path-from-shell-initialize))
 
-(defun my/show-path ()
+(defun +show-path ()
   "Show current PATH and exec-path."
   (interactive)
   (with-help-window "*PATH*"

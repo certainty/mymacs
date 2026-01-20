@@ -24,7 +24,6 @@
 
 (defun pmd--projects-candidates ()
   "Return a list of project candidates for completion, sorted by name"
-  (message "Fetching project metadata...")
   (let ((projects (pmd--fetch-entities pmd--project-type "projects"))
          (candidates '()))
     (maphash
@@ -38,17 +37,18 @@
 (defun +pmd-projects ()
   "Consult project metadata projects."
   (interactive)
-  (let ((candidates (pmd--projects-candidates)))
-    (when-let ((project-id (consult--read
-                             candidates
-                             :prompt "PMD Projects: "
-                             :category pmd--project-type
-                             :history 'pmd--projects-history
-                             :require-match t
-                             :lookup #'consult--lookup-candidate
-                             :group (pmd--grouping-fn "service_group")
-                             :sort nil)))
-      (pmd--browse-url (format "projects/%s" project-id)))))
+  (pmd--with-cache-control
+    (let ((candidates (pmd--projects-candidates)))
+      (when-let ((project-id (consult--read
+                               candidates
+                               :prompt "PMD Projects: "
+                               :category pmd--project-type
+                               :history 'pmd--projects-history
+                               :require-match t
+                               :lookup #'consult--lookup-candidate
+                               :group (pmd--grouping-fn "service_group")
+                               :sort nil)))
+        (pmd--browse-url (format "projects/%s" project-id))))))
 
 (eval-when-compile
   (require 'marginalia))
@@ -66,7 +66,7 @@
           ((pmd--string (gethash "product_lifecycle" data)) :face 'marginalia-documentation :width 20)
           (head :face 'marginalia-on :width 20)
           (contacts :face 'marginalia-documentation :truncate 60)
-          ((pmd--icon-tags (pmd--list-string (gethash "tags" data))) :face 'marginalia-identifier :width 20)))))
+          ((pmd--icon-tags (pmd--list-string (gethash "tags" data))) :face 'marginalia-symbol :width 20)))))
 
   (add-to-list 'marginalia-annotators `(,pmd--project-type pmd--projects-annotate)))
 

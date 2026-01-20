@@ -12,6 +12,11 @@
   :type 'string
   :group 'consult-pmd)
 
+(defcustom pmd-cache-duration 300
+  "Duration in seconds for which fetched PMD entities are cached."
+  :type 'integer
+  :group 'consult-pmd)
+
 ;;; Helpers
 (defun pmd--keyword->string (key)
   "Convert keyword KEY to string without leading colon."
@@ -59,7 +64,6 @@
       current)))
 
 ;;; API request helpers
-
 (cl-defun pmd--make-url (path &rest params)
   "Make a URL for `PATH' with `PARAMS'. `PARAMS' is a plist containting key-value pairs."
   (let ((base-url (string-remove-suffix "/" pmd-base-url))
@@ -106,25 +110,54 @@ If `PARAMS' does not contain :format \"json\" it will be added. "
 ;; it gets surprisingly brittle when embark is involved. So the overall strategy we apply is that we store the
 ;; entities in a different variable and allow to recover a particular entity by type and id.
 
-(defvar pmd--entities-data (make-hash-table))
+(defvar pmd--entities-data (make-hash-table)
+  "A correlation store for PMD entities. It maps entity TYPE to a record.
+Each record is an alist with keys:
+- data: A hash table mapping entity ID to full entity data
+- timestamp: The time when the data was fetched
+
+The timestamps is used to implement caching strategies.
+")
+
+(defvar pmd--force-cache-refresh nil
+  "A dynamic variable to force cache refresh for PMD entities.")
 
 (defun pmd--fetch-entities (type &rest arguments)
   "Fetch entities from PMD and returns it.
 As a side-effect it stores the data under the key `TYPE' in `pmd--entities-data' which
 is used to recover the full object from the id in various parts of the system.
 `ARGUMENTS' are passed through to `pmd--api-request'. "
-  (when-let ((data (apply #'pmd--api-request arguments)))
-    (puthash type data pmd--entities-data)
-    data))
+  (if (bound-and-true-p pmd--force-cache-refresh)
+    (pmd--cache-clear-type type)
+    (pmd--maybe-invalidate-cache type))
+  (let ((record (gethash type pmd--entities-data)))
+    (if record
+      (progn
+        (message "PMD Cache hit for type %s" type)
+        (alist-get 'data record))
+      (when-let ((data (apply #'pmd--api-request arguments)))
+        (puthash type `((data . ,data) (timestamp . ,(current-time))) pmd--entities-data)
+        data))))
 
 (defun pmd--recover-entity (type id)
   "Recovers the entity of type `TYPE' with the given `ID'"
-  (let ((entities (gethash type pmd--entities-data)))
-    (cl-assert (hash-table-p entities) "[BUG] You need to fetch the entities first")
-    (let ((data (gethash id entities)))
+  (let ((record (gethash type pmd--entities-data)))
+    (cl-assert record "[BUG] No data fetched for entity type %s" type)
+    (let ((data (gethash id (alist-get 'data record))))
       (cl-assert (hash-table-p data) "[BUG] No data for entity with given id")
       data)))
 
+(defun pmd--cache-clear-type (type)
+  "Clear the PMD cache for entity `TYPE'."
+  (remhash type pmd--entities-data))
+
+(defun pmd--maybe-invalidate-cache (type)
+  "Invalidate the cache for entity `TYPE' if the cache duration has expired."
+  (when-let* ((record (gethash type pmd--entities-data))
+               (timestamp (alist-get 'timestamp record))
+               (elapsed (float-time (time-subtract (current-time) timestamp))))
+    (when (> elapsed pmd-cache-duration)
+      (pmd--cache-clear-type type))))
 
 ;;; Completion candidates
 (cl-defun pmd--completion-candidate (display type id)
@@ -207,5 +240,16 @@ This propertizes the `DISPLAY' string with properties to retrieve `ID' and `DATA
                    (id (get-text-property 0 'pmd-id cand)))
         `(,type ,id . nil))))
   (add-to-list 'embark-target-finders #'pmd--embark-target))
+
+(defun +pmd-cache-clear ()
+  "Clear the PMD cache for all entity types."
+  (interactive)
+  (clrhash pmd--entities-data)
+  (message "PMD cache cleared."))
+
+(cl-defmacro pmd--with-cache-control (&rest body)
+  "Execute `BODY' with cache refresh forced, if universal argument is given."
+  `(let ((pmd--force-cache-refresh (if current-prefix-arg t nil)))
+     ,@body))
 
 (provide 'consult-pmd-core)
