@@ -159,7 +159,7 @@ Functions are called with one argument: either 'light or 'dark.")
          :default-height ,my/presentation-font-size)
        (t
          :default-family ,my/font
-         :default-weight medium
+         :default-weight light
          :default-slant normal
          :default-height ,my/font-size
 
@@ -170,8 +170,62 @@ Functions are called with one argument: either 'light or 'dark.")
          :variable-pitch-family ,my/pitch-font
          :variable-pitch-height 1.0)))
   :config
+  (defun my/apply-ui-font (&rest _)
+    (when (display-graphic-p)
+      (dolist (face '(mode-line mode-line-inactive tab-bar tab-bar-tab tab-bar-tab-inactive header-line tab-line tab-line-close tab-line-close-highlight))
+        (when (facep face)
+          (set-face-attribute face nil :family my/ui-font :weight 'regular :height 1.0)))))
+  (add-hook 'after-init-hook #'my/apply-ui-font)
+  (advice-add 'fontaine-set-preset :after #'my/apply-ui-font)
   (fontaine-set-preset 'regular)
-  (diminish 'fontaine-mode))
+  (diminish 'fontaine-mode)
+
+  (when (and (memq window-system '(mac ns))
+          (fboundp 'mac-auto-operator-composition-mode))
+    (mac-auto-operator-composition-mode))
+
+  (defconst my/ligature-composition-rules
+    '((?! . ("!=" "!!" "!!!"))
+       (?= . ("==" "=>" "==="))
+       (?> . (">=" ">>" ">>>" "->" "=>"))
+       (?< . ("<-" "<=" "<<"))
+       (?- . ("->" "--" "-<"))
+       (?/ . ("//" "/*" "*/" "/="))
+       (?| . ("||" "|="))
+       (?& . ("&&" "&="))
+       (?+ . ("++" "+="))
+       (?* . ("**" "*="))
+       (?~ . ("~~" "~="))
+       (?: . ("::" ":="))
+       (?# . ("###" "##"))
+       (?^ . ("^="))
+       (?\? . ("??" "?:"))
+       (?. . (".." "..."))
+       (?\\ . ("\\\\"))
+       (?% . ("%%" "%%%"))
+       (?' . ("''"))
+       (?_ . ("__"))
+       (?$ . ("$$"))
+       (?@ . ("@@"))
+       )
+    "Table of character sequences that should render as ligatures.")
+
+  (defun my/enable-font-ligatures (&optional frame)
+    "Enable Maple Mono NF ligatures in FRAME or the current frame.
+         When called interactively, operate on the selected frame."
+    (interactive)
+    (let ((target-frame (or frame (selected-frame))))
+      (when (display-graphic-p target-frame)
+        (with-selected-frame target-frame
+          (dolist (rule my/ligature-composition-rules)
+            (let* ((char (car rule))
+                    (patterns (cdr rule))
+                    (table (mapcar (lambda (pattern)
+                                     (vector pattern 0 'font-shape-gstring))
+                             patterns)))
+              (set-char-table-range composition-function-table char table)))))))
+
+  (my/enable-font-ligatures))
 
 ;;;; Nerd Icons
 (use-package nerd-icons

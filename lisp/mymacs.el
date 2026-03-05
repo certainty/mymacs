@@ -35,7 +35,7 @@ Checks MYMACS_CONTEXT environment variable first, then falls back to OS detectio
       nil)))
 
 ;;; config
-(defcustom my/font "Iosevka Nerd Font Mono"
+(defcustom my/font "Maple Mono NF"
   "Fixed pitch font"
   :type 'string
   :group 'mymacs)
@@ -45,12 +45,17 @@ Checks MYMACS_CONTEXT environment variable first, then falls back to OS detectio
   :type 'string
   :group 'mymacs)
 
-(defcustom my/font-size 102
+(defcustom my/ui-font "Iosevka Nerd Font Propo"
+  "Font used for interface elements like the mode line."
+  :type 'string
+  :group 'mymacs)
+
+(defcustom my/font-size 128
   "Default font size to use"
   :type 'integer
   :group 'mymacs)
 
-(defcustom my/bigger-font-size 140
+(defcustom my/bigger-font-size 170
   "Default font size to use"
   :type 'integer
   :group 'mymacs)

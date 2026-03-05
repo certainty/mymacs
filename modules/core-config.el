@@ -38,7 +38,7 @@
          ("Broker Primary Preview" . "https://central-messaging-broker-hqk78.main.odyssey.preview.nwse.cloud/"))))
 
   (when (memq window-system '(mac ns))
-    (setopt my/font-size 131)
+    (setopt my/font-size 130)
     (setopt my/bigger-font-size 170)
     (setopt my/presentation-font-size 230)))
 

@@ -17,8 +17,7 @@
     ("h" . agent-shell-help-menu)
     ("A" . agent-shell-attention-jump)
     ("R" . agent-review)
-    ("M" . agent-shell-manager-toggle)
-    ("S" . agent-shell-sidebar-toggle))
+    ("M" . agent-shell-manager-toggle))
 
   :custom
   (agent-shell-session-strategy 'reuse)
@@ -61,14 +60,6 @@
   (agent-shell-manager-side 'bottom)
   (agent-shell-manager-transient t)
   :commands agent-shell-manager-toggle)
-
-(use-package agent-shell-sidebar
-  :straight (agent-shell-sidebar :type git :host github :repo "cmacrae/agent-shell-sidebar")
-  :after agent-shell
-  :custom
-  (agent-shell-sidebar-position 'right)
-  (agent-shell-sidebar-width "28%")
-  :commands (agent-shell-sidebar-toggle agent-shell-sidebar-toggle-focus))
 
 (provide 'ai-agent-shell)
 
