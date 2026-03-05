@@ -1,13 +1,27 @@
+;;; ai-gptel.el --- gptel -*- lexical-binding: t; -*-
+
+
 (use-package gptel
-  :general
-  (leader-def
-    "aa" '(:ignore t :which-key "ai")
-    "aa" 'gptel-send
-    "aA" 'gptel
-    "am" 'gptel-menu
-    "ar" 'gptel-rewrite
-    "a." 'gptel-add
-    "af" 'gptel-add-file)
+  :preface
+  (define-prefix-command '+gptel)
+  (define-key +ai (kbd "a") (cons "+gptel" +gptel))
+
+  :bind
+  (:map +goto/act
+    ("A" . gptel))
+  (:map +gptel
+    ("a" . gptel)
+    ("m" . gptel-menu)
+    ("s" . gptel-send)
+    ("r" . gptel-rewrite)
+    ("." . gptel-add)
+    ("f" . gptel-add-file))
+  (:map gptel-mode-map
+    ("C-c C-s" . gptel-stop-streaming)
+    ("C-c C-c" . gptel-send)
+    ("C-c C-r" . gptel-rewrite)
+    ("C-c C-a" . gptel-add)
+    ("C-c C-f" . gptel-add-file))
 
   :config
   (defun my/gptel--openrouter-key ()
@@ -83,16 +97,19 @@
   (mapcar (apply-partially #'apply #'gptel-make-tool)
     (llm-tool-collection-get-tag 'editing)))
 
-(use-package elysium
-  :general
-  (leader-def
-    "ae" '(:ignore t :which-key "elysium")
-    "aee" 'elysium-query
-    "aec" 'elysium-add-context
-    "aew" 'elysium-toggle-window
-    "aea" 'elysium-keep-all-suggested-changes
-    "aed" 'elysium-discard-all-suggested-changes)
 
+(use-package elysium
+  :preface
+  (define-prefix-command '+elysium)
+  (define-key +ai (kbd "e") (cons "+elysium" +elysium))
+
+  :bind
+  (:map +elysium
+    ("e" . elysium-query)
+    ("c" . elysium-add-context)
+    ("w" . elysium-toggle-window)
+    ("a" . elysium-keep-all-suggested-changes)
+    ("d" . elysium-discard-all-suggested-changes))
   :custom
   (elysium-window-size 0.33)
   (elysium-window-style 'vertical))

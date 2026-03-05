@@ -7,41 +7,21 @@
 ;;; Code:
 (use-package vc
   :straight (:type built-in)
-  :general
-  (leader-def
-    "vv" 'vc-next-action
-    "vc" 'project-vc-dir
-    "v." 'vc-dir
-    "vi" 'vc-log-incoming
-    "vo" 'vc-log-outgoing
-    "vd" 'vc-root-diff
-    "va" 'vc-annotate
-    "vs" '(:ignore t :which-key "search")
-    "vsl" 'vc-log-search
-    "vF" 'vc-update
-    "vP" 'vc-push)
+  :bind
+  (:map +vc
+    ("v" . vc-next-action)
+    ("c" . project-vc-dir)
+    ("." . vc-dir)
+    ("i" . vc-log-incoming)
+    ("o" . vc-log-outgoing)
+    ("d" . vc-root-diff)
+    ("a" . vc-annotate)
+    ("F" . vc-update)
+    ("P" . vc-push))
 
-  (local-leader-def
-    :keymaps 'vc-dir-mode-map
-    "b" '(:ignore t :which-key "branch")
-    "bb" 'vc-create-branch
-    "bs" 'vc-switch-branch
-    "z" '(:ignore t :which-key "stash")
-    "zp" 'vc-git-stash-pop-at-point
-    "zz" 'vc-git-stash
-    "zs" 'vc-git-stash-snapshot
-    :keymaps 'vc-annotate-mode-map
-    "a" 'vc-annotate-toggle-annotation-visibility
-    :keymaps 'log-view-mode-map
-    "o" 'vc-log-outgoing
-    "i" 'vc-log-incoming
-    "f" 'vc-log-search
-    "F" 'vc-update
-    "P" 'vc-push
-    :keymaps 'vc-git-stash-shared-map
-    "za" 'vc-git-stash-apply-at-point
-    "zk" 'vc-git-stash-delete-at-point
-    "zp" 'vc-git-stash-pop-at-point)
+  (:map +vc-search
+    ("l" . vc-log-search))
+
   :custom
   (vc-follow-symlinks t)
 
@@ -97,20 +77,17 @@
 (use-package agitate
   :hook
   ((diff-mode . agitate-diff-enable-outline-minor-mode))
-  :general
-  (leader-def
-    "vD" 'agitate-diff-buffer-or-file
-    "vsg" 'agitate-vc-git-grep
-    "vS" 'agitate-vc-git-show
-    "vsf" 'agitate-vc-git-find-revision)
-
-  (local-leader-def
-    :keymaps 'vc-dir-mode-map
-    "s" '(:ignore t :which-key "search")
-    "ss" 'agitate-vc-git-grep
-    "sS" 'agitate-vc-git-grep-symbol-at-point
-    "sF" 'agitate-vc-git-find-revision
-    "sC" 'agitate-vc-git-commit-search)
+  :bind
+  (:map +vc-search-map
+    ("g" . agitate-vc-git-grep)
+    ("G" . agitate-vc-git-grep-symbol-at-point)
+    ("F" . agitate-vc-git-find-revision)
+    ("C" . agitate-vc-git-commit-search))
+  (:map vc-dir-mode-map
+    ("C-c G" . agitate-vc-git-grep)
+    ("C-c g" . agitate-vc-git-grep-symbol-at-point)
+    ("C-c F" . agitate-vc-git-find-revision)
+    ("C-c C" . agitate-vc-git-commit-search))
 
   :config
   (advice-add #'vc-git-push :override #'agitate-vc-git-push-prompt-for-remote)
@@ -121,15 +98,19 @@
   (agitate-log-edit-informative-mode))
 
 (use-package magit
-  :general
-  (leader-def
-    "vs" 'magit-status
-    "vB" 'magit-blame-addition
-    "vl" 'magit-log-buffer-file
-    "vL" 'magit-log-all)
+  :bind
+  (:map +vc
+    ("s" . magit-status)
+    ("B" . magit-blame-addition)
+    ("l" . magit-log-buffer-file)
+    ("L" . magit-log-all))
   :custom
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
-  (magit-bury-buffer-function #'magit-restore-window-configuration))
+  (magit-bury-buffer-function #'magit-restore-window-configuration)
+  :config
+  (when (my/context-work-p)
+    (setopt magit-git-executable "/opt/homebrew/bin/git")
+    ))
 
 (use-package forge
   :commands (forge forge-dispatch))
@@ -140,17 +121,17 @@
 
 (use-package smerge-mode
   :straight (:type built-in)
-  :general
-  (leader-def
-    "vm" '(:ignore t :which-key "merge")
-    "vmm" 'smerge-mode
-    "vmM" 'smerge-keep-mine
-    "vmo" 'smerge-keep-other
-    "vmb" 'smerge-keep-base
-    "vma" 'smerge-keep-all
-    "vmc" 'smerge-keep-current
-    "vmn" 'smerge-next
-    "vmp" 'smerge-prev))
+  :bind
+  (:map +vc
+    ("=" . smerge-mode))
+  (:map smerge-mode-map
+    ("C-c m" . smerge-keep-mine)
+    ("C-c o" . smerge-keep-other)
+    ("C-c b" . smerge-keep-base)
+    ("C-c a" . smerge-keep-all)
+    ("C-c c" . smerge-keep-current)
+    ("C-c n" . smerge-next)
+    ("C-c p" . smerge-prev)))
 
 (use-package ediff
   :straight (:type built-in)

@@ -8,23 +8,21 @@
 
 ;;;; Consult - Enhanced commands
 (use-package consult
-  :general
-  (leader-def
-    "fr" 'consult-recent-file
-    "gg" 'consult-goto-line
-    "s!" 'consult-flymake
-    "sC" 'consult-compile-error
-    "sb" 'consult-buffer
-    "sB" 'consult-buffer-other-window
-    "sr" 'consult-bookmark
-    "sm" 'consult-mark
-    "sM" 'consult-global-mark
-    "sl" 'consult-line
-    "sL" 'consult-line-multi
-    "sR" 'consult-ripgrep
-    "si" 'consult-imenu
-    "sI" 'consult-imenu-multi
-    "sO" 'consult-outline)
+  :bind
+  (:map my/leader-map
+    ("r" . consult-recent-file))
+  (:map +search
+    ("d" . consult-flymake)
+    ("b" . consult-buffer)
+    ("B" . consult-buffer-other-window)
+    ("r" . consult-bookmark)
+    ("g" . consult-goto-line)
+    ("j" . consult-global-mark) ;; jump list
+    ("l" . consult-line)
+    ("L" . consult-line-multi)
+    ("r" . consult-ripgrep)
+    ("i" . consult-imenu)
+    ("I" . consult-imenu-multi))
   :custom
   (consult-narrow-key "<")
   (consult-project-function (lambda (_) (project-root (project-current))))
@@ -37,8 +35,6 @@
     consult-theme :preview-key '(:debounce 0.2 any)
     consult-ripgrep consult-git-grep consult-grep
     consult-bookmark consult-recent-file consult-xref
-    consult--source-bookmark consult--source-file-register
-    consult--source-recent-file consult--source-project-recent-file
     :preview-key '(:debounce 0.4 any)))
 
 (defun +search-web ()
@@ -58,13 +54,12 @@
 
 (use-package consult-omni
   :straight (consult-omni :type git :host github :repo "armindarvish/consult-omni" :branch "main" :files (:defaults "sources/*.el"))
-  :general
-  (leader-def
-    "ss" 'consult-omni)
-  (leader-def
-    "sw" '+search-web
-    "sf" '+system-files
-    "sr" '+rtfm)
+  :bind
+  (:map +search
+    ("S" . consult-omni)
+    ("W" . +search-web)
+    ("F" . +system-files)
+    ("R" . +rtfm))
 
   :custom
   (consult-omni-default-browse-function #'eww-browse-url)
@@ -82,7 +77,6 @@
        consult-omni-fd
        consult-omni-ripgrep
        consult-omni-org-agenda
-       consult-omni-elfeed
        consult-omni-notes
        consult-omni-calc))
   (consult-omni-sources-load-modules)
@@ -90,7 +84,6 @@
                                       "Wikipedia"
                                       "DuckDuckGo API"
                                       "Dictionary"
-                                      "elfeed"
                                       "Notes Search"
                                       "Org Agenda")))
 
@@ -114,18 +107,36 @@
   (:map eww-mode-map
     ("C-c C-o" . eww-browse-with-external-browser)))
 
+(use-package consult-notes
+  :commands (consult-notes
+              consult-notes-search-in-all-notes)
+  :custom
+  (consult-notes-denote-files-function (lambda () (denote-directory-files nil t nil)))
+  (consult-notes-file-dir-sources
+    `(("Library" ?l ,my/library-path)
+       ("Org" ?o ,my/org-path)
+       ("Notes" ?n ,my/notes-path)))
+  :config
+  (with-eval-after-load 'denote
+    (consult-notes-denote-mode)))
+
 ;;;  P-Search
 ;;;; P-search - Powerful project-wide search
 (use-package p-search
-  :general
-  (leader-def
-    "sx" 'p-search
-    "sX" 'p-search-directory)
+  :preface
+  (defun +psearch-library ()
+    "Search in library with p-search"
+    (interactive)
+    (let ((default-directory (expand-file-name my/library-path)))
+      (call-interactively #'p-search)))
+
+  :bind
+  (:map +search
+    ("x" . p-search))
   :custom
   (p-search-default-searcher 'rg)
   (p-search-default-save-buffers 'ask)
   (p-search-case-fold-search t))
-
 
 ;;; Easy access to web bookmarks
 
@@ -142,8 +153,7 @@
         (when url
           (browse-url url))))))
 
-(leader-def
-  "sq" '+quicklink)
+(define-key +search "q" '+quicklink)
 
 (provide 'core-search)
 ;;; core-search.el ends here

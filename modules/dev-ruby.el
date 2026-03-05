@@ -6,6 +6,20 @@
 ;;; Code:
 
 ;;;; Ruby Mode
+
+(defun rufo-success-p (retcode)
+  (member retcode '(0 3)))
+
+(reformatter-define rufo
+  :program "rufo"
+  :lighter " Rufo"
+  :exit-code-success-p rufo-success-p)
+
+(add-hook 'ruby-ts-mode-hook
+  (lambda ()
+    (setq-local my/external-formatter #'rufo-buffer
+      my/format-policy 'dwim)))
+
 (use-package ruby-ts-mode
   :straight (:type built-in)
   :mode (("\\.rb\\'" . ruby-ts-mode)
@@ -15,28 +29,20 @@
           ("\\.gemspec\\'" . ruby-ts-mode)
           ("Guardfile\\'" . ruby-ts-mode)
           ("\\.ru\\'" . ruby-ts-mode))
-  :hook (ruby-ts-mode . eglot-ensure)
-  :general
-  (local-leader-def
-    :keymaps 'ruby-ts-mode-map
-    "t" '(:ignore t :which-key "test")
-    "ta" 'ruby-test-run-all
-    "tt" 'ruby-test-run
-    "ts" 'ruby-test-run-at-point
+  :hook
+  (ruby-ts-mode . eglot-ensure)
+  (ruby-ts-mode . subword-mode)
 
-    "a" 'eglot-code-actions
-    "r" '(:ignore t :which-key "refactor")
-    "rr" 'eglot-rename
-    "g" '(:ignore t :which-key "goto")
-    "gi" 'eglot-find-implementation
-    "gt" 'eglot-find-type-definition
-    "gd" 'eglot-find-declaration)
+  :bind
+  (:map ruby-ts-mode-map
+    ("C-c ." . ruby-test-run-at-point)
+    ("C-c t" . ruby-test-run)
+    ("C-c T" . ruby-test-run-all)
+    ("C-c c" . compile))
+
   :custom
-  (ruby-insert-encoding-magic-comment nil)
-  :config
-  (with-eval-after-load 'which-key
-    (which-key-add-keymap-based-replacements ruby-ts-mode-map
-      "SPC m t" "test")))
+  (ruby-indent-level 2)
+  (ruby-insert-encoding-magic-comment nil))
 
 ;;;; Ruby Test Runner
 (defun ruby-test-run ()

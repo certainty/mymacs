@@ -9,19 +9,23 @@
 
 (use-package project
   :straight (:type built-in)
-  :general
-  (leader-def
-    "/" 'consult-ripgrep
-    "*" '+find-symbol
-    "SPC" 'project-find-file
-    "pp" 'project-switch-project
-    "pB" 'project-switch-to-buffer
-    "pb" 'consult-project-buffer
-    "pd" 'project-dired
-    "ps" 'consult-ripgrep
-    "pk" 'project-kill-buffers
-    "pD" 'project-forget-project
-    "pc" 'project-compile)
+  :bind
+  (:map my/leader-map
+    ("/" . consult-ripgrep)
+    ("*" . +find-symbol)
+    ("f" . project-find-file))
+  (:map +project
+    ("p" . project-switch-project)
+    ("B" . project-switch-to-buffer)
+    ("b" . consult-project-buffer)
+    ("d" . project-dired)
+    ("s" . consult-ripgrep)
+    ("k" . project-kill-buffers)
+    ("D" . project-forget-project)
+    ("c" . project-compile))
+
+  (:map +project-search
+    ("p" . consult-ripgrep))
 
   :custom
   (project-switch-commands
@@ -47,17 +51,18 @@
   :hook (after-init . tabspaces-mode)
   :commands (tabspaces-switch-or-create-workspace
               tabspaces-open-or-create-project-and-workspace)
-  :general
-  (leader-def
-    "TAB TAB" 'tabspaces-open-or-create-project-and-workspace
-    "TAB >" 'tabspaces-switch-or-create-workspace
-    "TAB d" 'tabspaces-close-workspace
-    "TAB b" 'tabspaces-switch-to-buffer
-    "TAB k" 'tabspaces-kill-buffers-close-workspace
-    "TAB R" 'tabspaces-restore-session
-    "TAB S" 'tabspaces-save-session
-    "TAB C" 'tabspaces-clear-buffers
-    "TAB ." 'tabspaces-switch-buffer-and-tab)
+  :bind
+  (:map +workspaces
+    ("TAB" . tabspaces-switch-or-create-workspace)
+    (">" . tabspaces-switch-or-create-workspace)
+    ("d" . tabspaces-close-workspace)
+    ("b" . tabspaces-switch-to-buffer)
+    ("k" . tabspaces-kill-buffers-close-workspace)
+    ("R" . tabspaces-restore-session)
+    ("S" . tabspaces-save-session)
+    ("C" . tabspaces-clear-buffers)
+    ("." . tabspaces-switch-buffer-and-tab))
+
   :custom
   (tabspaces-use-filtered-buffers-as-default t)
   (tabspaces-default-tab "Default")
@@ -65,23 +70,6 @@
   (tabspaces-include-buffers '("*scratch*"))
   (tabspaces-session t)
   (tabspaces-session-auto-restore nil))
-
-(with-eval-after-load 'consult
-  (consult-customize consult--source-buffer :hidden t :default nil)
-  (defvar consult--source-workspace
-    (list :name  "Workspace Buffers"
-      :narrow   ?w
-      :history  'buffer-name-history
-      :category 'buffer
-      :state    #'consult--buffer-state
-      :default  t
-      :items    (lambda () (consult--buffer-query
-                             :predicate #'tabspaces--local-buffer-p
-                             :sort 'visibility
-                             :as #'buffer-name)))
-    "Workspace buffer candidate source for `consult-buffer'.")
-  (add-to-list 'consult-buffer-sources 'consult--source-workspace))
-
 
 (provide 'core-workspaces)
 ;;; core-workspaces.el ends here

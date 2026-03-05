@@ -11,30 +11,37 @@
   ((dired-mode . denote-dired-mode)
     (denote-mode-hook . (lambda () (corfu-mode -1))))
 
-  :general
-  (leader-def
-    "n" '(:ignore t :which-key "notes")
-    "nn" 'denote
-    "nN" 'denote-subdirectory
-    "nt" 'denote-type
-    "nT" 'denote-template
-    "nd" 'denote-date
+  :bind
+  (:map +notes
+    ("n" . denote)
+    ("N" . denote-subdirectory)
+    ("t" . denote-type)
+    ("T" . denote-template)
+    ("d" . denote-date)
 
-    "nl" '(:ignore t :which-key "links")
-    "nll" 'denote-find-link
-    "nlL" 'denote-find-backlink
-    "nli" 'denote-link
-    "nla" 'denote-add-links
-    "nlb" 'denote-backlinks
+    ("l" . denote-find-link)
+    ("L" . denote-find-backlink)
+    ("i" . denote-link)
+    ("a" . denote-add-links)
+    ("b" . denote-backlinks)
 
-    "nf" '(:ignore t :which-key "file")
-    "nfr" 'denote-rename-file
-    "nfR" 'denote-rename-file-using-front-matter
+    ("f r" . denote-rename-file)
+    ("f R" . denote-rename-file-using-front-matter)
 
-    "nff" 'denote-open-or-create
-    "nfF" 'denote-open-or-create-with-command
-    "no" '+browse-notes
-    "nO" '+browse-managed-documents)
+    ("f" . denote-open-or-create)
+    ("F" . denote-open-or-create-with-command))
+  (:map +org-search
+    ("x" . +psearch-org))
+  (:map +notes-search
+    ("n" . consult-notes)
+    ("g" . +consult-grep-notes)
+    ("N" . denote-find)
+    ("x" . +psearch-notes)
+    ("d" . +psearch-documents))
+
+  (:map +notes-goto
+    ("n" . +browse-notes)
+    ("m" . +browse-managed-documents))
 
   :preface
   (defun +browse-notes ()
@@ -53,7 +60,7 @@
     ("C-c C-d C-R" . denote-dired-rename-marked-files-using-front-matter))
 
   :custom
-  (denote-directory (list my/notes-path))
+  (denote-directory my/notes-path)
 
   ;; File naming
   (denote-file-type nil)                ; Use .org by default
@@ -97,18 +104,18 @@
               denote-silo-select-silo-then-command
               denote-silo-dired
               denote-silo-cd )
-  :general
-  (leader-def
-    "ns" '(:ignore t :which-key "silo")
-    "nss" 'denote-silo-cd
-    "nse" 'denote-silo-dired
-    "nsc" 'denote-silo-create-note
-    "nsn" 'denote-silo-open-or-create
-    "nsx" 'denote-silo-select-silo-then-command)
+  :bind
+  (:map +notes
+    ("S" . denote-silo-select-silo-then-command)
+    ("sc" . denote-silo-create-note)
+    ("sn" . denote-silo-open-or-create)
+    ("se" . denote-silo-dired)
+    ("ss" . denote-silo-cd))
 
   :config
   (setq denote-silo-directories
     (list denote-directory
+      my/library-path
       my/managed-documents-path)))
 
 ;;;; Org Roam style backlinks for Denote
@@ -151,16 +158,6 @@
   "Search in org directory using p-search."
   (interactive)
   (my/search-in-directory my/org-path))
-
-(leader-def
-  "sn" '(:ignore t :which-key "notes")
-  "snn" 'denote-find
-  "snf" '+consult-notes
-  "sng" '+consult-grep-notes
-
-  "sN" '+psearch-notes
-  "sd" '+psearch-documents
-  "so" '+psearch-org)
 
 (provide 'writing-notes)
 ;;; writing-notes.el ends here

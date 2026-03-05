@@ -9,11 +9,9 @@
 (use-package jinx
   :defer t
   :hook ((text-mode org-mode markdown-mode) . jinx-mode)
-  :general
-  (local-leader-def
-    :keymaps 'jinx-mode-map
-    "!s" 'jinx-correct
-    "!S" 'jinx-languages)
+  :bind
+  (:map jinx-mode-map
+    ("C-," . jinx-correct))
   :custom
   (jinx-delay 0.2)
   :config
@@ -23,11 +21,9 @@
 (use-package flyspell
   :straight (:type built-in)
   :hook ((text-mode org-mode markdown-mode) . flyspell-mode)
-  :general
-  (local-leader-def
-    :keymaps 'flyspell-mode-map
-    "!c" 'flyspell-correct-word-before-point
-    "!b" 'flyspell-buffer)
+  :bind
+  (:map flyspell-mode-map
+    ("C-c b" . flyspell-buffer))
   :custom
   (flyspell-issue-message-flag nil)
   (flyspell-issue-welcome-flag nil)
@@ -50,11 +46,6 @@
 ;;;; Writegood Mode - Detect weak words and passive voice
 (use-package writegood-mode
   :hook ((text-mode org-mode markdown-mode) . writegood-mode)
-  :general
-  (local-leader-def
-    :keymaps 'write-good-mode
-    "wg" 'writegood-grade-level
-    "wr" 'writegood-reading-ease)
   :custom
   (writegood-weasel-words
     '("many" "various" "very" "fairly" "several" "extremely"
@@ -64,11 +55,6 @@
        "completely"))
   :config
   (diminish 'writegood-mode))
-
-(use-package writeroom-mode
-  :general
-  (leader-def
-    "xwm" 'writeroom-mode))
 
 (provide 'writing-base)
 ;;; writing-base.el ends here

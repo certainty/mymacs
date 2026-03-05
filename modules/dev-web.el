@@ -26,11 +26,7 @@
           (typescript-ts-mode . emmet-mode)
           (tsx-ts-mode . emmet-mode))
   :custom
-  (emmet-move-cursor-between-quotes t)
-  :general
-  (local-leader-def
-    :keymaps '(html-ts-mode-map css-ts-mode-map web-mode-map)
-    "e" 'emmet-expand-line))
+  (emmet-move-cursor-between-quotes t))
 
 ;;;; Rainbow Mode - Show colors inline
 (use-package rainbow-mode
@@ -52,13 +48,6 @@
           ("\\.hbs\\'" . web-mode)
           ("\\.vue\\'" . web-mode)
           ("\\.svelte\\'" . web-mode))
-  :general
-  (local-leader-def
-    :keymaps 'web-mode-map
-    "n" 'web-mode-tag-match
-    "e" 'emmet-expand-line
-    "r" 'web-mode-element-rename
-    "w" 'web-mode-element-wrap)
   :custom
   (web-mode-markup-indent-offset 2)
   (web-mode-css-indent-offset 2)

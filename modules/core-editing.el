@@ -27,91 +27,24 @@
 (use-package display-line-numbers
   :straight (:type built-in)
   :hook prog-mode
-
-  :general
-  (leader-def
-    "tl" 'display-line-numbers-mode)
+  :bind
+  (:map +toggle
+    ("l" . display-line-numbers-mode))
 
   :custom
   (display-line-numbers-type t)
   (display-line-numbers-width-start t))
 
-(use-package evil-nerd-commenter
-  :demand t
-  :after evil
-  :commands (evilnc-comment-operator
-              evilnc-inner-comment
-              evilnc-outer-commenter)
-  :general ([remap comment-line] #'evilnc-comment-or-uncomment-lines))
-
-(use-package evil-surround
-  :after evil
-  :hook (after-init . global-evil-surround-mode))
-
-(use-package evil-exchange
-  :after evil
-  :config
-  (diminish 'evil-exchange-mode)
-  (evil-exchange-install))
-
-(use-package evil-snipe
-  :after evil
-  :hook (after-init . (lambda ()
-                        (evil-snipe-mode 1)
-                        (evil-snipe-override-mode 1)))
-  :config
-  (diminish 'evil-snipe-mode)
-
-  :custom
-  (evil-snipe-scope 'visible)
-  (evil-snipe-repeat-scope 'whole-visible)
-  (evil-snipe-smart-case t)
-  (evil-snipe-use-vim-sneak-bindings t))
-
-;;;; Evil Visualstar - Search with * in visual mode
-(use-package evil-visualstar
-  :after evil
-  :hook (after-init . global-evil-visualstar-mode))
-
-;;;; Evil Lion - Align operators
-(use-package evil-lion
-  :after evil
-  :hook (after-init . evil-lion-mode))
-
-;;;; Evil Args - Arguments text object
-(use-package evil-args
-  :general
-  (:keymaps 'evil-inner-text-objects-map
-    "a" 'evil-inner-arg)
-  (:keymaps 'evil-outer-text-objects-map
-    "a" 'evil-outer-arg)
-  (:states 'normal
-    "L" 'evil-forward-arg
-    "H" 'evil-backward-arg
-    "K" 'evil-jump-out-args)
-  (:states '(normal motion)
-    "[," 'evil-backward-arg
-    "]," 'evil-forward-arg))
-
 (use-package embark
-  :general
-  (:states '(normal insert visual motion emacs)
-    "C-." 'embark-act
-    "C-," 'embark-dwim
-    "C-h B" 'embark-bindings)
-
-  (:keymaps 'minibuffer-local-map
-    "C-c C-c" 'embark-collect
-    "C-c C-e" 'embark-export
-    "C-c C-m" 'embark-select
-    "C-c C-a" 'embark-act-all)
-
-  (leader-def
-    "." '(:ignore t :which-key "embark")
-    ".." 'embark-dwim
-    ".," 'embark-act
-    ".a" 'embark-act-all
-    ".m" 'embark-select)
+  :bind
+  (:map mymacs-mode-map
+    ("C-." . embark-act)
+    ("C-," . embark-dwim))
+  (:map minibuffer-local-map
+    ("C-c C-c" . embark-collect)
+    ("C-c C-e" . embark-export)
+    ("C-c C-m" . embark-select)
+    ("C-c C-a" . embark-act-all))
 
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
@@ -176,16 +109,20 @@ targets."
   (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package ws-butler
-  :hook prog-mode)
+  :hook (after-init . ws-butler-global-mode)
+  :bind
+  (:map +goto/act
+    ("w" . ws-butler-clean-reagion)))
 
 ;; ----------------------------
 ;; Yasnippet
 ;; ----------------------------
 (use-package yasnippet
   :hook (after-init . yas-global-mode)
-  :general
-  (leader-def
-    "xs" 'yas-insert-snippet)
+  :bind
+  (:map +do
+    ("s" . yas-insert-snippet))
+
   :custom
   (yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory)))
   :config

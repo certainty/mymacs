@@ -3,46 +3,30 @@
 
 (use-package org
   :hook (org-after-todo-state-change . save-buffer)
-  :general
-  (leader-def
-    "o" '(:ignore t :which-key "org")
-    "oa" '+personal-agenda
-    "oA" 'org-agenda
-    "oc" 'org-capture
-    "ot" '+capture-task
-    "on" '+capture-note
-    "oe" '+capture-event
-    "od" '+capture-decision
-
-    "go" '(:ignore t :which-key "org")
-    "god" '+browse-org
-    "gop" '+goto-projects
-    "gol" '+goto-log
-    "goc" '+goto-contacts)
-
-  (local-leader-def
-    :keymaps 'org-mode-map
-    "a" '(:ignore t :which-key "archive")
-    "aa" 'org-archive-subtree-default
-    "aA" 'org-archive-to-archive-sibling
-    "c" '+collapse-all
-    "r" '(:ignore t :which-key "refile")
-    "rr" 'org-refile
-    "rR" 'org-refile-to-last-stored
-    "s" '(:ignore t :which-key "search")
-    "sg" '+org-ripgrep
-    "o" '+sort-all-by-todo)
+  :bind
+  (:map +org
+    ("a" . +personal-agenda)
+    ("A" . org-agenda)
+    ("c" . org-capture)
+    ("t" . +capture-task)
+    ("n" . +capture-note)
+    ("e" . +capture-event)
+    ("d" . +capture-decision))
+  (:map +org-search
+    ("o" . consult-org-agenda)
+    ("O" . +org-ripgrep))
+  (:map +org-goto
+    ("l" . +goto-log)
+    ("t" . +goto-tasks)
+    ("c" . +goto-contacts)
+    ("o" . +browse-org))
   :custom
   (org-id-link-to-org-use-id t)
-
   (org-todo-keywords
-    '((sequence "DECISION(!q)" "|")
-       (sequence "TODO(t)" "DOING(g!)" "|" "DONE(d!)")
-       (sequence "FEATURE(r)" "DOING(g!)" "|" "DONE(d!)")
-       (sequence "PROJ(p)" "DOING(g!)" "|" "DONE(d!)")
-       (sequence "EVT(m)" "|" "DONE(d)")
-       (sequence "|" "BLOCKED(l!)")
-       (sequence "|" "CANCELED(c!)")))
+    '((sequence "INBOX(i)" "NEXT(n)" "TODO(t)" "WAIT(w@/!)" "BLOCKED(b@/!)" "PROJ(p)" "|" "DONE(d!)" "CANCELLED(c@)")
+       (sequence "EVT(m)" "|" "DONE(d!)" "CANCELLED(c@")
+       (sequence "DECISION(q)" "|")))
+
 
   (org-priority-default ?B)
   (org-priority-highest ?A)
@@ -81,25 +65,23 @@
          :prepend t)
 
        ("p" "Project" entry (file "tasks.org")
-         "* PROJ %?
+         "* PROJ %? :project:
 :PROPERTIES:
 :CAPTURED: %U
 :END:"
          :prepend t)
 
        ("d" "Decision" entry (file+olp+datetree "log.org")
-         "* DECISION %?
+         "* DECISION %? :decision:
 :PROPERTIES:
 :CAPTURED: %T
-:CATEGORY: decision
 :END:"
          :tree-type week)
 
-       ("e" "Event" entry (file "calendar.org")
-         "* EVT %?
+       ("e" "Event" entry (file+olp+datetree "log.org")
+         "* EVT %? :event:
 :PROPERTIES:
 :CAPTURED: %U
-:CATEGORY: event
 :END:"
          :prepend t)))
 
@@ -117,7 +99,7 @@
   (org-agenda-custom-commands
     '(
        ("d" "Decision Log"
-         ((tags "CATEGORY=\"decision\"|TODO=\"DECISION\""
+         ((tags-todo "!DECISION"
             ((org-agenda-overriding-header "🧠 Decision Log\n")
               (org-agenda-remove-tags nil)
               (org-agenda-show-inherited-tags t)
@@ -127,7 +109,7 @@
               (org-agenda-time-grid '((today require-timed remove-match) () "      " "┈┈┈┈┈┈┈┈┈┈┈┈┈"))))))
 
        ("e" "Event Log"
-         ((tags "CATEGORY=\"event\"|TODO=\"EVT\""
+         ((tags "+event"
             ((org-agenda-overriding-header "📅 Event Log\n")
               (org-agenda-remove-tags nil)
               (org-agenda-show-inherited-tags t)
@@ -135,26 +117,27 @@
               (org-agenda-todo-keyword-format "")))))
 
        ("y" "My Agenda"
-         ((tags-todo "-CATEGORY=\"project\""
-            ((org-agenda-overriding-header "⚡ Today\n")
-              (org-agenda-sorting-strategy '(priority-down))
+         ((todo "NEXT|TODO"
+            ((org-agenda-overriding-header "⚡ Ready\n")
+              (org-agenda-sorting-strategy '(deadline-up scheduled-up priority-down))
               (org-agenda-remove-tags nil)
               (org-agenda-use-time-grid t)
+              (org-agenda-max-entries 12)
               (org-agenda-deadline-leaders '(" Deadline: " " In %2d d.: " "%2d d. ago: "))
-              (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
               (org-agenda-prefix-format "%s  %?-2i %?-12c ")))
 
-           (tags "+CATEGORY=\"project\"|+TODO=\"PROJ\""
-             ((org-agenda-overriding-header "\n⚡ Projects\n")
+           (todo "BLOCKED|WAITING"
+             ((org-agenda-overriding-header "\n⚡ Blocked\n")
+               (org-agenda-sorting-strategy '(priority-down))
                (org-agenda-remove-tags nil)
-               (org-tags-match-list-sublevels nil)
+               (org-agenda-max-entries 12)
                (org-agenda-show-inherited-tags t)
-               (org-agenda-prefix-format "  %?-2i %s ")
-               (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+               (org-agenda-deadline-leaders '(" Deadline: " " In %2d d.: " "%2d d. ago: "))
+               (org-agenda-prefix-format "%s  %?-2i %?-12c ")
                (org-agenda-todo-keyword-format "")))
 
            (agenda ""
-             ((org-agenda-overriding-header "\n🗓️ Calendar\n")
+             ((org-agenda-overriding-header "\n🗓️ Upcoming\n")
                (org-deadline-warning-days 3)
                (org-agenda-skip-scheduled-if-done nil)
                (org-agenda-time-leading-zero t)
@@ -181,13 +164,13 @@
               (org-agenda-log-mode-items '(closed clock))
               (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp "CLOSED"))
               (org-agenda-prefix-format "   %?-2i %?-12c %?-2t%s ")))
-           (tags "CATEGORY=\"decision\"|TODO=\"DECISION\""
+           (tags "+decision"
              ((org-agenda-overriding-header "\n🧠 Decisions (last 7 days)\n")
                (org-agenda-span 7)
                (org-agenda-start-day "-6d")
                (org-agenda-prefix-format "   %?-2i %?-12c %?-2t%s ")
                (org-agenda-remove-tags nil)))
-           (tags-todo "+CATEGORY=\"project\"|+TODO=\"PROJ\""
+           (tags-todo "+project|!TODO|!BLOCKED|!DELEGATED"
              ((org-agenda-overriding-header "\n📋 Open Projects\n")
                (org-agenda-remove-tags nil)
                (org-tags-match-list-sublevels nil)
@@ -275,9 +258,9 @@
     (interactive)
     (my/goto-special-org-file "log"))
 
-  (defun +goto-projects ()
+  (defun +goto-tasks ()
     (interactive)
-    (my/goto-special-org-file "projects"))
+    (my/goto-special-org-file "tasks"))
 
   (defun +goto-contacts ()
     (interactive)
@@ -313,10 +296,10 @@
 (my/with-popper! "*Org Agenda.*")
 
 (use-package org-project-capture
-  :general
-  (leader-def
-    "op" 'org-project-capture-capture-for-current-project
-    "oP" 'org-project-capture-project-todo-completing-read)
+  :bind
+  (:map +org
+    ("p" . org-project-capture-capture-for-current-project)
+    ("P" . org-project-capture-project-todo-completing-read))
 
   :custom
   (org-project-capture-backend (make-instance 'org-project-capture-project-backend))
@@ -339,19 +322,21 @@
 
 (use-package org-caldav
   :if (my/context-private-p)
-  :general
-  (leader-def
-    "oS" 'org-caldav-sync)
+  :bind
+  (:map +org
+    ("S" . org-caldav-sync))
 
   :custom
   (org-caldav-url "https://drive.krentzlin.me/remote.php/dav/calendars/david")
   (org-caldav-files nil)
   (org-icalendar-timezone "Europe/Berlin")
-  (org-icalendar-include-todo '("TODO" "PROJ" "DOING" "DONE" "CANCELLED" "BLOCKED"))
+  (org-icalendar-include-todo '("TODO" "PROJ" "DOING" "DONE" "CANCELLED" "BLOCKED" "DELEGATED"))
   (org-caldav-sync-todo t)
   (org-caldav-todo-percent-states '((0 "TODO")
                                      (0 "PROJ")
                                      (50 "DOING")
+                                     (50 "BLOCKED")
+                                     (50 "DELEGATED")
                                      (100 "DONE")
                                      (100 "CANCELLED")))
   :config

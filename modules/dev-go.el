@@ -7,34 +7,15 @@
   :straight (:type built-in)
   :mode (("\\.go\\'" . go-ts-mode))
   :hook (go-ts-mode . eglot-ensure)
-  :general
-  (local-leader-def
-    :keymaps 'go-ts-mode-map
-    "t" '(:ignore t :which-key "test")
-    "tt" '+go-test-current-test
-    "tf" '+go-test-current-file
-    "tp" '+go-test-current-project
-    "tb" '+go-test-current-benchmark
-    "tc" '+go-test-current-coverage
 
-    "i" '(:ignore t :which-key "imports")
-    "ia" 'go-import-add
-    "ir" 'go-remove-unused-imports
-    "ig" 'go-goto-imports
-
-
-    "a" 'eglot-code-actions
-    "r" '(:ignore t :which-key "refactor")
-    "rr" 'eglot-rename
-    "g" '(:ignore t :which-key "goto")
-    "gi" 'eglot-find-implementation
-    "gt" 'eglot-find-type-definition
-    "gd" 'eglot-find-declaration
-
-    "x" '(:ignore t :which-key "execute")
-    "xr" '+go-run
-    "xb" '+go-build
-    "xc" 'compile)
+  :bind
+  (:map go-ts-mode-map
+    ("C-c ." . '+go-test-current-test)
+    ("C-c t" . '+go-test-current-file)
+    ("C-c T" . '+go-test-current-project)
+    ("C-c r" . '+go-run)
+    ("C-c b" . '+go-build)
+    ("C-c c" . 'compile))
   :custom
   (go-ts-mode-indent-offset 2)
 
@@ -49,11 +30,7 @@
   :commands (gofmt
               go-import-add
               go-remove-unused-imports
-              go-goto-imports)
-  :config
-  ;; Use goimports instead of gofmt for formatting
-  (setq gofmt-command "goimports"))
-
+              go-goto-imports))
 
 ;;;; Go testing functions
 (defun +go-test-current-test ()

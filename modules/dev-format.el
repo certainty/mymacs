@@ -107,8 +107,6 @@ Possible values:
 
 (add-hook 'before-save-hook #'+format-on-save nil)
 
-(with-eval-after-load 'general
-  (leader-def
-    "to" '+toggle-format-on-save))
+(define-key +toggle "o" #'+toggle-format-on-save)
 
 (provide 'dev-format)

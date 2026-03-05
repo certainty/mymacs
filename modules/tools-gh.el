@@ -6,17 +6,18 @@
 ;;; Code:
 
 (use-package consult-gh
-  :general
-  (leader-def
-    "sg" '(:ignore t :which-key "github")
-    "sgg" 'consult-gh-repo-list
-    "sgu" 'consult-gh-user-repos
-    "sgf" 'consult-gh-favorite-repos
-    "sgp" '(:ignore t :which-key "prs")
-    "sgpp" 'consult-gh-pr-list
-    "sga" '(:ignore t :which-key "actions")
-    "sgaa" 'consult-gh-run-list
-    "sgd" 'consult-gh-dashboard)
+  :preface
+  (define-prefix-command '+github-search-map)
+  (define-key +search (kbd "G") +github-search-map)
+
+  :bind
+  (:map +github-search-map
+    ("g" . consult-gh-repo-list)
+    ("u" . consult-gh-user-repos)
+    ("f" . consult-gh-favorite-repos)
+    ("p" . consult-gh-pr-list)
+    ("a" . consult-gh-run-list)
+    ("d" . consult-gh-dashboard))
   :custom
   (consult-gh-default-clone-directory my/repositories-path)
   (consult-gh-show-preview t)
@@ -100,10 +101,10 @@
 
 (use-package consult-gh-embark
   :after embark
-  :general
-  (:keymaps 'consult-gh-embark-repos-actions-map
-    "rp" '+clone-permanent
-    "rt" '+clone-temp)
+  :bind
+  (:map consult-gh-embark-repos-actions-map
+    ("rp" . '+clone-permanent)
+    ("rt" . '+clone-temp))
   :init
   (consult-gh-embark-mode 1))
 

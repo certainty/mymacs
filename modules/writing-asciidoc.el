@@ -11,16 +11,9 @@
   :hook
   (adoc-mode . visual-line-mode)
   (adoc-mode . visual-fill-column-mode)
-  :general
-  (local-leader-def
-    :keymaps 'adoc-mode-map
-    "h" '(:ignore t :which-key "headings")
-    "h1" 'adoc-adjust-title-del
-    "h2" 'adoc-adjust-title-del
-
-    "i" '(:ignore t :which-key "insert")
-    "il" 'adoc-insert-link
-    "ii" 'adoc-insert-image)
+  :bind
+  (:map adoc-mode-map
+    ("C-c v" . adoc-preview-buffer))
   :custom
   (adoc-fontify-code-blocks-natively t))
 

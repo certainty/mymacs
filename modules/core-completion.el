@@ -25,7 +25,7 @@
   :custom
   (completion-styles '(orderless basic))
   (orderless-matching-styles
-    '(orderless-flex orderless-regexp orderless-initialism))
+    '(orderless-initialism  orderless-literal orderless-prefixes))
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles partial-completion orderless)))))
 
@@ -44,14 +44,14 @@
   ((after-init . global-corfu-mode)
     (corfu-mode . corfu-popupinfo-mode)
     (org-mode . (lambda () (setq-local corfu-auto nil))))
-  :general
-  (:keymaps 'corfu-map
-    "C-y" 'corfu-insert
-    "TAB" 'corfu-next
-    "<tab>" 'corfu-next
-    "S-TAB" 'corfu-previous
-    "<backtab>" 'corfu-previous
-    "C-SPC" 'corfu-show)
+  :bind
+  (:map corfu-map
+    ("C-y" . corfu-insert)
+    ("TAB" . corfu-next)
+    ("<tab>" . corfu-next)
+    ("S-TAB" . corfu-previous)
+    ("<backtab>" . corfu-previous)
+    ("C-SPC" . corfu-show))
   :custom
   (corfu-auto t)
   (corfu-quit-no-match 'separator)

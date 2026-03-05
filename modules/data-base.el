@@ -18,16 +18,15 @@
 (use-package csv-mode
   :mode (("\\.csv\\'" . csv-mode)
           ("\\.tsv\\'" . csv-mode))
-  :general
-  (local-leader-def
-    :keymaps 'csv-mode-map
-    "a" 'csv-align-fields
-    "u" 'csv-unalign-fields
-    "s" 'csv-sort-fields
-    "S" 'csv-sort-numeric-fields
-    "r" 'csv-reverse-region
-    "k" 'csv-kill-fields
-    "t" 'csv-transpose)
+  :bind
+  (:map csv-mode-map
+    ("C-c C-a" . csv-align-fields)
+    ("C-c C-u" . csv-unalign-fields)
+    ("C-c C-s" . csv-sort-fields)
+    ("C-c C-S" . csv-sort-numeric-fields)
+    ("C-c C-r" . csv-reverse-region)
+    ("C-c C-k" . csv-kill-fields)
+    ("C-c C-t" . csv-transpose))
   :custom
   (csv-separators '("," ";" "|" "\t"))
   (csv-align-padding 1)
@@ -49,22 +48,16 @@
     (setq-local js-indent-level 2)
     (eglot-ensure))
 
-  (add-hook 'json-ts-mode-hook #'my/json-mode-setup)
-
-  (local-leader-def
-    :keymaps 'json-ts-mode-map
-    "=" '+json-pretty-print-buffer))
+  (add-hook 'json-ts-mode-hook #'my/json-mode-setup))
 
 ;;;; YAML enhancements (already configured in my-ruby.el)
 (add-to-list 'auto-mode-alist '("yaml\\.gotmpl\\'" . yaml-ts-mode))
 
 (with-eval-after-load 'yaml-ts-mode
-
   (defun my/yaml-mode-setup ()
     "Setup for YAML buffers."
     (setq-local yaml-indent-offset 2)
     (eglot-ensure))
-
   (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-setup))
 
 (use-package mmm-mode

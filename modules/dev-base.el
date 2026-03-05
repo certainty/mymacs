@@ -17,6 +17,20 @@
 (use-package eglot
   :straight (:type built-in)
   :commands (eglot eglot-ensure)
+  :preface
+  (define-prefix-command '+eglot)
+  (define-key +do (kbd "c") (cons "+eglot" +eglot))
+  :init
+  (setq eglot-stay-out-of '(flymake))
+  :bind
+  (:map +eglot
+    ("R" . eglot-reconnect)
+    ("f" . eglot-format)
+    ("a" . eglot-code-actions)
+    ("r" . eglot-rename)
+    ("q" . eglot-shutdown)
+    ("c" . eglot-list-connections)
+    ("i" . eglot-inlay-hints-mode))
   :custom
   (eglot-report-progress nil)
   (eglot-extend-to-xref t)
@@ -25,34 +39,8 @@
   (eglot-autoshutdown t)
   (eglot-events-buffer-size 0)
   (eglot-sync-connect nil)
-
   :config
-  (fset #'jsonrpc--log-event #'ignore)
-
-  :general
-  (local-leader-def
-    :keymaps 'eglot-mode-map
-    "c" '(:ignore t :which-key "code")
-    "cl" 'eglot
-    "cr" 'eglot-rename
-    "cf" 'eglot-format
-    "ca" 'eglot-code-actions
-    "cd" 'xref-find-definitions
-    "cD" 'xref-find-references
-    "ci" 'eglot-find-implementation
-    "ct" 'eglot-find-type-definition
-    "cR" 'eglot-reconnect
-    "cQ" 'eglot-shutdown
-    "cS" 'eglot-shutdown-all)
-
-  :bind
-  (:map eglot-mode-map
-    ("M-g e a" . xref-find-apropos)
-    ("M-g e d" . xref-find-definitions)
-    ("M-g e r" . eglot-rename)
-    ("M-g e i" . eglot-find-implementation)
-    ("M-g e D" . eglot-find-declaration)
-    ("M-g e t" . eglot-find-type-definition)))
+  (fset #'jsonrpc--log-event #'ignore))
 
 ;;; Treesitter
 (use-package treesit-auto
@@ -69,15 +57,6 @@
 (use-package flymake
   :straight (:type built-in)
   :hook (prog-mode . flymake-mode)
-  :general
-  (local-leader-def
-    :keymaps 'flymake-mode-map
-    "!" '(:ignore t :which-key "diagnostics")
-    "!!" 'consult-flymake
-    "!l" 'flymake-show-buffer-diagnostics
-    "!L" 'flymake-show-project-diagnostics
-    "!n" 'flymake-goto-next-error
-    "!p" 'flymake-goto-prev-error)
   :custom
   (flymake-no-changes-timeout 0.5)
   (flymake-start-on-save-buffer t)

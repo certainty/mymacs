@@ -17,23 +17,6 @@
   :straight (:type built-in)
   :commands eldoc-mode
   :hook (emacs-lisp-mode . turn-on-eldoc-mode)
-  :general
-  (local-leader-def
-    :keymaps 'emacs-lisp-mode-map
-    "d" '(:ignore t :which-key "doc")
-    "de" '+toggle-eldoc-buffer
-    "e" '(:ignore t :which-key "eval")
-    "eb" 'eval-buffer
-    "ed" 'eval-defun
-    "ee" 'eval-last-sexp
-    "er" 'eval-region
-    "el" 'load-library
-    "h" '(:ignore t :which-key "help")
-    "hf" 'describe-function
-    "hv" 'describe-variable
-    "hk" 'describe-key
-    "hp" 'describe-package
-    "t" 'ert)
   :custom
   (eldoc-echo-area-use-multiline-p t)
   (eldoc-echo-area-display-truncation-message nil)

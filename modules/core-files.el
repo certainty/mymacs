@@ -56,10 +56,11 @@
   :hook
   (dired-mode . dired-omit-mode)
   (dired-mode . hl-line-mode)
-  :general
-  (leader-def
-    "e" 'dired-jump ; I'm just used to this
-    "fD" 'dired)
+  :bind
+  (:map my/leader-map
+    ("e" . 'dired-jump))
+  (:map +files
+    ("e" . 'dired))
   :custom
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
@@ -123,19 +124,25 @@
 (use-package wdired
   :straight (:type built-in)
   :after dired
-  :general
-  (:keymaps 'dired-mode-map
-    :states 'normal
-    "i" 'wdired-change-to-wdired-mode)
+  :bind
+  (:map dired-mode-map
+    ("C-c C-w" . wdired-change-to-wdired-mode)
+    ("C-c C-k" . wdired-abort-changes)
+    ("C-c C-c" . wdired-finish-edit))
   :custom
   (wdired-allow-to-change-permissions t)
   (wdired-create-parent-directories t))
 
-
-(with-eval-after-load 'general
-  (leader-def
-    "ff" 'find-file
-    "fs" 'save-buffer))
+(use-package emacs
+  :straight (:type built-in)
+  :bind
+  (:map +files
+    ("f" . find-file)
+    ("r" . revert-buffer)
+    ("s" . save-buffer)
+    ("S" . save-some-buffers)
+    ("b" . switch-to-buffer)
+    ("B" . ibuffer)))
 
 (provide 'core-files)
 ;;; core-files.el ends here

@@ -76,18 +76,22 @@
 
 (use-package popper
   :hook after-init
+
   :preface
+  (define-prefix-command '+popper)
+  (define-key my/leader-map (kbd "bp") +popper)
+
   (cl-defun my/with-popper! (&rest config)
     (with-eval-after-load 'popper
       (cl-dolist (c config)
         (add-to-list 'popper-reference-buffers c))))
-  :general
-  (leader-def
-    "bp" '(:ignore t :which-key "Popper")
-    "bpp" 'popper-toggle
-    "bpc" 'popper-cycle
-    "bpT" 'popper-toggle-type
-    "bpk" 'popper-kill-latest-popup)
+
+  :bind
+  (:map +popper
+    ("p" . popper-toggle)
+    ("c" . popper-cycle)
+    ("T" . popper-toggle-type)
+    ("k" . popper-kill-latest-popup))
   :custom
   (popper-reference-buffers
     '("\\*Messages\\*"
@@ -106,17 +110,19 @@
   (popper-echo-mode 1)
   (diminish 'popper-mode))
 
-(with-eval-after-load 'general
-  (leader-def
-    "bd" '+kill-current
-    "bD" '+delete-current-buffer-file
-    "bS" 'save-some-buffers
-    "br" 'revert-buffer
-    "bR" '+rename-file-and-buffer
-    "bi" 'ibuffer
-    "bz" 'bury-buffer
-    "bK" '+kill-other
-    "bx" '+kill-all))
+(use-package emacs
+  :straight (:type built-in)
+  :bind
+  (:map +buffers
+    ("d" . +kill-current)
+    ("D" . +delete-current-buffer-file)
+    ("S" . save-some-buffers)
+    ("r" . revert-buffer)
+    ("R" . +rename-file-and-buffer)
+    ("i" . ibuffer)
+    ("z" . bury-buffer)
+    ("K" . +kill-other)
+    ("x" . +kill-all)))
 
 ;;;; Ibuffer - Advanced buffer list
 (use-package ibuffer
@@ -176,9 +182,10 @@ The DWIM behaviour of this command is as follows:
 
 (use-package visual-fill-column-mode
   :straight (:type built-in)
-  :general
-  (leader-def
-    "tc" '+center-window)
+  :bind
+  (:map +toggle
+    ("C" . +center-window))
+
   :custom
   (visual-fill-column-width 250)
   (visual-fill-column-inhibit-sensible-window-split t)
@@ -201,10 +208,10 @@ The DWIM behaviour of this command is as follows:
 ;;; Windows
 (use-package ace-window
   :commands (ace-window ace-swap-window)
-  :general
-  (leader-def
-    "ww" 'ace-window
-    "wx" 'ace-swap-window))
+  :bind
+  (:map +windows
+    ("w" . ace-window)
+    ("x" . ace-swap-window)))
 
 (defun +split-vertically ()
   "Split the window to the right and focus it."
@@ -218,20 +225,27 @@ The DWIM behaviour of this command is as follows:
   (split-window-below)
   (windmove-down))
 
-(with-eval-after-load 'general
-  (leader-def
-    "|" '+split-vertically
-    "=" '+split-horizontally
-    "wh" 'evil-window-left
-    "wj" 'evil-window-down
-    "wk" 'evil-window-up
-    "wl" 'evil-window-right
-    "wd" 'delete-window
-    "ws" 'split-window-below
-    "wv" 'split-window-right
-    "wo" 'delete-other-windows
-    "w=" 'balance-windows
-    "tm" 'toggle-frame-maximized))
+
+(use-package emacs
+  :straight (:type built-in)
+  :bind
+  (:map my/leader-map
+    ("|" . +split-vertically)
+    ("=" . +split-horizontally))
+
+  (:map +windows
+    ("h" . windmove-left)
+    ("j" . windmove-down)
+    ("k" . windmove-up)
+    ("l" . windmove-right)
+    ("d" . delete-window)
+    ("s" . split-window-below)
+    ("v" . split-window-right)
+    ("o" . delete-other-windows)
+    ("=" . balance-windows))
+
+  (:map +toggle
+    ("m" . toggle-frame-maximized)))
 
 (provide 'core-buffers)
 ;;; buffers.el ends here

@@ -80,6 +80,11 @@ Checks MYMACS_CONTEXT environment variable first, then falls back to OS detectio
   :type 'string
   :group 'mymacs)
 
+(defcustom my/library-path "~/Library"
+  "Path to the library"
+  :type 'string
+  :group 'mymacs)
+
 (defcustom my/elfeed-directory "~/Documents/Local/Archive/Elfeed"
   "Path to the elfeed db directory."
   :type 'string

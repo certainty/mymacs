@@ -50,10 +50,12 @@
 (require 'core-dashboard)
 
 ;;; Dev
+
 (require 'dev-base)
 (require 'dev-format)
 (require 'dev-lispy)
 (require 'dev-elisp)
+
 (require 'dev-web)
 (require 'dev-go)
 
@@ -83,7 +85,8 @@
 (require 'tools-vc)
 (require 'tools-secrets)
 (require 'tools-terminal)
-(require 'tools-rss)
+(require 'tools-tmr)
+;;(require 'tools-rss)
 
 (when (my/context-work-p)
   (use-package consult-pmd
@@ -92,20 +95,18 @@
                  :local-repo ,(expand-file-name "local-packages/consult-pmd" user-emacs-directory)
                  :files ("*.el"))
     :commands (+pmd-projects +pmd-servicegroups +pmd-teams)
-    :general
-    (leader-def
-      "sp" '(:ignore t :which-key "pmd")
-      "spp" '+pmd-projects
-      "sps" '+pmd-servicegroups
-      "spt" '+pmd-teams
-      "spe" '+pmd-people))
-
+    :bind
+    (:map +pmd
+      ("p" . +pmd-projects)
+      ("s" . +pmd-servicegroups)
+      ("t" . +pmd-teams)
+      ("e" . +pmd-people)))
   (require 'tools-gh))
 
 ;;; AI
-(require 'ai-gptel)
-(when (my/context-work-p)
-  (require 'ai-copilot))
+;; (require 'ai-gptel)
+;; (when (my/context-work-p)
+;;   (require 'ai-copilot))
 
 (provide 'init)
 ;;; init.el ends here

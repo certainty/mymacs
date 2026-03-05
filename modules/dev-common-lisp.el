@@ -56,78 +56,10 @@
       (progn
         (load "~/.local/share/quicklisp/log4sly-setup.el")
         (global-log4sly-mode 1))
-      (message "log4sly not found")))
-
-  :general
-  (local-leader-def
-    :keymaps 'sly-mode-map
-    "e" '(:ignore t :which-key "export")
-    "es" 'sly-export-symbol-at-point
-    "eS" 'sly-export-struct
-    "ec" 'sly-export-class
-
-    "!" '(:ignore t :which-key "diagnostics")
-    "!c" 'sly-remove-notes
-    "!n" 'sly-next-note
-    "!e" 'sly-next-error
-
-    "c" '(:ignore t :which-key "compile")
-    "cc" 'sly-compile-defun
-    "cf" 'sly-compile-file
-    "cs" 'sly-compile-and-load-file
-    "cr" 'sly-compile-region
-    "cl" 'sly-load-file
-
-    "h" '(:ignore t :which-key "help")
-    "h." 'sly-describe-symbol
-    "hh" 'hyperspec-lookup
-    "h~" 'hyperspec-lookup-format
-    "#"  'hyperspec-lookup-reader-macro
-    "d"  'sly-documentation-lookup
-
-    "x" '(:ignore t :which-key "xref")
-    "xa" 'sly-apropos
-    "xp" 'sly-apropos-package
-    "x<" 'sly-who-calls
-    "x>" 'sly-calls-who
-    "xx" 'sly-who-references
-    "xm" 'sly-who-macroexpands
-    "xs" 'sly-who-sets
-    "xS" 'sly-who-specializes
-
-    "r" '(:ignore t :which-key "repl")
-    "rr" '+open-repl
-    "rc" '+open-repl-select
-    "rC" 'sly-mrepl-clear-repls
-    "rl" 'sly-asdf-load-system
-    "rR" 'sly-restart-inferior-lisp
-    "rp" '+reload-project
-    "rs" 'sly-mrepl-sync
-
-    "s" '(:ignore t :which-key "stickers")
-    "sb" 'sly-stickers-toggle-break-on-stickers
-    "sc" 'sly-stickers-clear-defun-stickers
-    "sC" 'sly-sitckers-clear-buffer-stickers
-    "sf" 'sly-stickers-fetch
-    "ss" 'sly-sickers-dwim
-
-    "t" '(:ignore t :which-key "trace")
-    "tt" 'sly-trace-dialog-toggle-trace
-    "tT" 'sly-trace-dialog-toggle-complex-trace
-    "td" 'sly-trace-dialog
-    "tu" 'sly-trace-dialog-untrace-all))
+      (message "log4sly not found"))))
 
 (use-package sly-asdf
   :after sly
-  :general
-  (local-leader-def
-    :keymaps 'sly-mode-map
-    "a" '(:ignore t :which-key "asdf")
-    "ar" 'sly-asdf-reload-system
-    "ac" 'sly-asdf-compile-system
-    "al" 'sly-asdf-load-system
-    "ab" 'sly-asdf-browse-system
-    "at" 'sly-asdf-test-system)
   :init
   (add-to-list 'sly-contribs 'sly-asdf 'append))
 

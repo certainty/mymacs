@@ -10,9 +10,10 @@
 
 (use-package dashboard
   :demand t
-  :general
-  (leader-def
-    "xd" 'dashboard-open)
+  :bind
+  (:map +do
+    ("d" . dashboard-open))
+
   :custom
   (dashboard-items '((recents . 5)
                       (projects . 8)
@@ -65,8 +66,8 @@
 
   :config
 
-  (use-package hide-mode-line
-    :demand t)
+  (use-package hide-mode-line :demand t)
+
   (add-hook 'dashboard-mode-hook #'hide-mode-line-mode)
 
   ;; Use dashboard as initial buffer

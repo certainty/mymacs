@@ -92,6 +92,24 @@
 
 (use-package helpful
   :bind
+  (:map +help-search
+    ("f" . helpful-callable)
+    ("F" . helpful-function)
+    ("v" . helpful-variable)
+    ("k" . helpful-key)
+    ("c" . helpful-command)
+    ("s" . helpful-symbol)
+    ("." . helpful-at-point)
+    ("m" . describe-mode)
+    ("b" . describe-bindings)
+    ("K" . describe-keymap)
+    ("a" . apropos)
+    ("A" . apropos-documentation)
+    ("P" . describe-package)
+    ("C" . describe-char)
+    ("T" . describe-theme)
+    ("x" . describe-syntax))
+
   (([remap describe-function] . helpful-callable)
     ([remap describe-variable] . helpful-variable)
     ([remap describe-key] . helpful-key)
@@ -100,57 +118,35 @@
   :custom
   (helpful-max-buffers 2))
 
-(with-eval-after-load 'general
-  (leader-def
-    "sh" '(:ignore t :which-key "help")
-    "shf" 'helpful-callable
-    "shF" 'helpful-function
-    "shv" 'helpful-variable
-    "shk" 'helpful-key
-    "shc" 'helpful-command
-    "shs" 'helpful-symbol
-    "sh." 'helpful-at-point
-
-    "shm" 'describe-mode
-    "shb" 'describe-bindings
-    "shK" 'describe-keymap
-    "sha" 'apropos
-    "shA" 'apropos-documentation
-
-    "shw" 'woman
-    "shi" 'info
-    "she" '+emacs-manual
-    "shE" '+elisp-manual
-
-    "shP" 'describe-package
-    "shC" 'describe-char
-    "shT" 'describe-theme
-    "shx" 'describe-syntax
-
-    "shd" '(:ignore t :which-key "describe")
-    "shdf" '+describe-face-at-point
-    "shdF" 'describe-face
-    "shdp" 'describe-text-properties
-    "shl" '(:ignore t :which-key "language")
-    "shlg" '+go-doc
-    "shlr" '+ruby-doc
-    "shls" '+scala-doc
-    "shD" 'devdocs-lookup
-    "shS" 'devdocs-search
-    ;; Which-key
-    "sh?" 'which-key-show-top-level
-    "shW" 'which-key-show-major-mode)
-
-  (when (eq system-type 'gnu/linux)
-    (leader-def
-      "shz" 'zeal-at-point
-      "shZ" 'zeal-at-point-search)))
-
 ;;;; Info mode enhancements
 (use-package info
   :straight (:type built-in)
+  :bind
+  (:map  +help-search
+    ("i" . info)
+    ("I" . info-apropos)
+    ("w" . woman)
+    ("e" . +emacs-manual)
+    ("E" . +elisp-manual))
   :custom
   (Info-use-header-line nil))
+
+
+(use-package emacs
+  :straight (:type built-in)
+  :preface
+  (define-prefix-command '+language)
+  (define-key +help-search "l" +language)
+
+  :bind
+  (:map +language
+    ("g" . +go-doc)
+    ("r" . +ruby-doc)
+    ("s" . +scala-doc)
+    ("d" . devdocs-lookup)
+    ("D" . devdocs-search)
+    ("z" . zeal-at-point)
+    ("Z" . zeal-at-point-search)))
 
 (provide 'core-help)
 ;;; core-help.el ends here

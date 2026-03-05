@@ -68,21 +68,13 @@ Functions are called with one argument: either 'light or 'dark.")
 (use-package mood-line
   :hook after-init
   :custom
-  (mood-line-glyph-alist mood-line-glyphs-unicode)
-  (mood-line-segment-modal-evil-state-alist
-    '((normal  . ("🅝" . font-lock-variable-name-face))
-       (insert  . ("🅘" . font-lock-string-face))
-       (visual  . ("🅥" . font-lock-keyword-face))
-       (replace . ("🅡" . font-lock-type-face))
-       (motion  . ("🅜" . font-lock-constant-face))
-       (operator . ("🅞" . font-lock-function-name-face))
-       (emacs   . ("🄴" . font-lock-builtin-face)))))
+  (mood-line-glyph-alist mood-line-glyphs-unicode))
 
 (use-package modus-themes
   :demand t
-  :general
-  (leader-def
-    "tt" 'modus-themes-toggle)
+  :bind
+  (:map +toggle
+    ("t" . modus-themes-toggle))
   :custom
   (modus-themes-to-toggle '(modus-vivendi modus-operandi))
   (modus-themes-mode-line '(moody))
@@ -135,12 +127,28 @@ Functions are called with one argument: either 'light or 'dark.")
 ;;; Fonts
 (use-package fontaine
   :hook after-init
-  :general
-  (leader-def
-    "tf" '(:ignore t :which-key "font")
-    "tfa" 'text-scale-adjust
-    "tff" '(my/toggle-font-bigger :which-key "bigger")
-    "tfp" '(my/toggle-font-presentation :which-key "presentation"))
+  :preface
+  (defun +font-bigger ()
+    (interactive)
+    (if (eq fontaine-current-preset 'bigger)
+      (fontaine-set-preset 'regular)
+      (fontaine-set-preset 'bigger)))
+
+  (defun +font-presentation ()
+    (interactive)
+    (if (eq fontaine-current-preset 'presentation)
+      (fontaine-set-preset 'regular)
+      (fontaine-set-preset 'presentation)))
+
+  (define-prefix-command '+font)
+  (define-key +toggle (kbd "f") (cons "+font" +font))
+
+
+  :bind
+  (:map +font
+    ("a" . text-scale-adjust)
+    ("f" . +font-bigger)
+    ("p" . +font-presentation))
   :custom
   (x-underline-at-descent-line nil)
   (fontaine-presets
@@ -161,20 +169,6 @@ Functions are called with one argument: either 'light or 'dark.")
 
          :variable-pitch-family ,my/pitch-font
          :variable-pitch-height 1.0)))
-
-  :preface
-  (defun my/toggle-font-bigger ()
-    (interactive)
-    (if (eq fontaine-current-preset 'bigger)
-      (fontaine-set-preset 'regular)
-      (fontaine-set-preset 'bigger)))
-
-  (defun my/toggle-font-presentation ()
-    (interactive)
-    (if (eq fontaine-current-preset 'presentation)
-      (fontaine-set-preset 'regular)
-      (fontaine-set-preset 'presentation)))
-
   :config
   (fontaine-set-preset 'regular)
   (diminish 'fontaine-mode))
@@ -197,11 +191,6 @@ Functions are called with one argument: either 'light or 'dark.")
        ("XXX"     . "#BF616A")
        ("TEMP"    . "#D08770")
        ("DEBUG"   . "#EBCB8B")))
-  :general
-  (leader-def
-    "sH" 'hl-todo-occur
-    "sT" 'hl-todo-next
-    "sP" 'hl-todo-previous)
   :config
   (diminish 'hl-todo-mode))
 
