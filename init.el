@@ -89,8 +89,8 @@
 ;;(require 'tools-rss)
 
 (when (my/context-work-p)
-  (require 'ai-agent-shell)
-  (require 'ai-minuet))
+  (require 'ai-gptel)
+  (require 'ai-agent-shell))
 
 (provide 'init)
 ;;; init.el ends here

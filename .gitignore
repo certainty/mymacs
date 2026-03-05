@@ -31,3 +31,4 @@ data/devdocs/*
 places
 places
 /forge-database.sqlite
+/.agent-shell/

@@ -24,55 +24,22 @@
     ("C-c C-f" . gptel-add-file))
 
   :config
-  (defun my/gptel--openrouter-key ()
-    (my/lookup-password :host "openrouter.ai" :user "apikey"))
-
-  (defun my/gptel--openrouter-backend ()
-    (when-let ((api-key (my/gptel--openrouter-key)))
-      (gptel-make-openai "OpenRouter"
-        :host "openrouter.ai"
-        :endpoint "/api/v1/chat/completions"
-        :stream t
-        :key api-key
-        :models '(
-                   openai/gpt-5.1-codex
-                   openai/gpt-5.1-codex-mini
-                   openai/gpt-5.2-chat
-                   openai/gpt-4o-mini
-                   openai/gpt-5-nano
-
-                   anthropic/claude-opus-4.5
-                   anthropic/claude-sonnet-4
-                   anthropic/claude-haiku-4.5
-                   anthropic/claude-3.5-haiku
-                   google/gemini-3-flash-preview
-                   google/gemini-2.5-pro
-                   qwen/qwen3-coder-plus))))
-
   (defun my/gptel--ollama-backend ()
     (when (executable-find "ollama")
-      (gptel-make-ollama "Ollama"
-        :host (or (getenv "OLLAMA_HOST") "localhost")
-        :stream t
-        :models '("llama3" "llama3.1" "phi3" "mistral"))))
+      (gptel-make-ollama
+        "Ollama"
+        :host "127.0.0.1:11434"
+        :protocol "http"
+        :endpoint "/api/chat"
+        :models '(qwen2.5-coder:latest)
+        :stream t)))
 
   (defun my/gptel--select-backend ()
-    (cond
-      ((my/context-work-p)
-        (setopt gptel-model 'claude-sonnet-4
-          gptel-backend (gptel-make-gh-copilot "Copilot")))
-      ((my/context-private-p)
-        (let ((openrouter (my/gptel--openrouter-backend))
-               (ollama (my/gptel--ollama-backend)))
-          (when openrouter
-            (setopt gptel-backend openrouter
-              gptel-model 'gpt-5-nano))
-          (unless gptel-backend
-            (when ollama
-              (setopt gptel-backend ollama
-                gptel-model 'llama3)))
-          (unless gptel-backend
-            (message "gptel: no private backend configured. Add an OpenRouter token to secrets/authinfo.gpg or ensure Ollama is running."))))))
+    (let ((ollama (my/gptel--ollama-backend)))
+      (if ollama
+        (setopt gptel-backend ollama
+          gptel-model (intern "qwen2.5-coder:latest"))
+        (message "gptel: Ollama backend not available. Ensure `ollama` is installed and the server is running."))))
 
   (setopt gptel-expert-commands t
     gptel-default-mode 'org-mode

@@ -65,10 +65,22 @@ Functions are called with one argument: either 'light or 'dark.")
       #'my/gnome-theme-file-changed)))
 
 ;; Mode-line: Mood-line
+(defconst my/mood-line-checker-glyphs
+  '((:checker-info . ?\uf05a)       ;; info-circle
+    (:checker-issues . ?\uf071)     ;; exclamation-triangle
+    (:checker-good . ?\uf00c)       ;; check
+    (:checker-checking . ?\uf110)   ;; spinner
+    (:checker-errored . ?\uf00d)    ;; times
+    (:checker-interrupted . ?\uf04c)) ;; pause
+  "Checker glyphs that map to common Nerd Font codepoints.")
+
 (use-package mood-line
   :hook after-init
-  :custom
-  (mood-line-glyph-alist mood-line-glyphs-unicode))
+  :config
+  (let ((glyphs (copy-tree mood-line-glyphs-unicode)))
+    (dolist (pair my/mood-line-checker-glyphs)
+      (setf (alist-get (car pair) glyphs) (cdr pair)))
+    (setq mood-line-glyph-alist glyphs)))
 
 (use-package modus-themes
   :demand t
@@ -194,7 +206,6 @@ Functions are called with one argument: either 'light or 'dark.")
        (?| . ("||" "|="))
        (?& . ("&&" "&="))
        (?+ . ("++" "+="))
-       (?* . ("**" "*="))
        (?~ . ("~~" "~="))
        (?: . ("::" ":="))
        (?# . ("###" "##"))
