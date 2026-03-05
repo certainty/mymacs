@@ -89,24 +89,8 @@
 ;;(require 'tools-rss)
 
 (when (my/context-work-p)
-  (use-package consult-pmd
-    :straight `(consult-pmd
-                 :type nil
-                 :local-repo ,(expand-file-name "local-packages/consult-pmd" user-emacs-directory)
-                 :files ("*.el"))
-    :commands (+pmd-projects +pmd-servicegroups +pmd-teams)
-    :bind
-    (:map +pmd
-      ("p" . +pmd-projects)
-      ("s" . +pmd-servicegroups)
-      ("t" . +pmd-teams)
-      ("e" . +pmd-people)))
-  (require 'tools-gh))
-
-;;; AI
-;; (require 'ai-gptel)
-;; (when (my/context-work-p)
-;;   (require 'ai-copilot))
+  (require 'ai-agent-shell)
+  (require 'ai-minuet))
 
 (provide 'init)
 ;;; init.el ends here
