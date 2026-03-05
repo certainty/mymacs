@@ -64,21 +64,4 @@
   (mapcar (apply-partially #'apply #'gptel-make-tool)
     (llm-tool-collection-get-tag 'editing)))
 
-
-(use-package elysium
-  :preface
-  (define-prefix-command '+elysium)
-  (define-key +ai (kbd "e") (cons "+elysium" +elysium))
-
-  :bind
-  (:map +elysium
-    ("e" . elysium-query)
-    ("c" . elysium-add-context)
-    ("w" . elysium-toggle-window)
-    ("a" . elysium-keep-all-suggested-changes)
-    ("d" . elysium-discard-all-suggested-changes))
-  :custom
-  (elysium-window-size 0.33)
-  (elysium-window-style 'vertical))
-
 (provide 'ai-gptel)
