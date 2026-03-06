@@ -27,10 +27,6 @@
 (use-package display-line-numbers
   :straight (:type built-in)
   :hook prog-mode
-  :bind
-  (:map +toggle
-    ("l" . display-line-numbers-mode))
-
   :custom
   (display-line-numbers-type t)
   (display-line-numbers-width-start t))

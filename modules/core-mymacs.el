@@ -64,11 +64,6 @@
     (interactive)
     (find-file (my/authinfo-path)))
 
-  :bind
-  (:map +explore
-    ("i" . +init-file)
-    ("m" . +init-module))
-
   :init)
 
 (provide 'core-mymacs)

@@ -6,18 +6,6 @@
 ;;; Code:
 
 (use-package consult-gh
-  :preface
-  (define-prefix-command '+github-search-map)
-  (define-key +search (kbd "G") +github-search-map)
-
-  :bind
-  (:map +github-search-map
-    ("g" . consult-gh-repo-list)
-    ("u" . consult-gh-user-repos)
-    ("f" . consult-gh-favorite-repos)
-    ("p" . consult-gh-pr-list)
-    ("a" . consult-gh-run-list)
-    ("d" . consult-gh-dashboard))
   :custom
   (consult-gh-default-clone-directory my/repositories-path)
   (consult-gh-show-preview t)

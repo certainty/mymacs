@@ -1,25 +1,14 @@
 ;;; ai-agent-shell.el --- Agent Shell integration -*- lexical-binding: t; -*-
 
-(define-prefix-command '+agent-shell)
-(define-key +ai (kbd "s") (cons "+agent-shell" +agent-shell))
-
-
 (use-package agent-shell
   :straight (agent-shell :type git :host github :repo "xenodium/agent-shell")
   :ensure-system-package
   ((codex-acp . "brew install codex-acp"))
 
   :bind
-  ((:map +ai
-     ("s" . agent-shell)
-     ("A" . agent-shell-new-shell)
-     ("p" . agent-shell-prompt-compose)
-     ("s" . agent-shell-send-screenshot)
-     ("t" . agent-shell-toggle)
-     ("h" . agent-shell-help-menu))
-    (:map agent-shell-mode-map
-      ("C-c C-r" . agent-shell-rename-buffer)
-      ("C-c C-l" . agent-shell-clear-buffer)))
+  ((:map agent-shell-mode-map
+     ("C-c C-r" . agent-shell-rename-buffer)
+     ("C-c C-l" . agent-shell-clear-buffer)))
 
   :custom
   (agent-shell-session-strategy 'reuse)
@@ -28,8 +17,6 @@
   (agent-shell-preferred-agent-config #'agent-shell-openai-make-agent-config)
 
   :init
-  (define-key my/leader-map (kbd ",") (cons "codex" 'agent-shell-openai-start-codex))
-
   (my/window-rule! agent-shell-mode :align right :size 0.45 :select t)
   (my/window-rule! agent-shell-viewport-edit-mode :align right :size 0.45 :select t)
 
@@ -43,18 +30,11 @@
 (use-package agent-review
   :straight (agent-review :type git :host github :repo "nineluj/agent-review")
   :after agent-shell
-  :bind
-  (:map +ai
-    ("r" . agent-review))
   :commands agent-review)
 
 (use-package agent-shell-attention
   :straight (agent-shell-attention :type git :host github :repo "ultronozm/agent-shell-attention.el")
   :after agent-shell
-  :bind
-  (:map +ai
-    ("d" . agent-shell-attention-dashboard)
-    ("j" . agent-shell-attention-jump))
   :custom
   (agent-shell-attention-indicator-location 'mode-line-misc-info)
   (agent-shell-attention-render-function #'agent-shell-attention-render-active)
@@ -64,9 +44,6 @@
 (use-package agent-shell-manager
   :straight (agent-shell-manager :type git :host github :repo "jethrokuan/agent-shell-manager")
   :after agent-shell
-  :bind
-  (:map +ai
-    ("m" . agent-shell-manager-toggle))
   :custom
   (agent-shell-manager-side 'bottom)
   (agent-shell-manager-transient t)

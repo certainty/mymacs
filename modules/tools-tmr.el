@@ -6,11 +6,6 @@
 ;;; Code:
 
 (use-package tmr
-  :bind
-  (:map +do
-    ("c" . tmr)
-    ("C" . tmr-prefix-map))
-
   :custom
   (tmr-sound-file "/usr/share/sounds/freedesktop/streo/alarm-clock-elapsed.oga")
   (tmr-notification-urgency 'normal)

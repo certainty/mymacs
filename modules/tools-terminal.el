@@ -17,10 +17,6 @@
     :before (lambda () (vterm-reset-cursor-point))))
 
 (use-package vterm-toggle
-  :bind
-  (:map +do
-    ("t" . vterm-toggle)
-    ("T" . vterm-toggle-cd))
   :custom
   (vterm-toggle-fullscreen-p nil)
   (vterm-toggle-scope 'project)

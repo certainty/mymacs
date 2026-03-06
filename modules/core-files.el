@@ -56,10 +56,6 @@
   :hook
   (dired-mode . dired-omit-mode)
   (dired-mode . hl-line-mode)
-  :bind
-  (:map +explore
-    ("e" . 'dired-jump))
-
   :custom
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
@@ -131,16 +127,6 @@
   :custom
   (wdired-allow-to-change-permissions t)
   (wdired-create-parent-directories t))
-
-(use-package emacs
-  :straight (:type built-in)
-  :bind
-  (:map +explore
-    ("b" . ibuffer))
-
-  (:map +buffers
-    ("r" . revert-buffer)
-    ("b" . switch-to-buffer)))
 
 (provide 'core-files)
 ;;; core-files.el ends here

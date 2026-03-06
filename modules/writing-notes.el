@@ -11,38 +11,6 @@
   ((dired-mode . denote-dired-mode)
     (denote-mode-hook . (lambda () (corfu-mode -1))))
 
-  :bind
-  (:map +notes
-    ("n" . denote)
-    ("N" . denote-subdirectory)
-    ("t" . denote-type)
-    ("T" . denote-template)
-    ("d" . denote-date)
-
-    ("l" . denote-find-link)
-    ("L" . denote-find-backlink)
-    ("i" . denote-link)
-    ("a" . denote-add-links)
-    ("b" . denote-backlinks)
-
-    ("f r" . denote-rename-file)
-    ("f R" . denote-rename-file-using-front-matter)
-
-    ("f" . denote-open-or-create)
-    ("F" . denote-open-or-create-with-command))
-  (:map +org-search
-    ("x" . +psearch-org))
-  (:map +notes-search
-    ("n" . consult-notes)
-    ("g" . +consult-grep-notes)
-    ("N" . denote-find)
-    ("x" . +psearch-notes)
-    ("d" . +psearch-documents))
-
-  (:map +notes-goto
-    ("n" . +browse-notes)
-    ("m" . +browse-managed-documents))
-
   :preface
   (defun +browse-notes ()
     (interactive)
@@ -104,14 +72,6 @@
               denote-silo-select-silo-then-command
               denote-silo-dired
               denote-silo-cd )
-  :bind
-  (:map +notes
-    ("S" . denote-silo-select-silo-then-command)
-    ("sc" . denote-silo-create-note)
-    ("sn" . denote-silo-open-or-create)
-    ("se" . denote-silo-dired)
-    ("ss" . denote-silo-cd))
-
   :config
   (setq denote-silo-directories
     (list denote-directory

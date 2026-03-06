@@ -3,23 +3,6 @@
 
 (use-package org
   :hook (org-after-todo-state-change . save-buffer)
-  :bind
-  (:map +org
-    ("a" . +personal-agenda)
-    ("A" . org-agenda)
-    ("c" . org-capture)
-    ("t" . +capture-task)
-    ("n" . +capture-note)
-    ("e" . +capture-event)
-    ("d" . +capture-decision))
-  (:map +org-search
-    ("o" . consult-org-agenda)
-    ("O" . +org-ripgrep))
-  (:map +org-goto
-    ("l" . +goto-log)
-    ("t" . +goto-tasks)
-    ("c" . +goto-contacts)
-    ("o" . +browse-org))
   :custom
   (org-id-link-to-org-use-id t)
   (org-todo-keywords
@@ -296,11 +279,6 @@
 (my/with-popper! "*Org Agenda.*")
 
 (use-package org-project-capture
-  :bind
-  (:map +org
-    ("p" . org-project-capture-capture-for-current-project)
-    ("P" . org-project-capture-project-todo-completing-read))
-
   :custom
   (org-project-capture-backend (make-instance 'org-project-capture-project-backend))
   (org-project-capture-capture-template "* TODO %?
@@ -322,10 +300,6 @@
 
 (use-package org-caldav
   :if (my/context-private-p)
-  :bind
-  (:map +org
-    ("S" . org-caldav-sync))
-
   :custom
   (org-caldav-url "https://drive.krentzlin.me/remote.php/dav/calendars/david")
   (org-caldav-files nil)

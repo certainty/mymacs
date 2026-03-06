@@ -149,13 +149,6 @@ Functions are called with one argument: either 'light or 'dark.")
       (fontaine-set-preset 'regular)
       (fontaine-set-preset 'presentation)))
 
-  (define-prefix-command '+font)
-  (define-key +toggle (kbd "f") (cons "+font" +font))
-
-
-  :bind
-  (:map +buffers
-    (">" . text-scale-adjust))
   :custom
   (x-underline-at-descent-line nil)
   (fontaine-presets

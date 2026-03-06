@@ -10,10 +10,6 @@
 
 (use-package dashboard
   :demand t
-  :bind
-  (:map +do
-    ("d" . dashboard-open))
-
   :custom
   (dashboard-items '((recents . 5)
                       (projects . 8)

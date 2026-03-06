@@ -8,19 +8,6 @@
 
 ;;;; Consult - Enhanced commands
 (use-package consult
-  :bind
-  (:map +language
-    ("d" . consult-flymake))
-
-  (:map +search
-    ("B" . consult-buffer)
-    ("r" . consult-recent-file)
-    ("@" . consult-bookmark)
-    ("j" . consult-global-mark) ;; jump list
-    ("l" . consult-line)
-    ("L" . consult-line-multi)
-    ("r" . consult-ripgrep))
-
   :custom
   (consult-narrow-key "<")
   (consult-project-function (lambda (_) (project-root (project-current))))
@@ -77,9 +64,6 @@
     (let ((default-directory (expand-file-name my/library-path)))
       (call-interactively #'p-search)))
 
-  :bind
-  (:map +search
-    ("x" . p-search))
   :custom
   (p-search-default-searcher 'rg)
   (p-search-default-save-buffers 'ask)
@@ -99,8 +83,6 @@
       (let ((url (cdr (assoc selection  my/quicklinks))))
         (when url
           (browse-url url))))))
-
-(define-key +search "q" '+quicklink)
 
 (provide 'core-search)
 ;;; core-search.el ends here

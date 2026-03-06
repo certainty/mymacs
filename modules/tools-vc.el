@@ -7,21 +7,6 @@
 ;;; Code:
 (use-package vc
   :straight (:type built-in)
-  :bind
-  (:map +vc
-    ("v" . vc-next-action)
-    ("c" . project-vc-dir)
-    ("." . vc-dir)
-    ("i" . vc-log-incoming)
-    ("o" . vc-log-outgoing)
-    ("d" . vc-root-diff)
-    ("a" . vc-annotate)
-    ("F" . vc-update)
-    ("P" . vc-push))
-
-  (:map +vc-search
-    ("l" . vc-log-search))
-
   :custom
   (vc-follow-symlinks t)
 
@@ -78,11 +63,6 @@
   :hook
   ((diff-mode . agitate-diff-enable-outline-minor-mode))
   :bind
-  (:map +vc-search-map
-    ("g" . agitate-vc-git-grep)
-    ("G" . agitate-vc-git-grep-symbol-at-point)
-    ("F" . agitate-vc-git-find-revision)
-    ("C" . agitate-vc-git-commit-search))
   (:map vc-dir-mode-map
     ("C-c G" . agitate-vc-git-grep)
     ("C-c g" . agitate-vc-git-grep-symbol-at-point)
@@ -98,12 +78,6 @@
   (agitate-log-edit-informative-mode))
 
 (use-package magit
-  :bind
-  (:map +vc
-    ("s" . magit-status)
-    ("B" . magit-blame-addition)
-    ("l" . magit-log-buffer-file)
-    ("L" . magit-log-all))
   :custom
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
   (magit-bury-buffer-function #'magit-restore-window-configuration)
@@ -122,8 +96,6 @@
 (use-package smerge-mode
   :straight (:type built-in)
   :bind
-  (:map +vc
-    ("=" . smerge-mode))
   (:map smerge-mode-map
     ("C-c m" . smerge-keep-mine)
     ("C-c o" . smerge-keep-other)

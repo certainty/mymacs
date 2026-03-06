@@ -5,11 +5,6 @@
   ((:map mymacs-mode-map
      ("C-M-i" . minuet-complete-with-minibuffer)
      ("M-i" . minuet-show-suggestion))
-    (:map +minuet
-      ("m" . minuet-show-suggestion)
-      ("y" . minuet-complete-with-minibuffer)
-      ("c" . minuet-configure-provider)
-      ("a" . minuet-auto-suggestion-mode))
     (:map minuet-active-mode-map
       ("C-p" . minuet-previous-suggestion)
       ("C-n" . minuet-next-suggestion)

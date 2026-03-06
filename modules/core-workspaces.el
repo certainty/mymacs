@@ -9,24 +9,6 @@
 
 (use-package project
   :straight (:type built-in)
-  :bind
-  (:map my/leader-map
-    ("/" . consult-ripgrep)
-    ("*" . +find-symbol)
-    ("f" . project-find-file))
-  (:map +project
-    ("p" . project-switch-project)
-    ("B" . project-switch-to-buffer)
-    ("b" . consult-project-buffer)
-    ("d" . project-dired)
-    ("s" . consult-ripgrep)
-    ("k" . project-kill-buffers)
-    ("D" . project-forget-project)
-    ("c" . project-compile))
-
-  (:map +project-search
-    ("p" . consult-ripgrep))
-
   :custom
   (project-switch-commands
     '((project-find-file "Find file" ?f)
@@ -51,18 +33,6 @@
   :hook (after-init . tabspaces-mode)
   :commands (tabspaces-switch-or-create-workspace
               tabspaces-open-or-create-project-and-workspace)
-  :bind
-  (:map +workspaces
-    ("TAB" . tabspaces-switch-or-create-workspace)
-    (">" . tabspaces-switch-or-create-workspace)
-    ("d" . tabspaces-close-workspace)
-    ("b" . tabspaces-switch-to-buffer)
-    ("k" . tabspaces-kill-buffers-close-workspace)
-    ("R" . tabspaces-restore-session)
-    ("S" . tabspaces-save-session)
-    ("C" . tabspaces-clear-buffers)
-    ("." . tabspaces-switch-buffer-and-tab))
-
   :custom
   (tabspaces-use-filtered-buffers-as-default t)
   (tabspaces-default-tab "Default")

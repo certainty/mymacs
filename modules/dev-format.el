@@ -107,6 +107,4 @@ Possible values:
 
 (add-hook 'before-save-hook #'+format-on-save nil)
 
-(define-key +toggle "o" #'+toggle-format-on-save)
-
 (provide 'dev-format)

@@ -3,8 +3,6 @@
 
 (use-package gptel
   :bind
-  (:map +ai
-    ("." . gptel-send))
   (:map gptel-mode-map
     ("C-c C-s" . gptel-stop-streaming)
     ("C-c C-c" . gptel-send)

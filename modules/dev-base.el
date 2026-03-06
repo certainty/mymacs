@@ -17,20 +17,8 @@
 (use-package eglot
   :straight (:type built-in)
   :commands (eglot eglot-ensure)
-  :preface
-  (define-prefix-command '+eglot)
-  (define-key +do (kbd "c") (cons "+eglot" +eglot))
   :init
   (setq eglot-stay-out-of '(flymake))
-  :bind
-  (:map +eglot
-    ("R" . eglot-reconnect)
-    ("f" . eglot-format)
-    ("a" . eglot-code-actions)
-    ("r" . eglot-rename)
-    ("q" . eglot-shutdown)
-    ("c" . eglot-list-connections)
-    ("i" . eglot-inlay-hints-mode))
   :custom
   (eglot-report-progress nil)
   (eglot-extend-to-xref t)

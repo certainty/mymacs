@@ -53,17 +53,10 @@
   :hook after-init
 
   :preface
-  (define-prefix-command '+popper)
-  (define-key my/leader-map (kbd "bp") +popper)
-
   (cl-defun my/with-popper! (&rest config)
     (with-eval-after-load 'popper
       (cl-dolist (c config)
         (add-to-list 'popper-reference-buffers c))))
-
-  :bind
-  (:map +buffer
-    ("c" . popper-cycle))
 
   :custom
   (popper-reference-buffers
@@ -82,15 +75,6 @@
   (global-set-key (kbd "C-/") #'popper-toggle)
   (popper-echo-mode 1)
   (diminish 'popper-mode))
-
-(use-package emacs
-  :straight (:type built-in)
-  :bind
-  (:map +buffers
-    ("d" . +kill-current)
-    ("r" . revert-buffer)
-    ("z" . bury-buffer)
-    ("D" . +kill-all)))
 
 ;;;; Ibuffer - Advanced buffer list
 (use-package ibuffer
@@ -150,10 +134,6 @@ The DWIM behaviour of this command is as follows:
 
 (use-package visual-fill-column-mode
   :straight (:type built-in)
-  :bind
-  (:map +windows
-    ("c" . +center-window))
-
   :custom
   (visual-fill-column-width 250)
   (visual-fill-column-inhibit-sensible-window-split t)
@@ -175,11 +155,7 @@ The DWIM behaviour of this command is as follows:
 
 ;;; Windows
 (use-package ace-window
-  :commands (ace-window ace-swap-window)
-  :bind
-  (:map +windows
-    ("w" . ace-window)
-    ("x" . ace-swap-window)))
+  :commands (ace-window ace-swap-window))
 
 (defun +split-vertically ()
   "Split the window to the right and focus it."
@@ -192,26 +168,6 @@ The DWIM behaviour of this command is as follows:
   (interactive)
   (split-window-below)
   (windmove-down))
-
-
-(use-package emacs
-  :straight (:type built-in)
-  :bind
-  (:map my/leader-map
-    ("|" . +split-vertically)
-    ("=" . +split-horizontally))
-
-  (:map +windows
-    ("m" . toggle-frame-maximized)
-    ("h" . windmove-left)
-    ("j" . windmove-down)
-    ("k" . windmove-up)
-    ("l" . windmove-right)
-    ("d" . delete-window)
-    ("s" . split-window-below)
-    ("v" . split-window-right)
-    ("o" . delete-other-windows)
-    ("=" . balance-windows)))
 
 (provide 'core-buffers)
 ;;; buffers.el ends here

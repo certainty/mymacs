@@ -1,9 +1,6 @@
 ;;; core-mymacs.el --- configure mymacs -*- lexical-binding: t; -*-
 
 (use-package elfeed
-  :bind
-  (:map +do
-    ("r" . elfeed))
   :custom
   (elfeed-search-filter "@2-week-ago +unread ")
   (elfeed-db-directory
