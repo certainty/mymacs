@@ -91,7 +91,17 @@
 (when (my/context-work-p)
   (require 'ai-gptel)
   ;;(require 'ai-minuet)
-  (require 'ai-agent-shell))
+  (require 'ai-agent-shell)
+
+  (use-package consult-pmd
+    :straight `(consult-pmd
+                 :type nil
+                 :local-repo ,(expand-file-name "local-packages/consult-pmd" user-emacs-directory)
+                 :files ("*.el"))
+    :custom
+    (my/code-path "~/NewWork/Code")
+    (my/code-temp-path "~/tmp/")
+    :commands (+pmd-projects +pmd-servicegroups +pmd-teams)))
 
 (provide 'init)
 ;;; init.el ends here

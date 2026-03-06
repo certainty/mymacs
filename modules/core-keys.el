@@ -208,7 +208,10 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("g" . (cons "VC Repo Grep" 'agitate-vc-git-grep))
     ("w" . (cons "Window Avy Word" 'my/avy-goto-char-timer-and-mark-word))
     ("x" . (cons "Project P-Search" 'p-search))
-    ("q" . (cons "Quicklink" '+quicklink)))
+    ("q" . (cons "Quicklink" '+quicklink))
+    ("P" . (cons "PMD projects" '+pmd-projects))
+    ("T" . (cons "PMD teams" '+pmd-teams))
+    ("E" . (cons "PMD People" '+pmd-people)))
 
   (+goto/act
     ("g" . (cons "Buffer Start" 'beginning-of-buffer))

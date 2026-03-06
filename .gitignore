@@ -32,3 +32,5 @@ places
 places
 /forge-database.sqlite
 /.agent-shell/
+
+.agent-ops/
