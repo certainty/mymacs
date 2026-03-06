@@ -6,7 +6,7 @@
 ;;
 ;;; Code:
 
-(define-prefix-command '+workspaces) 
+(define-prefix-command '+workspaces)
 (define-prefix-command '+workspaces-search)
 (define-prefix-command '+workspaces-goto)
 
@@ -42,11 +42,9 @@
 (define-prefix-command '+windows)
 (define-prefix-command '+do)
 
-(define-prefix-command '+pmd)
-
 (define-prefix-command '+goto/act)
 (define-prefix-command '+search)
-(define-prefix-command '+previous) 
+(define-prefix-command '+previous)
 (define-prefix-command '+next)
 
 (defvar-keymap my/leader-map :doc "The main leader map")
@@ -67,7 +65,7 @@
 
 
 (when (my/context-work-p)
-  (define-key my/leader-map (kbd ",") (cons "+pmd" +pmd)))
+  (define-key my/leader-map (kbd ",") (cons "agent" 'agent-shell-toggle)))
 
 ;; search prefixes
 (define-key +search (kbd "n") (cons "+notes" +notes-search))

@@ -90,7 +90,7 @@
 
 (when (my/context-work-p)
   (require 'ai-gptel)
-  (require 'ai-minuet)
+  ;;(require 'ai-minuet)
   (require 'ai-agent-shell))
 
 (provide 'init)
