@@ -9,35 +9,20 @@
 (eval-when-compile (require 'cl-lib))
 
 (define-prefix-command '+files)
-
-(define-prefix-command '+help)
-
 (define-prefix-command '+org)
-
 (define-prefix-command '+vc)
 (define-prefix-command '+windows)
-
 (define-prefix-command '+goto/act)
 (define-prefix-command '+previous)
 (define-prefix-command '+next)
-
 (define-prefix-command '+workspaces)
-
 (define-prefix-command '+ai)
-(define-prefix-command '+agent-shell)
-
 (define-prefix-command '+buffers)
-
 (define-prefix-command '+do)
-
 (define-prefix-command '+explore)
-
 (define-prefix-command '+find)
-
 (define-prefix-command '+notes)
-
 (define-prefix-command '+language)
-
 (define-prefix-command '+terminal)
 
 (defvar-keymap my/leader-map :doc "The main leader map")
@@ -176,14 +161,14 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("T" . (cons "Toggle" 'vterm-toggle)))
 
   (+language
-    ("d" . (cons "Diagnostics" 'consult-flymake))
-    ("D" . (cons "Definition" 'xref-find-definitions))
+    ("D" . (cons "Diagnostics" 'consult-flymake))
+    ("d" . (cons "Definition" 'xref-find-definitions))
     ("f" . (cons "Format" 'eglot-format))
     ("a" . (cons "Code Actions" 'eglot-code-actions))
     ("i" . (cons "Find Implementation" 'eglot-find-implementation))
     ("I" . (cons "Find Declaration" 'eglot-find-declaration))
-    ("r" . (cons "Rename" 'eglot-rename))
-    ("R" . (cons "References" 'xref-find-references))
+    ("R" . (cons "Rename" 'eglot-rename))
+    ("r" . (cons "References" 'xref-find-references))
     ("t" . (cons "Type Definition" 'eglot-find-typeDefinition))
     ("h" . (cons "Inlay Hints" 'eglot-inlay-hints-mode))
     ("q" . (cons "Shutdown" 'eglot-shutdown))
@@ -228,10 +213,12 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
   (+goto/act
     ("g" . (cons "Buffer Start" 'beginning-of-buffer))
     ("e" . (cons "Buffer End" 'end-of-buffer))
+    ("d" . (cons "Definition" 'xref-find-definitions))
     ("h" . (cons "Line Start" 'move-beginning-of-line))
     ("j" . (cons "Next Line" 'next-line))
     ("k" . (cons "Prev Line" 'previous-line))
     ("l" . (cons "Line End" 'move-end-of-line))
+    ("r" . (cons "References" 'xref-find-references))
     ("s" . (cons "Indent Start" 'back-to-indentation))
     ("?" . (cons "Helpful At Point" 'helpful-at-point))
     ("b" . (cons "Pop Mark" 'pop-to-mark-command))
