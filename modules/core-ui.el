@@ -67,11 +67,11 @@ Functions are called with one argument: either 'light or 'dark.")
 ;; Mode-line: Mood-line
 (defconst my/mood-line-checker-glyphs
   '((:checker-info . ?\uf05a)       ;; info-circle
-    (:checker-issues . ?\uf071)     ;; exclamation-triangle
-    (:checker-good . ?\uf00c)       ;; check
-    (:checker-checking . ?\uf110)   ;; spinner
-    (:checker-errored . ?\uf00d)    ;; times
-    (:checker-interrupted . ?\uf04c)) ;; pause
+     (:checker-issues . ?\uf071)     ;; exclamation-triangle
+     (:checker-good . ?\uf00c)       ;; check
+     (:checker-checking . ?\uf110)   ;; spinner
+     (:checker-errored . ?\uf00d)    ;; times
+     (:checker-interrupted . ?\uf04c)) ;; pause
   "Checker glyphs that map to common Nerd Font codepoints.")
 
 (use-package mood-line
@@ -84,9 +84,6 @@ Functions are called with one argument: either 'light or 'dark.")
 
 (use-package modus-themes
   :demand t
-  :bind
-  (:map +toggle
-    ("t" . modus-themes-toggle))
   :custom
   (modus-themes-to-toggle '(modus-vivendi modus-operandi))
   (modus-themes-mode-line '(moody))
@@ -157,10 +154,8 @@ Functions are called with one argument: either 'light or 'dark.")
 
 
   :bind
-  (:map +font
-    ("a" . text-scale-adjust)
-    ("f" . +font-bigger)
-    ("p" . +font-presentation))
+  (:map +buffers
+    (">" . text-scale-adjust))
   :custom
   (x-underline-at-descent-line nil)
   (fontaine-presets

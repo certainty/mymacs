@@ -10,18 +10,16 @@
   ((codex-acp . "brew install codex-acp"))
 
   :bind
-  ((:map my/leader-map
-     ("," . agent-shell-openai-start-codex))
-    (:map +agent-shell
-      ("t" . agent-shell-toggle)
-      ("a" . agent-shell)
-      ("A" . agent-shell-new-shell)
-      ("p" . agent-shell-prompt-compose)
-      ("s" . agent-shell-send-screenshot)
-      ("h" . agent-shell-help-menu))
+  ((:map +ai
+     ("s" . agent-shell)
+     ("A" . agent-shell-new-shell)
+     ("p" . agent-shell-prompt-compose)
+     ("s" . agent-shell-send-screenshot)
+     ("t" . agent-shell-toggle)
+     ("h" . agent-shell-help-menu))
     (:map agent-shell-mode-map
-      ("R" . agent-shell-rename-buffer)
-      ("c" . agent-shell-clear-buffer)))
+      ("C-c C-r" . agent-shell-rename-buffer)
+      ("C-c C-l" . agent-shell-clear-buffer)))
 
   :custom
   (agent-shell-session-strategy 'reuse)
@@ -30,6 +28,8 @@
   (agent-shell-preferred-agent-config #'agent-shell-openai-make-agent-config)
 
   :init
+  (define-key my/leader-map (kbd ",") (cons "codex" 'agent-shell-openai-start-codex))
+
   (my/window-rule! agent-shell-mode :align right :size 0.45 :select t)
   (my/window-rule! agent-shell-viewport-edit-mode :align right :size 0.45 :select t)
 
@@ -44,7 +44,7 @@
   :straight (agent-review :type git :host github :repo "nineluj/agent-review")
   :after agent-shell
   :bind
-  (:map +agent-shell
+  (:map +ai
     ("r" . agent-review))
   :commands agent-review)
 
@@ -52,7 +52,7 @@
   :straight (agent-shell-attention :type git :host github :repo "ultronozm/agent-shell-attention.el")
   :after agent-shell
   :bind
-  (:map +agent-shell
+  (:map +ai
     ("d" . agent-shell-attention-dashboard)
     ("j" . agent-shell-attention-jump))
   :custom
@@ -65,7 +65,7 @@
   :straight (agent-shell-manager :type git :host github :repo "jethrokuan/agent-shell-manager")
   :after agent-shell
   :bind
-  (:map +agent-shell
+  (:map +ai
     ("m" . agent-shell-manager-toggle))
   :custom
   (agent-shell-manager-side 'bottom)

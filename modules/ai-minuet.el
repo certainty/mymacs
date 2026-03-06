@@ -1,10 +1,6 @@
 ;;; ai-minuet.el --- Minuet -*- lexical-binding: t; -*-
 
 (use-package minuet
-  :preface
-  (define-prefix-command '+minuet)
-  (define-key +ai (kbd "m") (cons "+minuet" +minuet))
-
   :bind
   ((:map mymacs-mode-map
      ("C-M-i" . minuet-complete-with-minibuffer)

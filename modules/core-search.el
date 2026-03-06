@@ -9,20 +9,18 @@
 ;;;; Consult - Enhanced commands
 (use-package consult
   :bind
-  (:map my/leader-map
-    ("r" . consult-recent-file))
+  (:map +language
+    ("d" . consult-flymake))
+
   (:map +search
-    ("d" . consult-flymake)
-    ("b" . consult-buffer)
-    ("B" . consult-buffer-other-window)
-    ("r" . consult-bookmark)
-    ("g" . consult-goto-line)
+    ("B" . consult-buffer)
+    ("r" . consult-recent-file)
+    ("@" . consult-bookmark)
     ("j" . consult-global-mark) ;; jump list
     ("l" . consult-line)
     ("L" . consult-line-multi)
-    ("r" . consult-ripgrep)
-    ("i" . consult-imenu)
-    ("I" . consult-imenu-multi))
+    ("r" . consult-ripgrep))
+
   :custom
   (consult-narrow-key "<")
   (consult-project-function (lambda (_) (project-root (project-current))))
@@ -36,57 +34,6 @@
     consult-ripgrep consult-git-grep consult-grep
     consult-bookmark consult-recent-file consult-xref
     :preview-key '(:debounce 0.4 any)))
-
-(defun +search-web ()
-  "Search the web (engines/wiki) via consult-omni."
-  (interactive)
-  (consult-omni-multi nil "Web: " '("DuckDuckGo API" "Wikipedia") nil nil :group 'domain))
-
-(defun +system-files ()
-  "Search local files and content via consult-omni."
-  (interactive)
-  (consult-omni-multi nil "Local: " '("fd" "locate") nil))
-
-(defun +rtfm ()
-  "Search reference material (man, notes, dictionaries, etc.) via consult-omni."
-  (interactive)
-  (consult-omni-multi nil "RTFM: " '("man" "Dictionary" "Notes Search" "Wikipedia") nil))
-
-(use-package consult-omni
-  :straight (consult-omni :type git :host github :repo "armindarvish/consult-omni" :branch "main" :files (:defaults "sources/*.el"))
-  :bind
-  (:map +search
-    ("S" . consult-omni)
-    ("W" . +search-web)
-    ("F" . +system-files)
-    ("R" . +rtfm))
-
-  :custom
-  (consult-omni-default-browse-function #'eww-browse-url)
-  (consult-omni-default-preview-function #'eww-browse-url)
-  (consult-omni-alternate-browse-function #'browse-url)
-  :config
-  (require 'consult-omni-sources)
-  (require 'consult-omni-embark)
-  (setq consult-omni-sources-modules-to-load
-    '(consult-omni-man
-       consult-omni-wikipedia
-       consult-omni-duckduckgo
-       consult-omni-dict
-       consult-omni-locate
-       consult-omni-fd
-       consult-omni-ripgrep
-       consult-omni-org-agenda
-       consult-omni-notes
-       consult-omni-calc))
-  (consult-omni-sources-load-modules)
-  (setq consult-omni-multi-sources '("man"
-                                      "Wikipedia"
-                                      "DuckDuckGo API"
-                                      "Dictionary"
-                                      "Notes Search"
-                                      "Org Agenda")))
-
 
 (use-package embark-consult
   :after embark

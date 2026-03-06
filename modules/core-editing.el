@@ -109,24 +109,8 @@ targets."
   (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package ws-butler
-  :hook (after-init . ws-butler-global-mode)
-  :bind
-  (:map +goto/act
-    ("w" . ws-butler-clean-reagion)))
+  :hook (after-init . ws-butler-global-mode))
 
-;; ----------------------------
-;; Yasnippet
-;; ----------------------------
-(use-package yasnippet
-  :hook (after-init . yas-global-mode)
-  :bind
-  (:map +do
-    ("s" . yas-insert-snippet))
-
-  :custom
-  (yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory)))
-  :config
-  (yas-reload-all))
 
 (provide 'core-editing)
 ;;; core-editing.el ends here

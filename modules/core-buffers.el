@@ -17,37 +17,12 @@
   (mapc 'kill-buffer (delq (current-buffer) (buffer-list)))
   (message "Killed all other buffers"))
 
-
 (defun +kill-all ()
   "Kill all buffers."
   (interactive)
   (when (yes-or-no-p "Kill all buffers? ")
     (mapc 'kill-buffer (buffer-list))
     (message "Killed all buffers")))
-
-(defun +rename-file-and-buffer ()
-  "Rename the current buffer and file it is visiting."
-  (interactive)
-  (let ((filename (buffer-file-name)))
-    (if (not (and filename (file-exists-p filename)))
-      (message "Buffer is not visiting a file!")
-      (let ((new-name (read-file-name "New name: " filename)))
-        (cond
-          ((vc-backend filename) (vc-rename-file filename new-name))
-          (t
-            (rename-file filename new-name t)
-            (set-visited-file-name new-name t t)))))))
-
-(defun +delete-current-buffer-file ()
-  "Delete the file associated with the current buffer and kill the buffer."
-  (interactive)
-  (let ((filename (buffer-file-name)))
-    (if (not (and filename (file-exists-p filename)))
-      (message "Buffer is not visiting a file!")
-      (when (yes-or-no-p (format "Are you sure you want to delete %s? " filename))
-        (delete-file filename)
-        (kill-buffer (current-buffer))
-        (message "File '%s' deleted" filename)))))
 
 (use-package uniquify
   :straight (:type built-in)
@@ -87,11 +62,9 @@
         (add-to-list 'popper-reference-buffers c))))
 
   :bind
-  (:map +popper
-    ("p" . popper-toggle)
-    ("c" . popper-cycle)
-    ("T" . popper-toggle-type)
-    ("k" . popper-kill-latest-popup))
+  (:map +buffer
+    ("c" . popper-cycle))
+
   :custom
   (popper-reference-buffers
     '("\\*Messages\\*"
@@ -115,14 +88,9 @@
   :bind
   (:map +buffers
     ("d" . +kill-current)
-    ("D" . +delete-current-buffer-file)
-    ("S" . save-some-buffers)
     ("r" . revert-buffer)
-    ("R" . +rename-file-and-buffer)
-    ("i" . ibuffer)
     ("z" . bury-buffer)
-    ("K" . +kill-other)
-    ("x" . +kill-all)))
+    ("D" . +kill-all)))
 
 ;;;; Ibuffer - Advanced buffer list
 (use-package ibuffer
@@ -183,8 +151,8 @@ The DWIM behaviour of this command is as follows:
 (use-package visual-fill-column-mode
   :straight (:type built-in)
   :bind
-  (:map +toggle
-    ("C" . +center-window))
+  (:map +windows
+    ("c" . +center-window))
 
   :custom
   (visual-fill-column-width 250)
@@ -234,6 +202,7 @@ The DWIM behaviour of this command is as follows:
     ("=" . +split-horizontally))
 
   (:map +windows
+    ("m" . toggle-frame-maximized)
     ("h" . windmove-left)
     ("j" . windmove-down)
     ("k" . windmove-up)
@@ -242,10 +211,7 @@ The DWIM behaviour of this command is as follows:
     ("s" . split-window-below)
     ("v" . split-window-right)
     ("o" . delete-other-windows)
-    ("=" . balance-windows))
-
-  (:map +toggle
-    ("m" . toggle-frame-maximized)))
+    ("=" . balance-windows)))
 
 (provide 'core-buffers)
 ;;; buffers.el ends here

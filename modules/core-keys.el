@@ -6,22 +6,8 @@
 ;;
 ;;; Code:
 
-(define-prefix-command '+workspaces)
-(define-prefix-command '+workspaces-search)
-(define-prefix-command '+workspaces-goto)
-
-(define-prefix-command '+ai)
-
-(define-prefix-command '+config)
-(define-prefix-command '+config-search)
-(define-prefix-command '+config-goto)
-
-(define-prefix-command '+notes)
-(define-prefix-command '+notes-search)
-(define-prefix-command '+notes-goto)
 
 (define-prefix-command '+files)
-(define-prefix-command '+buffers)
 
 (define-prefix-command '+help)
 (define-prefix-command '+help-search)
@@ -40,36 +26,78 @@
 (define-prefix-command '+vc-search)
 (define-prefix-command '+vc-goto)
 (define-prefix-command '+windows)
-(define-prefix-command '+do)
 
 (define-prefix-command '+goto/act)
-(define-prefix-command '+search)
 (define-prefix-command '+previous)
 (define-prefix-command '+next)
 
 (defvar-keymap my/leader-map :doc "The main leader map")
 
+;; This config uses a "two key Leader mappings" approach: first key describes
+;; semantic group, second key executes an action. Both keys are usually chosen
+;; to create some kind of mnemonic.
+;; Example: `<Leader>f` groups "find" type of actions; `<Leader>ff` - find files.
+;;
+;; Anything that would require a deeper nesting is delegated to just be executed via M-x
+
+;; Usually if there are global and local kinds of actions, lowercase second key
+;; denotes local and uppercase - global.
+;;
+;; You can think of bigger letters == bigger scope
+;; Example: `<Leader>fS` / `<Leader>fs` - find workspace/document LSP symbols.
+;;
+;;
+;; In meow we dispatch to keypad by default with the leader so we are careful not
+;; to bind prefixes that are already taken in keypad mode. Those are:
+;;
+;; x => C-x
+;; h => C-h
+;; c => C-c
+;; m => M-
+;; g => C-M-
+
+(define-prefix-command '+workspaces)
+(define-prefix-command '+workspaces-search)
+(define-prefix-command '+workspaces-goto)
 (define-key my/leader-map (kbd "TAB") (cons "+workspaces" +workspaces))
+
+(define-prefix-command '+ai)
 (define-key my/leader-map (kbd "a") (cons "+ai" +ai))
-(define-key my/leader-map (kbd "n") (cons "+notes"  +notes))
-(define-key my/leader-map (kbd "d") (cons "+do" +do))
-(define-key my/leader-map (kbd "F") (cons "+files" +files))
+
+(define-prefix-command '+buffers)
 (define-key my/leader-map (kbd "b") (cons "+buffers" +buffers))
-(define-key my/leader-map (kbd "o") (cons "+org" +org))
-(define-key my/leader-map (kbd "p") (cons "+projects" +project))
-(define-key my/leader-map (kbd "s") (cons "+search" +search))
-(define-key my/leader-map (kbd "G") (cons "+goto/act" +goto/act))
-(define-key my/leader-map (kbd "t") (cons "+toggle" +toggle))
+
+(define-prefix-command '+do)
+(define-key my/leader-map (kbd "d") (cons "+do" +do))
+
+(define-prefix-command '+explore)
+(define-key my/leader-map (kbd "e") (cons "+explore" +explore))
+
+(define-prefix-command '+search)
+(define-key my/leader-map (kbd "f") (cons "+find" +search))
+
+(define-prefix-command '+notes)
+(define-prefix-command '+notes-search)
+(define-prefix-command '+notes-goto)
+(define-key my/leader-map (kbd "j") (cons "+jot"  +notes))
+
+(define-prefix-command '+language)
+(define-key my/leader-map (kbd "l") (cons "+languate" +language))
+
+(define-key my/leader-map (kbd "F") (cons "+files" +files)) ;;  TODO: remove
+
+(define-prefix-command '+terminal)
+(define-key my/leader-map (kbd "t") (cons "+term" +terminal))
+
+(define-key my/leader-map (kbd "o") (cons "+org" +org)) ;; TODO: find alternative mnemonic
+(define-key my/leader-map (kbd "p") (cons "+projects" +project)) ;; TODO: remove
+(define-key my/leader-map (kbd "T") (cons "+toggle" +toggle)) ;; TODO: remove
 (define-key my/leader-map (kbd "v") (cons "+vcs" +vc))
 (define-key my/leader-map (kbd "w") (cons "+windows" +windows))
 
 
-(when (my/context-work-p)
-  (define-key my/leader-map (kbd ",") (cons "agent" 'agent-shell-toggle)))
-
 ;; search prefixes
 (define-key +search (kbd "n") (cons "+notes" +notes-search))
-(define-key +search (kbd "c") (cons "+config" +config-search))
 (define-key +search (kbd "o") (cons "+org" +org-search))
 (define-key +search (kbd "p") (cons "+project" +project-search))
 (define-key +search (kbd "TAB") (cons "+workspaces" +workspaces-search))
@@ -78,7 +106,6 @@
 
 ;; goto prefixes
 (define-key +goto/act (kbd "n") (cons "+notes" +notes-goto))
-(define-key +goto/act (kbd "c") (cons "+config" +config-goto))
 (define-key +goto/act (kbd "o") (cons "+org" +org-goto))
 (define-key +goto/act (kbd "p") (cons "+project" +project-goto))
 (define-key +goto/act (kbd "TAB") (cons "+workspaces" +workspaces-goto))

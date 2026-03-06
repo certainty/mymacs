@@ -2,20 +2,9 @@
 
 
 (use-package gptel
-  :preface
-  (define-prefix-command '+gptel)
-  (define-key +ai (kbd "a") (cons "+gptel" +gptel))
-
   :bind
-  (:map +goto/act
-    ("A" . gptel))
-  (:map +gptel
-    ("a" . gptel)
-    ("m" . gptel-menu)
-    ("s" . gptel-send)
-    ("r" . gptel-rewrite)
-    ("." . gptel-add)
-    ("f" . gptel-add-file))
+  (:map +ai
+    ("." . gptel-send))
   (:map gptel-mode-map
     ("C-c C-s" . gptel-stop-streaming)
     ("C-c C-c" . gptel-send)

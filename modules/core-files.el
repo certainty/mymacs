@@ -57,10 +57,9 @@
   (dired-mode . dired-omit-mode)
   (dired-mode . hl-line-mode)
   :bind
-  (:map my/leader-map
+  (:map +explore
     ("e" . 'dired-jump))
-  (:map +files
-    ("e" . 'dired))
+
   :custom
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
@@ -136,13 +135,12 @@
 (use-package emacs
   :straight (:type built-in)
   :bind
-  (:map +files
-    ("f" . find-file)
+  (:map +explore
+    ("b" . ibuffer))
+
+  (:map +buffers
     ("r" . revert-buffer)
-    ("s" . save-buffer)
-    ("S" . save-some-buffers)
-    ("b" . switch-to-buffer)
-    ("B" . ibuffer)))
+    ("b" . switch-to-buffer)))
 
 (provide 'core-files)
 ;;; core-files.el ends here

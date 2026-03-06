@@ -11,7 +11,7 @@
 (use-package emacs
   :straight (:type built-in)
   :preface
-  (defun +find-config-file ()
+  (defun +config-file ()
     "Find a file in the Emacs config directory."
     (interactive)
     (let ((default-directory user-emacs-directory))
@@ -22,7 +22,7 @@
     (interactive)
     (dired user-emacs-directory))
 
-  (defun +find-init-file ()
+  (defun +init-file ()
     "Open init.el."
     (interactive)
     (find-file (expand-file-name "init.el" user-emacs-directory)))
@@ -65,14 +65,10 @@
     (find-file (my/authinfo-path)))
 
   :bind
-  (:map +config
-    ("f" . +find-config-file)
-    ("d" . +browse-config)
-    ("i" . +find-init-file)
-    ("e" . +find-early-init-file)
-    ("m" . +edit-config-module))
-  (:map +do
-    ("c" . +reload-config)
-    ("t" . +show-startup-time)))
+  (:map +explore
+    ("i" . +init-file)
+    ("m" . +init-module))
+
+  :init)
 
 (provide 'core-mymacs)
