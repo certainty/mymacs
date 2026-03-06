@@ -78,6 +78,15 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     (vc-dir (project-root project))
     (call-interactively #'vc-dir)))
 
+(defun my/start-codex ()
+  "Start Codex via agent-shell, loading integration lazily when needed."
+  (interactive)
+  (unless (fboundp 'agent-shell-openai-start-codex)
+    (require 'agent-shell-openai nil t))
+  (if (commandp 'agent-shell-openai-start-codex)
+    (call-interactively #'agent-shell-openai-start-codex)
+    (user-error "Codex command unavailable; check `agent-shell` installation/config")))
+
 ;; This config uses a "two key Leader mappings" approach: first key describes
 ;; semantic group, second key executes an action. Both keys are usually chosen
 ;; to create some kind of mnemonic.
@@ -121,7 +130,7 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("o" . (cons "Org GTD" +org))
     ("v" . (cons "VC" +vc))
     ("w" . (cons "Windows" +windows))
-    ("," . (cons "Codex Start" 'agent-shell-openai-start-codex))
+    ("," . (cons "Codex Start" 'my/start-codex))
     ("/" . (cons "Find Ripgrep" 'consult-ripgrep))
     ("*" . (cons "Find Symbol" '+find-symbol))
     ("|" . (cons "Window Split Right" '+split-vertically))
