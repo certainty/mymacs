@@ -62,8 +62,6 @@
 
   (defun +find-auth-info ()
     (interactive)
-    (find-file (my/authinfo-path)))
-
-  :init)
+    (find-file (my/authinfo-path))))
 
 (provide 'core-mymacs)
