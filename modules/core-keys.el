@@ -271,8 +271,6 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("r" . (cons "Rename" 'denote-rename-file))
     ("R" . (cons "Rename Front Matter" 'denote-rename-file-using-front-matter)))
 
-
-
   (+vc
     ("s" . (cons "Status" 'magit-status))
     ("d" . (cons "Root Diff" 'vc-root-diff))
@@ -311,7 +309,7 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
   :demand t
   :after meow
   :config
-  (keymap-set my/surround-map "y" #'embrace-add)
+  (keymap-set my/surround-map "a" #'embrace-add)
   (keymap-set my/surround-map "c" #'embrace-change)
   (keymap-set my/surround-map "d" #'embrace-delete))
 

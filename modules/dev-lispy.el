@@ -37,8 +37,6 @@
     '("M-k" . paredit-backward-up)
     '("M-s" . paredit-kill)
     '("M-m" . paredit-join-sexps)
-    '("M-r" . paredit-raise-sexp)
-    '("|" . paredit-split-sexp)
-    '("@" . paredit-splice-sexp)))
+    '("M-r" . paredit-raise-sexp)))
 
 (provide 'dev-lispy)
