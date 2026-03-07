@@ -15,6 +15,7 @@
   :init
 
   (when (my/context-private-p)
+    (setopt my/font-size 120)
     (setopt my/repositories-path "~/Code")
     (setopt user-mail-address "david@krentzlin.me"))
 

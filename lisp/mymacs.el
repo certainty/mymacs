@@ -40,6 +40,7 @@ Checks MYMACS_CONTEXT environment variable first, then falls back to OS detectio
   :type 'string
   :group 'mymacs)
 
+
 (defcustom my/pitch-font "Iosevka Nerd Font Propo"
   "Variable pitch font"
   :type 'string

@@ -135,8 +135,13 @@ Functions are called with one argument: either 'light or 'dark.")
 
 ;;; Fonts
 (use-package fontaine
-  :hook after-init
+  :demand t
   :preface
+
+  (defun +font-regular ()
+    (interactive)
+    (fontaine-set-preset 'regular))
+
   (defun +font-bigger ()
     (interactive)
     (if (eq fontaine-current-preset 'bigger)
@@ -170,16 +175,6 @@ Functions are called with one argument: either 'light or 'dark.")
          :variable-pitch-family ,my/pitch-font
          :variable-pitch-height 1.0)))
   :config
-  (defun my/apply-ui-font (&rest _)
-    (when (display-graphic-p)
-      (dolist (face '(mode-line mode-line-inactive tab-bar tab-bar-tab tab-bar-tab-inactive header-line tab-line tab-line-close tab-line-close-highlight))
-        (when (facep face)
-          (set-face-attribute face nil :family my/ui-font :weight 'regular :height 1.0)))))
-  (add-hook 'after-init-hook #'my/apply-ui-font)
-  (advice-add 'fontaine-set-preset :after #'my/apply-ui-font)
-  (fontaine-set-preset 'regular)
-  (diminish 'fontaine-mode)
-
   (when (and (memq window-system '(mac ns))
           (fboundp 'mac-auto-operator-composition-mode))
     (mac-auto-operator-composition-mode))
@@ -224,7 +219,9 @@ Functions are called with one argument: either 'light or 'dark.")
                              patterns)))
               (set-char-table-range composition-function-table char table)))))))
 
-  (my/enable-font-ligatures))
+  (my/enable-font-ligatures)
+  (set-frame-font my/font t)
+  (+font-regular))
 
 ;;;; Nerd Icons
 (use-package nerd-icons
