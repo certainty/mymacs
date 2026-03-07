@@ -8,7 +8,6 @@
 
 (eval-when-compile (require 'cl-lib))
 
-(define-prefix-command '+files)
 (define-prefix-command '+org)
 (define-prefix-command '+vc)
 (define-prefix-command '+windows)
@@ -103,19 +102,17 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
 
 (my/leader-bindings!
   (my/leader-map
-    ("TAB" . (cons "Workspaces" +workspaces))
-    ("a" . (cons "AI" +ai))
     ("b" . (cons "Buffers" +buffers))
     ("d" . (cons "Do" +do))
     ("e" . (cons "Explore" +explore))
     ("f" . (cons "Find" +find))
     ("j" . (cons "Jot" +notes))
     ("l" . (cons "Language" +language))
+    ("s" . (cons "Sessions" +workspaces))
     ("t" . (cons "Terminal" +terminal))
     ("o" . (cons "Org GTD" +org))
     ("v" . (cons "VC" +vc))
     ("w" . (cons "Windows" +windows))
-    ("," . (cons "Codex Start" 'my/start-codex))
     ("/" . (cons "Find Ripgrep" 'consult-ripgrep))
     ("*" . (cons "Find Symbol" '+find-symbol))
     ("|" . (cons "Window Split Right" '+split-vertically))
@@ -247,11 +244,10 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("m" . (cons "Pop Mark" 'pop-to-mark-command)))
 
   (+workspaces
-    ("TAB" . (cons "Switch/Create" 'tabspaces-switch-or-create-workspace))
+    ("s" . (cons "Switch/Create" 'tabspaces-open-or-create-project-and-workspace))
     ("d" . (cons "Delete" 'tabspaces-close-workspace))
     ("b" . (cons "Buffer Switch" 'tabspaces-switch-to-buffer))
-    ("k" . (cons "Kill Buffers" 'tabspaces-kill-buffers-close-workspace))
-    ("." . (cons "Buffer and Tab" 'tabspaces-switch-buffer-and-tab)))
+    ("k" . (cons "Kill Buffers" 'tabspaces-kill-buffers-close-workspace)))
 
   (+org
     ("a" . (cons "Agenda Personal" '+personal-agenda))
@@ -275,18 +271,7 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("r" . (cons "Rename" 'denote-rename-file))
     ("R" . (cons "Rename Front Matter" 'denote-rename-file-using-front-matter)))
 
-  (+ai
-    ("s" . (cons "Shell" 'agent-shell))
-    ("S" . (cons "Send Screenshot" 'agent-shell-send-screenshot))
-    ("A" . (cons "New Shell" 'agent-shell-new-shell))
-    ("p" . (cons "Compose Prompt" 'agent-shell-prompt-compose))
-    ("t" . (cons "Toggle Shell" 'agent-shell-toggle))
-    ("h" . (cons "Help" 'agent-shell-help-menu))
-    ("r" . (cons "Review" 'agent-review))
-    ("d" . (cons "Attention Dashboard" 'agent-shell-attention-dashboard))
-    ("j" . (cons "Attention Jump" 'agent-shell-attention-jump))
-    ("m" . (cons "Shell Manager" 'agent-shell-manager-toggle))
-    ("." . (cons "GPTel Send" 'gptel-send)))
+
 
   (+vc
     ("s" . (cons "Status" 'magit-status))
@@ -298,6 +283,24 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("p" . (cons "Push" 'vc-push))
     ("l" . (cons "Log File" 'magit-log-buffer-file))
     ("L" . (cons "Log All" 'magit-log-all))))
+
+(when (my/context-work-p)
+  (my/leader-bindings!
+    (my/leader-map
+      ("," . (cons "Codex Start" 'my/start-codex))
+      ("a" . (cons "AI" +ai)))
+    (+ai
+      ("s" . (cons "Shell" 'agent-shell))
+      ("S" . (cons "Send Screenshot" 'agent-shell-send-screenshot))
+      ("A" . (cons "New Shell" 'agent-shell-new-shell))
+      ("p" . (cons "Compose Prompt" 'agent-shell-prompt-compose))
+      ("t" . (cons "Toggle Shell" 'agent-shell-toggle))
+      ("h" . (cons "Help" 'agent-shell-help-menu))
+      ("r" . (cons "Review" 'agent-review))
+      ("d" . (cons "Attention Dashboard" 'agent-shell-attention-dashboard))
+      ("j" . (cons "Attention Jump" 'agent-shell-attention-jump))
+      ("m" . (cons "Shell Manager" 'agent-shell-manager-toggle))
+      ("." . (cons "GPTel Send" 'gptel-send)))))
 
 (defvar-keymap my/surround-map :doc "Surround/embrace prefix map.")
 
