@@ -51,12 +51,25 @@
   (add-hook 'json-ts-mode-hook #'my/json-mode-setup))
 
 ;;;; YAML enhancements (already configured in my-ruby.el)
+
+(use-package outline-indent
+  :commands outline-indent-minor-mode
+  :bind
+  (:map outline-indent-minor-mode-map
+    ("C-c C-t" . outline-indent-toggle-fold)
+    ("C-c C-o" . outline-indent-open-fold)
+    ("C-c C-c" . outline-indent-close-fold)
+    ("C-c C-m" . outline-indent-close-folds))
+  :custom
+  (outline-indent-ellipsis " ▼"))
+
 (add-to-list 'auto-mode-alist '("yaml\\.gotmpl\\'" . yaml-ts-mode))
 
 (with-eval-after-load 'yaml-ts-mode
   (defun my/yaml-mode-setup ()
     "Setup for YAML buffers."
     (setq-local yaml-indent-offset 2)
+    (outline-indent-minor-mode)
     (eglot-ensure))
   (add-hook 'yaml-ts-mode-hook #'my/yaml-mode-setup))
 

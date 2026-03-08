@@ -51,7 +51,7 @@ Checks MYMACS_CONTEXT environment variable first, then falls back to OS detectio
   :type 'string
   :group 'mymacs)
 
-(defcustom my/font-size 128
+(defcustom my/font-size 115
   "Default font size to use"
   :type 'integer
   :group 'mymacs)

@@ -86,7 +86,7 @@
 (require 'tools-secrets)
 (require 'tools-terminal)
 (require 'tools-tmr)
-;;(require 'tools-rss)
+(require 'tools-rss)
 
 (when (my/context-work-p)
   (require 'ai-gptel)

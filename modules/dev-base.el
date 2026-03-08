@@ -31,12 +31,17 @@
   (fset #'jsonrpc--log-event #'ignore))
 
 ;;; Treesitter
-(use-package treesit-auto
-  :hook (after-init . global-treesit-auto-mode)
+(use-package treesit
+  :straight (:type built-in)
   :custom
   (treesit-extra-load-path
     (list (expand-file-name "tree-sitter" user-emacs-directory)))
-  (treesit-font-lock-level 5)
+  (treesit-font-lock-level 5))
+
+(use-package treesit-auto
+  :unless (my/context-work-p) ;; super slow on macos so we don't use it
+  :hook (after-init . global-treesit-auto-mode)
+  :custom
   (treesit-auto-install 'prompt)
   :config
   (treesit-auto-add-to-auto-mode-alist 'all))
