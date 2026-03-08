@@ -1,4 +1,4 @@
-q#+title: Elfeed configuration
+#+title: Elfeed configuration
   
 * Content                                                            :elfeed:
 ** Engineering                                                 :engineering:
