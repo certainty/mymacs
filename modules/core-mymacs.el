@@ -6,8 +6,6 @@
 ;;
 ;;; Code:
 
-
-
 (use-package emacs
   :straight (:type built-in)
   :preface

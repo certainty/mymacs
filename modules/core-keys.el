@@ -154,8 +154,9 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("r" . (cons "RSS" 'elfeed)))
 
   (+terminal
-    ("t" . (cons "Toggle Here" 'vterm-toggle-cd))
-    ("T" . (cons "Toggle" 'vterm-toggle)))
+    ("t". (cons "Toggle" 'vterm-toggle))
+    ("T" . (cons "Toggle new" 'multi-vterm-project))
+    ("n" . (cons "New global" 'multi-vterm)))
 
   (+language
     ("D" . (cons "Diagnostics" 'consult-flymake))
@@ -230,7 +231,8 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("p" . (cons "Paragraph" 'forward-paragraph))
     ("d" . (cons "Diagnostic" 'flymake-goto-next-error))
     ("h" . (cons "Hunk" 'diff-hl-next-hunk))
-    ("t" . (cons "TODO" 'hl-todo-next))
+    ("T" . (cons "TODO" 'hl-todo-next))
+    ("t" . (cons "Terminal" 'vterm-toggle-forward))
     ("s" . (cons "Smerge" 'smerge-next))
     ("m" . (cons "Set Mark" 'set-mark-command)))
 
@@ -239,7 +241,8 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("p" . (cons "Paragraph" 'backward-paragraph))
     ("d" . (cons "Diagnostic" 'flymake-goto-prev-error))
     ("h" . (cons "Hunk" 'diff-hl-previous-hunk))
-    ("t" . (cons "TODO" 'hl-todo-previous))
+    ("T" . (cons "TODO" 'hl-todo-previous))
+    ("t" . (cons "Terminal" 'vterm-toggle-backward))
     ("s" . (cons "Smerge" 'smerge-prev))
     ("m" . (cons "Pop Mark" 'pop-to-mark-command)))
 
@@ -466,12 +469,8 @@ If the avy command is aborted with `C-g', do nothing."
       '("{" . meow-backward-barf)
       '("}" . meow-forward-barf)
 
-      '("%" . meow-block)
-      '("$" . meow-to-block)
-
       '("^" . meow-join)
       '("%" . mark-whole-buffer)
-
 
       ;; Selection control / maps
       '("<escape>" . meow-cancel-selection)
@@ -505,7 +504,7 @@ If the avy command is aborted with `C-g', do nothing."
       '("l" . meow-right)
       '("L" . meow-right-expand)
       '("m" . meow-block)
-      '("M" . meow-block-expand)
+      '("M" . meow-to-block)
       '("n" . meow-search)
       ;;'("N" . ignored)
       '("o" . meow-open-below)
@@ -529,9 +528,9 @@ If the avy command is aborted with `C-g', do nothing."
       ;;'("X" . ignored)
       '("y" . meow-save)
       ;;'("Y" . ignored)
-      '("z" . meow-pop-selection)
-      '("Z" . meow-cancel-selection)
-      ))
+      '("z" . meow-pop-selection))
+    '("Z" . meow-cancel-selection)
+    )
 
   (add-to-list 'meow-mode-state-list '(vterm-mode . insert))
   (add-to-list 'meow-mode-state-list '(eshell-mode . insert))

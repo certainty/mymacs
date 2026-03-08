@@ -21,8 +21,11 @@
   (vterm-toggle-fullscreen-p nil)
   (vterm-toggle-scope 'project)
   :init
-  (my/window-rule! vterm-mode :align bottom :size 0.3 :select t)
+  (my/window-rule! vterm-mode :align right :size 0.4 :select t)
   (my/with-popper! "\\*vterm\\*"))
+
+(use-package multi-vterm
+  :commands (multi-vterm-project multi-vterm))
 
 
 (provide 'tools-terminal)
