@@ -7,8 +7,7 @@
 
 ;;;; Spell Checking with Jinx
 (use-package jinx
-  :defer t
-  :hook ((text-mode org-mode markdown-mode) . jinx-mode)
+  :hook ((org-mode markdown-mode) . jinx-mode)
   :bind
   (:map jinx-mode-map
     ("C-," . jinx-correct))
@@ -20,7 +19,7 @@
 ;;;; Alternative: Flyspell (fallback if jinx not available)
 (use-package flyspell
   :straight (:type built-in)
-  :hook ((text-mode org-mode markdown-mode) . flyspell-mode)
+  :hook ((org-mode markdown-mode) . flyspell-mode)
   :bind
   (:map flyspell-mode-map
     ("C-c b" . flyspell-buffer))
@@ -45,7 +44,7 @@
 
 ;;;; Writegood Mode - Detect weak words and passive voice
 (use-package writegood-mode
-  :hook ((text-mode org-mode markdown-mode) . writegood-mode)
+  :hook ((org-mode markdown-mode) . writegood-mode)
   :custom
   (writegood-weasel-words
     '("many" "various" "very" "fairly" "several" "extremely"
