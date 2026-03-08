@@ -32,6 +32,7 @@
 (use-package marginalia
   :hook after-init)
 
+
 (use-package nerd-icons-completion
   :after (marginalia nerd-icons)
   :hook
@@ -96,6 +97,18 @@
   :init
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev))
+
+(use-package prescient
+  :custom
+  (completion-preview-sort-function #'prescient-completion-sort))
+
+(use-package corfu-prescient
+  :hook after-init
+  :after corfu)
+
+(use-package vertico-prescient
+  :hook after-init
+  :after vertico)
 
 (provide 'core-completion)
 ;;; core-completion.el ends here

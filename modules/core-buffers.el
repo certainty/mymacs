@@ -33,6 +33,13 @@
   (uniquify-after-kill-buffer-p t)
   (uniquify-ignore-buffers-re "^\\*"))
 
+(use-package buffer-terminator
+  :hook after-init
+  :custom
+  (buffer-terminator-verbose nil)
+  (buffer-terminator-inactivity-timeout (* 30 60))
+  (buffer-terminator-interval (* 10 60)))
+
 ;;; Tame the windows with shackle and popper
 
 (use-package shackle
