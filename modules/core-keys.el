@@ -155,8 +155,8 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
 
   (+terminal
     ("t". (cons "Toggle" 'vterm-toggle))
-    ("T" . (cons "Toggle new" 'multi-vterm-project))
-    ("n" . (cons "New global" 'multi-vterm)))
+    ("n" . (cons "New" 'multi-vterm-project))
+    ("T" . (cons "New global" 'multi-vterm)))
 
   (+language
     ("D" . (cons "Diagnostics" 'consult-flymake))
@@ -205,11 +205,7 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("v" . (cons "VC Log Search" 'vc-log-search))
     ("g" . (cons "VC Repo Grep" 'agitate-vc-git-grep))
     ("w" . (cons "Window Avy Word" 'my/avy-goto-char-timer-and-mark-word))
-    ("x" . (cons "Project P-Search" 'p-search))
-    ("q" . (cons "Quicklink" '+quicklink))
-    ("P" . (cons "PMD projects" '+pmd-projects))
-    ("T" . (cons "PMD teams" '+pmd-teams))
-    ("E" . (cons "PMD People" '+pmd-people)))
+    ("x" . (cons "Project P-Search" 'p-search)))
 
   (+goto/act
     ("g" . (cons "Buffer Start" 'beginning-of-buffer))
@@ -256,11 +252,11 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("a" . (cons "Agenda Personal" '+personal-agenda))
     ("A" . (cons "Agenda Global" 'org-agenda))
     ("c" . (cons "Capture" 'org-capture))
+    ("l" . (cons "Open Log" '+goto-log))
     ("t" . (cons "Capture Task" '+capture-task))
     ("e" . (cons "Capture Event" '+capture-event))
     ("o" . (cons "Timer" 'tmr))
     ("O" . (cons "Timer Presets" 'my/tmr-prefix-dispatch))
-    ("l" . (cons "Open Log" '+goto-log))
     ("T" . (cons "Open Tasks" '+goto-tasks)))
 
   (+notes
@@ -301,7 +297,12 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
       ("d" . (cons "Attention Dashboard" 'agent-shell-attention-dashboard))
       ("j" . (cons "Attention Jump" 'agent-shell-attention-jump))
       ("m" . (cons "Shell Manager" 'agent-shell-manager-toggle))
-      ("." . (cons "GPTel Send" 'gptel-send)))))
+      ("." . (cons "GPTel Send" 'gptel-send)))
+    (+find
+      ("q" . (cons "Quicklink" '+quicklink))
+      ("P" . (cons "PMD projects" '+pmd-projects))
+      ("T" . (cons "PMD teams" '+pmd-teams))
+      ("E" . (cons "PMD People" '+pmd-people)))))
 
 (defvar-keymap my/surround-map :doc "Surround/embrace prefix map.")
 
