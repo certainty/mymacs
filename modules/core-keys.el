@@ -255,6 +255,7 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("l" . (cons "Open Log" '+goto-log))
     ("t" . (cons "Capture Task" '+capture-task))
     ("e" . (cons "Capture Event" '+capture-event))
+    ("n".  (cons "Capture Note" '+capture-note))
     ("o" . (cons "Timer" 'tmr))
     ("O" . (cons "Timer Presets" 'my/tmr-prefix-dispatch))
     ("T" . (cons "Open Tasks" '+goto-tasks)))

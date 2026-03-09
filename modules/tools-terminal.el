@@ -22,6 +22,7 @@
   (vterm-toggle-scope 'project)
   :init
   (my/window-rule! vterm-mode :align right :size 0.4 :select t)
+  (my/window-rule! "\\*vterm\\*" :align right :size 0.4 :select t)
   (my/with-popper! "\\*vterm\\*"))
 
 (use-package multi-vterm
