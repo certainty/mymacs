@@ -349,7 +349,12 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     (back-to-indentation)
     (meow-insert))
 
-  (defun my/avy-goto-char-timer-and-mark-word ()
+  (defun my/reverse-search ()
+    (interactive)
+    (meow--with-negative-argument-p)
+    (meow-negati))
+
+  (defun my/avy-goto-char-timer-and-mark-symbol ()
     "Use `avy-goto-char-timer', then select the word at the jumped-to location.
 
 If the avy command is aborted with `C-g', do nothing."
@@ -359,7 +364,7 @@ If the avy command is aborted with `C-g', do nothing."
         (progn
           (call-interactively #'avy-goto-char-timer)
           (when (/= (point) orig)
-            (let ((bounds (bounds-of-thing-at-point 'word)))
+            (let ((bounds (bounds-of-thing-at-point 'symbol)))
               (when bounds
                 (goto-char (car bounds))
                 (set-mark (cdr bounds))
@@ -507,7 +512,7 @@ If the avy command is aborted with `C-g', do nothing."
       '("m" . meow-block)
       '("M" . meow-to-block)
       '("n" . meow-search)
-      ;;'("N" . ignored)
+      '("N" . my/avy-goto-char-timer-and-mark-symbol)
       '("o" . meow-open-below)
       '("O" . meow-open-above)
       '("p" . meow-yank)
