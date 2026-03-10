@@ -42,6 +42,14 @@
     (setopt treesit-auto-install-grammar 'always)
     (setopt treesit-enabled-modes t)))
 
+;; Only used to install grammars
+;; (use-package treesit-auto
+;;   :demand t
+;;   :custom
+;;   (treesit-auto-install 'prompt)
+;;   :config
+;;   (treesit-auto-add-to-auto-mode-alist 'all))
+
 
 ;;; Flymake
 (use-package flymake
