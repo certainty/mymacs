@@ -223,21 +223,23 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("." . (cons "Embark Act" 'embark-act)))
 
   (+next
+    ("]" . (cons "Tab" 'tab-next))
     ("b" . (cons "Buffer" 'next-buffer))
     ("p" . (cons "Paragraph" 'forward-paragraph))
     ("d" . (cons "Diagnostic" 'flymake-goto-next-error))
     ("h" . (cons "Hunk" 'diff-hl-next-hunk))
-    ("T" . (cons "TODO" 'hl-todo-next))
+    ("a" . (cons "TODO" 'hl-todo-next)) ; annotation
     ("t" . (cons "Terminal" 'vterm-toggle-forward))
     ("s" . (cons "Smerge" 'smerge-next))
     ("m" . (cons "Set Mark" 'set-mark-command)))
 
   (+previous
+    ("[" . (cons "Tab" 'tab-previous))
     ("b" . (cons "Buffer" 'previous-buffer))
     ("p" . (cons "Paragraph" 'backward-paragraph))
     ("d" . (cons "Diagnostic" 'flymake-goto-prev-error))
     ("h" . (cons "Hunk" 'diff-hl-previous-hunk))
-    ("T" . (cons "TODO" 'hl-todo-previous))
+    ("a" . (cons "TODO" 'hl-todo-previous)) ;; annotation
     ("t" . (cons "Terminal" 'vterm-toggle-backward))
     ("s" . (cons "Smerge" 'smerge-prev))
     ("m" . (cons "Pop Mark" 'pop-to-mark-command)))
