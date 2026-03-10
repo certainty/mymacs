@@ -135,7 +135,7 @@ is used to recover the full object from the id in various parts of the system.
       (progn
         (message "PMD Cache hit for type %s" type)
         (alist-get 'data record))
-      (when-let ((data (apply #'pmd--api-request arguments)))
+      (when-let* ((data (apply #'pmd--api-request arguments)))
         (puthash type `((data . ,data) (timestamp . ,(current-time))) pmd--entities-data)
         data))))
 

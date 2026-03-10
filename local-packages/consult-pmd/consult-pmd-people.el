@@ -38,14 +38,14 @@
   "Consult project metadata people."
   (interactive)
   (let ((candidates (pmd--people-candidates)))
-    (when-let ((person-id (consult--read
-                            candidates
-                            :prompt "PMD People: "
-                            :category pmd--people-type
-                            :history 'pmd--people-history
-                            :lookup #'consult--lookup-candidate
-                            :require-match t
-                            :sort nil)))
+    (when-let* ((person-id (consult--read
+                             candidates
+                             :prompt "PMD People: "
+                             :category pmd--people-type
+                             :history 'pmd--people-history
+                             :lookup #'consult--lookup-candidate
+                             :require-match t
+                             :sort nil)))
       (let ((data (pmd--recover-entity pmd--people-type person-id)))
         (browse-url (format "https://github.com/%s" (pmd--string (gethash "github_com" data))))))))
 
@@ -55,7 +55,7 @@
 (with-eval-after-load 'marginalia
   (defun pmd--people-annotate (cand)
     "Annotate team CAND with metadata fields."
-    (when-let ((data (pmd--candidate-data cand)))
+    (when-let* ((data (pmd--candidate-data cand)))
       (marginalia--fields
         ((pmd--icon-mail (gethash "email" data)) :face 'marginalia-string :width 40)
         ((pmd--icon-github (gethash "github_com" data)) :face 'marginalia-string))))
