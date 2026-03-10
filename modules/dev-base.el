@@ -27,6 +27,7 @@
   (eglot-autoshutdown t)
   (eglot-events-buffer-size 0)
   (eglot-sync-connect nil)
+  (eglot-code-action-indicator "*") ;; prohibit weired jumps in line height when eglot shows information
   :config
   (fset #'jsonrpc--log-event #'ignore))
 
