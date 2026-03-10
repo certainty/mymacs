@@ -58,7 +58,7 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
 (defun +find-vc-changed-files ()
   "Show changed version-controlled files, scoped to current project when possible."
   (interactive)
-  (if-let ((project (project-current nil)))
+  (if-let* ((project (project-current nil)))
     (vc-dir (project-root project))
     (call-interactively #'vc-dir)))
 

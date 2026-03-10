@@ -60,8 +60,7 @@
 (require 'dev-go)
 
 (when (my/context-private-p)
-  (require 'dev-common-lisp)
-  (require 'dev-ocaml))
+  (require 'dev-common-lisp))
 
 (when (my/context-work-p)
   (require 'dev-ruby)
@@ -86,11 +85,9 @@
 (require 'tools-secrets)
 (require 'tools-terminal)
 (require 'tools-tmr)
-(require 'tools-rss)
 
 (when (my/context-work-p)
   (require 'ai-gptel)
-  ;;(require 'ai-minuet)
   (require 'ai-agent-shell)
 
   (use-package consult-pmd

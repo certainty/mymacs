@@ -86,9 +86,6 @@
     (setopt magit-git-executable "/opt/homebrew/bin/git")
     ))
 
-(use-package forge
-  :commands (forge forge-dispatch))
-
 (use-package diff-hl
   :hook
   (after-init . global-diff-hl-mode))

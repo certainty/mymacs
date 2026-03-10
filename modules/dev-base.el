@@ -36,15 +36,12 @@
   :custom
   (treesit-extra-load-path
     (list (expand-file-name "tree-sitter" user-emacs-directory)))
-  (treesit-font-lock-level 5))
-
-(use-package treesit-auto
-  :unless (my/context-work-p) ;; super slow on macos so we don't use it
-  :hook (after-init . global-treesit-auto-mode)
-  :custom
-  (treesit-auto-install 'prompt)
+  (treesit-font-lock-level 5)
   :config
-  (treesit-auto-add-to-auto-mode-alist 'all))
+  (when (>= emacs-major-version 31)
+    (setopt treesit-auto-install-grammar 'always)
+    (setopt treesit-enabled-modes t)))
+
 
 ;;; Flymake
 (use-package flymake

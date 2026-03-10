@@ -76,10 +76,10 @@
   (interactive)
   (require 'consult)
   (let* ((bookmark-names (mapcar #'car my/quicklinks)))
-    (when-let ((selection (consult--read
-                            bookmark-names
-                            :prompt "Select bookmark: "
-                            :sort nil)))
+    (when-let* ((selection (consult--read
+                             bookmark-names
+                             :prompt "Select bookmark: "
+                             :sort nil)))
       (let ((url (cdr (assoc selection  my/quicklinks))))
         (when url
           (browse-url url))))))
