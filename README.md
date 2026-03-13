@@ -24,3 +24,4 @@ M-x straight-freeze-versions
 
 **Optional / feature-specific**
 - aspell or hunspell (fallback spell backend if enchant is unavailable)
+

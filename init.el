@@ -86,10 +86,10 @@
 (require 'tools-terminal)
 (require 'tools-tmr)
 
-(when (my/context-work-p)
-  (require 'ai-gptel)
-  (require 'ai-agent-shell)
+(require 'ai-gptel)
+((require 'ai-agent-shell))
 
+(when (my/context-work-p)
   (use-package consult-pmd
     :straight `(consult-pmd
                  :type nil

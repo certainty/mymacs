@@ -5,16 +5,24 @@
 
 (use-package chatgpt-shell
   :straight (:type git :host github :repo "xenodium/chatgpt-shell" :files ("chatgpt-shell*.el"))
-  :custom
-  ((chatgpt-shell-openai-key
-     (lambda ()
-       (auth-source-pass-get 'secret "emacs-chatgpt")))))
+  :config
+  (when (my/context-work-p)
+    (setopt chatgpt-shell-openai-key
+      (lambda ()
+        (auth-source-pass-get 'secret "emacs-chatgpt"))))
+
+  (when (my/context-private-p)
+    (setopt chatgpt-shell-openrouter-key
+      (lambda ()
+        (auth-source-pass-get 'secret "emacs-openrouter")))
+
+    (setopt chatgpt-shell-models
+      (append (chatgpt-shell-openrouter-models)
+        (when (executable-find "ollama")
+          (chatgpt-shell-ollama-models))))))
 
 (use-package agent-shell
   :straight (agent-shell :type git :host github :repo "xenodium/agent-shell")
-  :ensure-system-package
-  ((codex-acp . "brew install codex-acp"))
-
   :bind
   ((:map agent-shell-mode-map
      ("C-c C-r" . agent-shell-rename-buffer)
@@ -24,7 +32,7 @@
   (agent-shell-session-strategy 'reuse)
   (agent-shell-show-welcome-message nil)
   ;; (agent-shell-prefer-viewport-interaction t) ; experimental interface
-  (agent-shell-preferred-agent-config #'agent-shell-openai-make-agent-config)
+  (agent-shell-preferred-agent-config (if (my/context-private-p) 'opencode 'codex))
 
   :init
   (my/window-rule! agent-shell-mode :align right :size 0.45 :select t)
@@ -34,7 +42,14 @@
   (my/with-popper! 'agent-shell-viewport-edit-mode)
 
   :config
-  (setopt agent-shell-openai-authentication (agent-shell-openai-make-authentication :login t))
+  (when (my/context-work-p)
+    (setopt agent-shell-openai-authentication
+      (agent-shell-openai-make-authentication :login t)))
+
+  (when (my/context-private-p)
+    (setopt agent-shell-opencode-authentication
+      (agent-shell-opencode-make-authentication :login t)))
+
   (setq agent-shell-text-file-capabilities '(read-text-file write-text-file)))
 
 (use-package agent-review

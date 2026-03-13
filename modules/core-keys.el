@@ -285,10 +285,9 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("l" . (cons "Log File" 'magit-log-buffer-file))
     ("L" . (cons "Log All" 'magit-log-all))))
 
-(when (my/context-work-p)
+(when (or (my/context-work-p) (my/context-private-p))
   (my/leader-bindings!
     (my/leader-map
-      ("," . (cons "Codex Start" 'my/start-codex))
       ("a" . (cons "AI" +ai)))
     (+ai
       ("s" . (cons "Shell" 'agent-shell))
@@ -301,7 +300,14 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
       ("d" . (cons "Attention Dashboard" 'agent-shell-attention-dashboard))
       ("j" . (cons "Attention Jump" 'agent-shell-attention-jump))
       ("m" . (cons "Shell Manager" 'agent-shell-manager-toggle))
-      ("." . (cons "GPTel Send" 'gptel-send)))
+      ("g" . (cons "GPTel" 'gptel))
+      ("e" . (cons "GPTel Menu" 'gptel-menu))
+      ("." . (cons "GPTel Send" 'gptel-send)))))
+
+(when (my/context-work-p)
+  (my/leader-bindings!
+    (my/leader-map
+      ("," . (cons "Codex Start" 'my/start-codex)))
     (+find
       ("q" . (cons "Quicklink" '+quicklink))
       ("P" . (cons "PMD projects" '+pmd-projects))
