@@ -17,4 +17,10 @@
   (setenv "GPG_AGENT_INFO" nil) ;force pinentry in emacs
   (setenv "GPG_TTY" "/dev/tty"))
 
+(use-package pass
+  :after epa
+  :commands (pass)
+  :init
+  (auth-source-pass-enable))
+
 (provide 'tools-secrets)

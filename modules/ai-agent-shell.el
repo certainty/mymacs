@@ -1,5 +1,15 @@
 ;;; ai-agent-shell.el --- Agent Shell integration -*- lexical-binding: t; -*-
 
+(use-package shell-maker
+  :straight (:type git :host github :repo "xenodium/shell-maker"))
+
+(use-package chatgpt-shell
+  :straight (:type git :host github :repo "xenodium/chatgpt-shell" :files ("chatgpt-shell*.el"))
+  :custom
+  ((chatgpt-shell-openai-key
+     (lambda ()
+       (auth-source-pass-get 'secret "emacs-chatgpt")))))
+
 (use-package agent-shell
   :straight (agent-shell :type git :host github :repo "xenodium/agent-shell")
   :ensure-system-package
