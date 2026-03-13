@@ -4,6 +4,16 @@
 
 * Emacs >= 30.0
 
+## Updates
+
+I use straight for package management.
+
+```
+M-x straight-thaw-versions
+M-x straight-pull-all
+M-x straight-freeze-versions
+```
+
 ## Dependencies
 
 **Required**
@@ -14,5 +24,4 @@
 
 **Optional / feature-specific**
 - aspell or hunspell (fallback spell backend if enchant is unavailable)
-- texlive-scheme-basic, texlive-koma-script, texlive-scrlttr2copy, texlive-latex-bin, texlive-fonts-recommended (Org/LaTeX export)
-
+- `elixir-ls` for Elixir and HEEx support via `eglot`

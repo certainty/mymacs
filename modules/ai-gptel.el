@@ -11,29 +11,60 @@
     ("C-c C-f" . gptel-add-file))
 
   :config
-  (defun my/gptel--ollama-backend ()
-    (when (executable-find "ollama")
-      (gptel-make-ollama
-        "Ollama"
-        :host "127.0.0.1:11434"
-        :protocol "http"
-        :endpoint "/api/chat"
-        :models '(qwen2.5-coder:latest)
-        :stream t)))
+  (defconst my/gptel-private-openrouter-model
+    (intern "qwen/qwen3-coder")
+    "Default OpenRouter model for private context.")
 
-  (defun my/gptel--select-backend ()
-    (let ((ollama (my/gptel--ollama-backend)))
-      (if ollama
-        (setopt gptel-backend ollama
-          gptel-model (intern "qwen2.5-coder:latest"))
-        (message "gptel: Ollama backend not available. Ensure `ollama` is installed and the server is running."))))
+  (defconst my/gptel-ollama-model
+    (intern "qwen2.5-coder:latest")
+    "Default Ollama model.")
+
+  (defun my/gptel--openrouter-key ()
+    (auth-source-pass-get 'secret "emacs-openrouter"))
+
+  (defvar my/gptel-openrouter-backend nil
+    "Registered OpenRouter backend for gptel.")
+
+  (defvar my/gptel-ollama-backend nil
+    "Registered Ollama backend for gptel.")
+
+  (when (my/context-private-p)
+    (when-let* ((key (my/gptel--openrouter-key)))
+      (setq my/gptel-openrouter-backend
+            (gptel-make-openai
+              "OpenRouter"
+              :host "openrouter.ai"
+              :endpoint "/api/v1/chat/completions"
+              :stream t
+              :models (list my/gptel-private-openrouter-model)
+              :key (lambda () key)
+              :header (lambda ()
+                        `(("Authorization" . ,(concat "Bearer " key))
+                           ("HTTP-Referer" . "https://github.com/certainty/mymacs")
+                           ("X-Title" . "mymacs")))))))
+
+  (when (executable-find "ollama")
+    (setq my/gptel-ollama-backend
+          (gptel-make-ollama
+            "Ollama"
+            :host "127.0.0.1:11434"
+            :protocol "http"
+            :endpoint "/api/chat"
+            :models (list my/gptel-ollama-model)
+            :stream t)))
 
   (setopt gptel-expert-commands t
     gptel-default-mode 'org-mode
     gptel-org-branching-context t
     gptel-include-reasoning t)
 
-  (my/gptel--select-backend)
+  (cond
+    ((and (my/context-private-p) my/gptel-openrouter-backend)
+     (setopt gptel-backend my/gptel-openrouter-backend
+       gptel-model my/gptel-private-openrouter-model))
+    (my/gptel-ollama-backend
+     (setopt gptel-backend my/gptel-ollama-backend
+       gptel-model my/gptel-ollama-model)))
 
   (add-hook 'gptel-post-stream-hook 'gptel-auto-scroll)
   (add-hook 'gptel-post-response-functions 'gptel-end-of-response)

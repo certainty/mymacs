@@ -30,7 +30,7 @@
     (let ((buf (get-buffer "*eldoc*")))
       (if buf
         (progn
-          (when-let ((win (get-buffer-window buf)))
+          (when-let* ((win (get-buffer-window buf)))
             (delete-window win))
           (kill-buffer buf))
         (eldoc)))))

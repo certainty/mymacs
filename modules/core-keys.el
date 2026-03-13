@@ -58,7 +58,7 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
 (defun +find-vc-changed-files ()
   "Show changed version-controlled files, scoped to current project when possible."
   (interactive)
-  (if-let ((project (project-current nil)))
+  (if-let* ((project (project-current nil)))
     (vc-dir (project-root project))
     (call-interactively #'vc-dir)))
 
@@ -166,6 +166,7 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("i" . (cons "Find Implementation" 'eglot-find-implementation))
     ("I" . (cons "Find Declaration" 'eglot-find-declaration))
     ("R" . (cons "Rename" 'eglot-rename))
+    ("c" . (cons "Query replace" 'xref-find-references-and-replace))
     ("r" . (cons "References" 'xref-find-references))
     ("t" . (cons "Type Definition" 'eglot-find-typeDefinition))
     ("h" . (cons "Inlay Hints" 'eglot-inlay-hints-mode))
@@ -223,21 +224,23 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("." . (cons "Embark Act" 'embark-act)))
 
   (+next
+    ("]" . (cons "Tab" 'tab-next))
     ("b" . (cons "Buffer" 'next-buffer))
     ("p" . (cons "Paragraph" 'forward-paragraph))
     ("d" . (cons "Diagnostic" 'flymake-goto-next-error))
     ("h" . (cons "Hunk" 'diff-hl-next-hunk))
-    ("T" . (cons "TODO" 'hl-todo-next))
+    ("a" . (cons "TODO" 'hl-todo-next)) ; annotation
     ("t" . (cons "Terminal" 'vterm-toggle-forward))
     ("s" . (cons "Smerge" 'smerge-next))
     ("m" . (cons "Set Mark" 'set-mark-command)))
 
   (+previous
+    ("[" . (cons "Tab" 'tab-previous))
     ("b" . (cons "Buffer" 'previous-buffer))
     ("p" . (cons "Paragraph" 'backward-paragraph))
     ("d" . (cons "Diagnostic" 'flymake-goto-prev-error))
     ("h" . (cons "Hunk" 'diff-hl-previous-hunk))
-    ("T" . (cons "TODO" 'hl-todo-previous))
+    ("a" . (cons "TODO" 'hl-todo-previous)) ;; annotation
     ("t" . (cons "Terminal" 'vterm-toggle-backward))
     ("s" . (cons "Smerge" 'smerge-prev))
     ("m" . (cons "Pop Mark" 'pop-to-mark-command)))
@@ -255,6 +258,7 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("l" . (cons "Open Log" '+goto-log))
     ("t" . (cons "Capture Task" '+capture-task))
     ("e" . (cons "Capture Event" '+capture-event))
+    ("n".  (cons "Capture Note" '+capture-note))
     ("o" . (cons "Timer" 'tmr))
     ("O" . (cons "Timer Presets" 'my/tmr-prefix-dispatch))
     ("T" . (cons "Open Tasks" '+goto-tasks)))
@@ -281,10 +285,9 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("l" . (cons "Log File" 'magit-log-buffer-file))
     ("L" . (cons "Log All" 'magit-log-all))))
 
-(when (my/context-work-p)
+(when (or (my/context-work-p) (my/context-private-p))
   (my/leader-bindings!
     (my/leader-map
-      ("," . (cons "Codex Start" 'my/start-codex))
       ("a" . (cons "AI" +ai)))
     (+ai
       ("s" . (cons "Shell" 'agent-shell))
@@ -297,7 +300,14 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
       ("d" . (cons "Attention Dashboard" 'agent-shell-attention-dashboard))
       ("j" . (cons "Attention Jump" 'agent-shell-attention-jump))
       ("m" . (cons "Shell Manager" 'agent-shell-manager-toggle))
-      ("." . (cons "GPTel Send" 'gptel-send)))
+      ("g" . (cons "GPTel" 'gptel))
+      ("e" . (cons "GPTel Menu" 'gptel-menu))
+      ("." . (cons "GPTel Send" 'gptel-send)))))
+
+(when (my/context-work-p)
+  (my/leader-bindings!
+    (my/leader-map
+      ("," . (cons "Codex Start" 'my/start-codex)))
     (+find
       ("q" . (cons "Quicklink" '+quicklink))
       ("P" . (cons "PMD projects" '+pmd-projects))

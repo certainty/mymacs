@@ -52,15 +52,15 @@
   (interactive)
   (pmd--with-cache-control
     (let ((candidates (pmd--projects-candidates)))
-      (when-let ((project-id (consult--read
-                               candidates
-                               :prompt "PMD Projects: "
-                               :category pmd--project-type
-                               :history 'pmd--projects-history
-                               :require-match t
-                               :lookup #'consult--lookup-candidate
-                               :group (pmd--grouping-fn "service_group")
-                               :sort nil)))
+      (when-let* ((project-id (consult--read
+                                candidates
+                                :prompt "PMD Projects: "
+                                :category pmd--project-type
+                                :history 'pmd--projects-history
+                                :require-match t
+                                :lookup #'consult--lookup-candidate
+                                :group (pmd--grouping-fn "service_group")
+                                :sort nil)))
         (pmd--browse-url (format "projects/%s" project-id))))))
 
 (eval-when-compile
@@ -69,7 +69,7 @@
 (with-eval-after-load 'marginalia
   (defun pmd--projects-annotate (cand)
     "Annotate project CAND with metadata fields."
-    (when-let ((data (pmd--candidate-data cand)))
+    (when-let* ((data (pmd--candidate-data cand)))
       (let ((contacts (pmd--list-string (pmd--dig data "people" "contact")))
              (head (pmd--string (pmd--dig data "people" "head"))))
         (marginalia--fields
@@ -86,7 +86,7 @@
 (with-eval-after-load 'embark
   (defun pmd--projects-repository-url (project)
     "Returns the full repository URL for `PROJECT'"
-    (when-let ((data (pmd--recover-entity pmd--project-type project)))
+    (when-let* ((data (pmd--recover-entity pmd--project-type project)))
       (let* ((server-url (pmd--dig data "git" "server_url"))
               (account (pmd--dig data "git" "account"))
               (repo (pmd--dig data "git" "repo")))
@@ -94,7 +94,7 @@
 
   (defun pmd--projects-repository-slug (project)
     "Returns the repository slug for `PROJECT'"
-    (when-let ((data (pmd--recover-entity pmd--project-type project)))
+    (when-let* ((data (pmd--recover-entity pmd--project-type project)))
       (let* ((account (pmd--dig data "git" "account"))
               (repo (pmd--dig data "git" "repo")))
         (format "%s/%s" account repo))))
@@ -141,20 +141,20 @@
   (defun +pmd-copy-repo-url (project)
     "Copy the repository URL for `PROJECT' to clipboard."
     (interactive "sProject ID: ")
-    (when-let ((repo-url (pmd--projects-repository-url project)))
+    (when-let* ((repo-url (pmd--projects-repository-url project)))
       (kill-new repo-url)
       (message "Copied repository URL: %s" repo-url)))
 
   (defun +pmd-open-repository (project)
     "Open the repository URL for `PROJECT' in browser."
     (interactive "sProject ID: ")
-    (when-let ((repo-url (pmd--projects-repository-url project)))
+    (when-let* ((repo-url (pmd--projects-repository-url project)))
       (browse-url repo-url)))
 
   (defun +pmd-copy-repo-slug (project)
     "Copy the repository slug for `PROJECT' to clipboard."
     (interactive "sProject ID: ")
-    (when-let ((repo-slug (pmd--projects-repository-slug project)))
+    (when-let* ((repo-slug (pmd--projects-repository-slug project)))
       (kill-new repo-slug)
       (message "Copied repository slug: %s" repo-slug)))
 
@@ -194,12 +194,12 @@
   (with-eval-after-load 'consult-gh
     (defun +pmd-search-github-repo (project-id)
       (interactive "sProject ID: ")
-      (when-let ((repo-slug (pmd--projects-repository-slug project-id)))
+      (when-let* ((repo-slug (pmd--projects-repository-slug project-id)))
         (consult-gh-search-code nil repo-slug)))
 
     (defun +pmd-browse-github-repo (project-id)
       (interactive "sProject ID: ")
-      (when-let ((repo-slug (pmd--projects-repository-slug project-id)))
+      (when-let* ((repo-slug (pmd--projects-repository-slug project-id)))
         (consult-gh-dired repo-slug)))
 
     (keymap-set pmd-projects-embark-map "g" '+pmd-search-github-repo)

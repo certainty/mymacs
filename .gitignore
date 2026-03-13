@@ -35,3 +35,5 @@ places
 
 .agent-ops/
 \#*\#
+/.main-tabspaces-session.el
+.chatgpt-shell*

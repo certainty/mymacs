@@ -19,6 +19,11 @@
   :commands (eglot eglot-ensure)
   :init
   (setq eglot-stay-out-of '(flymake))
+
+  (with-eval-after-load 'consult
+    (setopt xref-show-xrefs-function 'consult-xref)
+    (setopt xref-show-definitions-function 'consult-xref))
+
   :custom
   (eglot-report-progress nil)
   (eglot-extend-to-xref t)
@@ -27,8 +32,11 @@
   (eglot-autoshutdown t)
   (eglot-events-buffer-size 0)
   (eglot-sync-connect nil)
+  (eglot-code-action-indicator "*") ;; prohibit weired jumps in line height when eglot shows information
   :config
-  (fset #'jsonrpc--log-event #'ignore))
+  (fset #'jsonrpc--log-event #'ignore)
+  (my/window-rule! "\\*xref\\*" :algin bottom :size 0.3 :select t)
+  (my/with-popper! "\\*xref\\*"))
 
 ;;; Treesitter
 (use-package treesit
@@ -36,15 +44,20 @@
   :custom
   (treesit-extra-load-path
     (list (expand-file-name "tree-sitter" user-emacs-directory)))
-  (treesit-font-lock-level 5))
-
-(use-package treesit-auto
-  :unless (my/context-work-p) ;; super slow on macos so we don't use it
-  :hook (after-init . global-treesit-auto-mode)
-  :custom
-  (treesit-auto-install 'prompt)
+  (treesit-font-lock-level 5)
   :config
-  (treesit-auto-add-to-auto-mode-alist 'all))
+  (when (>= emacs-major-version 31)
+    (setopt treesit-auto-install-grammar 'always)
+    (setopt treesit-enabled-modes t)))
+
+;; Only used to install grammars
+;; (use-package treesit-auto
+;;   :demand t
+;;   :custom
+;;   (treesit-auto-install 'prompt)
+;;   :config
+;;   (treesit-auto-add-to-auto-mode-alist 'all))
+
 
 ;;; Flymake
 (use-package flymake

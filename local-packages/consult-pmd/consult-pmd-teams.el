@@ -38,15 +38,15 @@
   "Consult project metadata teams."
   (interactive)
   (let ((candidates (pmd--teams-candidates)))
-    (when-let ((team-id (consult--read
-                          candidates
-                          :prompt "PMD Teams: "
-                          :category pmd--team-type
-                          :history 'pmd--teams-history
-                          :require-match t
-                          :group (pmd--grouping-fn "org_unit")
-                          :lookup #'consult--lookup-candidate
-                          :sort nil)))
+    (when-let* ((team-id (consult--read
+                           candidates
+                           :prompt "PMD Teams: "
+                           :category pmd--team-type
+                           :history 'pmd--teams-history
+                           :require-match t
+                           :group (pmd--grouping-fn "org_unit")
+                           :lookup #'consult--lookup-candidate
+                           :sort nil)))
       (pmd--browse-url (format "teams/%s" team-id)))))
 
 (eval-when-compile
@@ -55,7 +55,7 @@
 (with-eval-after-load 'marginalia
   (defun pmd--teams-annotate (cand)
     "Annotate team CAND with metadata fields."
-    (when-let ((data (pmd--candidate-data cand)))
+    (when-let* ((data (pmd--candidate-data cand)))
       (marginalia--fields
         ((pmd--string (gethash "head" data)) :face 'marginalia-string)
         ((pmd--string (gethash "email" data)) :face 'marginalia-type)
@@ -73,13 +73,13 @@
   (defun +pmd-open-team-channel (team-id)
     "Open the PMD team channel in the browser."
     (interactive)
-    (when-let ((url (pmd--team-channel-url team-id)))
+    (when-let* ((url (pmd--team-channel-url team-id)))
       (browse-url url)))
 
   (defun +pmd-copy-team-channel-url (team-id)
     "Copy the PMD team channel URL to the clipboard."
     (interactive)
-    (when-let ((url (pmd--team-channel-url team-id)))
+    (when-let* ((url (pmd--team-channel-url team-id)))
       (kill-new url)
       (message "Copied team channel URL to clipboard.")))
 

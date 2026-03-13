@@ -38,14 +38,14 @@
   "Consult project metadata servicegroups."
   (interactive)
   (let ((candidates (pmd--servicegroups-candidates)))
-    (when-let ((team-id (consult--read
-                          candidates
-                          :prompt "PMD ServiceGroup: "
-                          :category pmd--servicegroup-type
-                          :history 'pmd--servicegroups-history
-                          :lookup #'consult--lookup-candidate
-                          :require-match t
-                          :sort nil)))
+    (when-let* ((team-id (consult--read
+                           candidates
+                           :prompt "PMD ServiceGroup: "
+                           :category pmd--servicegroup-type
+                           :history 'pmd--servicegroups-history
+                           :lookup #'consult--lookup-candidate
+                           :require-match t
+                           :sort nil)))
       (pmd--browse-url (format "service_groups/%s" team-id)))))
 
 (eval-when-compile
@@ -54,7 +54,7 @@
 (with-eval-after-load 'marginalia
   (defun pmd--servicegroups-annotate (cand)
     "Annotate team CAND with metadata fields."
-    (when-let ((data (pmd--candidate-data cand)))
+    (when-let* ((data (pmd--candidate-data cand)))
       (marginalia--fields
         ((format "heads: %s" (pmd--string (pmd--list-string (gethash "heads" data)))) :face 'marginalia-string :width 50)
         ((format "directors: %s" (pmd--string (pmd--list-string (gethash "directors" data)))) :face 'marginalia-on :width 50)
