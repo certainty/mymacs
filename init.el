@@ -55,6 +55,7 @@
 (require 'dev-format)
 (require 'dev-lispy)
 (require 'dev-elisp)
+(require 'dev-elixir)
 
 (require 'dev-web)
 (require 'dev-go)

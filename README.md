@@ -24,4 +24,4 @@ M-x straight-freeze-versions
 
 **Optional / feature-specific**
 - aspell or hunspell (fallback spell backend if enchant is unavailable)
-
+- `elixir-ls` for Elixir and HEEx support via `eglot`
