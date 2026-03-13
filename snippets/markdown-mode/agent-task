@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: agent-task 
+# key: agents
+# --
+
+# Task
+
+JIRA Issue: $jira-issue 
+
+## Goal
+
+## Technical notes
+
+## Acceptance criteria
+
+## Verification
