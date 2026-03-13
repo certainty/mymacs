@@ -88,7 +88,7 @@
 (require 'tools-tmr)
 
 (require 'ai-gptel)
-((require 'ai-agent-shell))
+(require 'ai-agent-shell)
 
 (when (my/context-work-p)
   (use-package consult-pmd
