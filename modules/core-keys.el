@@ -166,6 +166,7 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("i" . (cons "Find Implementation" 'eglot-find-implementation))
     ("I" . (cons "Find Declaration" 'eglot-find-declaration))
     ("R" . (cons "Rename" 'eglot-rename))
+    ("c" . (cons "Query replace" 'xref-find-references-and-replace))
     ("r" . (cons "References" 'xref-find-references))
     ("t" . (cons "Type Definition" 'eglot-find-typeDefinition))
     ("h" . (cons "Inlay Hints" 'eglot-inlay-hints-mode))

@@ -8,6 +8,7 @@
 
 ;;;; Consult - Enhanced commands
 (use-package consult
+  :defer 2
   :custom
   (consult-narrow-key "<")
   (consult-project-function (lambda (_) (project-root (project-current))))

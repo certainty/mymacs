@@ -19,6 +19,11 @@
   :commands (eglot eglot-ensure)
   :init
   (setq eglot-stay-out-of '(flymake))
+
+  (with-eval-after-load 'consult
+    (setopt xref-show-xrefs-function 'consult-xref)
+    (setopt xref-show-definitions-function 'consult-xref))
+
   :custom
   (eglot-report-progress nil)
   (eglot-extend-to-xref t)
@@ -29,7 +34,9 @@
   (eglot-sync-connect nil)
   (eglot-code-action-indicator "*") ;; prohibit weired jumps in line height when eglot shows information
   :config
-  (fset #'jsonrpc--log-event #'ignore))
+  (fset #'jsonrpc--log-event #'ignore)
+  (my/window-rule! "\\*xref\\*" :algin bottom :size 0.3 :select t)
+  (my/with-popper! "\\*xref\\*"))
 
 ;;; Treesitter
 (use-package treesit
