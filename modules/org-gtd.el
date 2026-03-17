@@ -100,14 +100,22 @@
               (org-agenda-todo-keyword-format "")))))
 
        ("y" "My Agenda"
-         ((todo "NEXT|TODO"
-            ((org-agenda-overriding-header "⚡ Ready\n")
-              (org-agenda-sorting-strategy '(deadline-up scheduled-up priority-down))
+         ((tags-todo "+nextup+TODO=\"NEXT\"|+nextup+TODO=\"TODO\""
+            ((org-agenda-overriding-header "⭐ Next Up\n")
+              (org-agenda-sorting-strategy '(priority-down deadline-up scheduled-up))
               (org-agenda-remove-tags nil)
-              (org-agenda-use-time-grid t)
               (org-agenda-max-entries 12)
-              (org-agenda-deadline-leaders '(" Deadline: " " In %2d d.: " "%2d d. ago: "))
-              (org-agenda-prefix-format "%s  %?-2i %?-12c ")))
+              (org-agenda-prefix-format "%s  %?-2i %?-12c ")
+              (org-agenda-todo-keyword-format "")))
+
+           (todo "NEXT|TODO"
+             ((org-agenda-overriding-header "⚡ Ready\n")
+               (org-agenda-sorting-strategy '(deadline-up scheduled-up priority-down))
+               (org-agenda-remove-tags nil)
+               (org-agenda-use-time-grid t)
+               (org-agenda-max-entries 12)
+               (org-agenda-deadline-leaders '(" Deadline: " " In %2d d.: " "%2d d. ago: "))
+               (org-agenda-prefix-format "%s  %?-2i %?-12c ")))
 
            (todo "BLOCKED|WAITING"
              ((org-agenda-overriding-header "\n⚡ Blocked\n")
@@ -193,90 +201,107 @@
     (interactive)
     (org-agenda nil "y"))
 
-  (defun +capture-task ()
+  (defun +org-toggle-next-up ()
     (interactive)
-    (org-capture nil "t"))
+    (if (derived-mode-p 'org-agenda-mode)
+      (let* ((marker (or (get-text-property (point) 'org-hd-marker)
+                       (get-text-property (point) 'org-marker)))
+              (agenda-window (get-buffer-window (current-buffer) 0))
+              (keep-top-visible (and agenda-window
+                                  (= (window-start agenda-window) (point-min)))))
+        (unless marker
+          (user-error "No Org item at point"))
+        (org-with-point-at marker
+          (org-toggle-tag "nextup" 'toggle)
+          (save-buffer))
+        (org-agenda-redo)
+        (when keep-top-visible
+          (set-window-start agenda-window (point-min) t)))
+      (org-toggle-tag "nextup" 'toggle)
+      (save-buffer)))
 
-  (defun +capture-note ()
-    (interactive)
-    (org-capture nil "n"))
+(defun +capture-task ()
+  (interactive)
+  (org-capture nil "t"))
 
-  (defun +capture-event ()
-    (interactive)
-    (org-capture nil "e"))
+(defun +capture-note ()
+  (interactive)
+  (org-capture nil "n"))
 
-  (defun +capture-project ()
-    (interactive)
-    (org-capture nil "p"))
+(defun +capture-event ()
+  (interactive)
+  (org-capture nil "e"))
 
-  (defun +capture-decision ()
-    (interactive)
-    (org-capture nil "d"))
+(defun +capture-project ()
+  (interactive)
+  (org-capture nil "p"))
 
-  (defun +browse-org ()
-    (interactive)
-    (dired my/org-path))
+(defun +capture-decision ()
+  (interactive)
+  (org-capture nil "d"))
 
-  (defun +sort-all-by-todo ()
-    (interactive)
-    (mark-whole-buffer)
-    (org-sort-entries nil ?o)
-    (deactivate-mark))
+(defun +browse-org ()
+  (interactive)
+  (dired my/org-path))
 
-  (defun +collapse-all ()
-    (interactive)
-    ;; run org-cycle with universal argument to collapse all
-    (universal-argument)
-    (org-cycle))
+(defun +sort-all-by-todo ()
+  (interactive)
+  (mark-whole-buffer)
+  (org-sort-entries nil ?o)
+  (deactivate-mark))
 
-  (defun my/goto-special-org-file (name)
-    (interactive "sFile name (without .org): ")
-    (let ((file-path (concat org-directory "/" name ".org")))
-      (unless (file-exists-p file-path)
-        (with-temp-buffer
-          (write-file file-path)))
-      (find-file-other-window file-path)))
+(defun +collapse-all ()
+  (interactive)
+  ;; run org-cycle with universal argument to collapse all
+  (universal-argument)
+  (org-cycle))
 
-  (defun +goto-log ()
-    (interactive)
-    (my/goto-special-org-file "log"))
+(defun my/goto-special-org-file (name)
+  (interactive "sFile name (without .org): ")
+  (let ((file-path (concat org-directory "/" name ".org")))
+    (unless (file-exists-p file-path)
+      (with-temp-buffer
+        (write-file file-path)))
+    (find-file-other-window file-path)))
 
-  (defun +goto-tasks ()
-    (interactive)
-    (my/goto-special-org-file "tasks"))
+(defun +goto-log ()
+  (interactive)
+  (my/goto-special-org-file "log"))
 
-  (defun +goto-contacts ()
-    (interactive)
-    (my/goto-special-org-file "contacts"))
+(defun +goto-tasks ()
+  (interactive)
+  (my/goto-special-org-file "tasks"))
 
-  (defun +org-ripgrep ()
-    (interactive)
-    (consult-ripgrep org-directory))
+(defun +goto-contacts ()
+  (interactive)
+  (my/goto-special-org-file "contacts"))
 
-  (defun +org-grep ()
-    (interactive)
-    (let ((default-directory org-directory))
-      (call-interactively #'grep)))
+(defun +org-ripgrep ()
+  (interactive)
+  (consult-ripgrep org-directory))
 
-  (setopt org-agenda-files
-    (list
-      (concat org-directory "/log.org")
-      (concat org-directory "/tasks.org")))
+(defun +org-grep ()
+  (interactive)
+  (let ((default-directory org-directory))
+    (call-interactively #'grep)))
 
-  (when (my/context-private-p)
-    (add-to-list 'org-agenda-files (concat org-directory "/caldav_tasks.org"))
-    (add-to-list 'org-agenda-files (concat org-directory "/calendar.org"))
-    (add-to-list 'org-agenda-files (concat org-directory "/caldav_calendar.org")))
+(setopt org-agenda-files
+  (list
+    (concat org-directory "/log.org")
+    (concat org-directory "/tasks.org")))
 
-  :init
-  (with-eval-after-load 'embark
-    (keymap-set embark-org-heading-map
-      "i" #'org-id-get-create))
+:init
+(with-eval-after-load 'embark
+  (keymap-set embark-org-heading-map
+    "i" #'org-id-get-create))
 
-  ;; Use shackle to pin agenda to the right; match both mode and buffer name.
-  (my/window-rule! org-agenda-mode :align right :size 0.4 :select nil :reuse t))
+(with-eval-after-load 'org-agenda
+  (keymap-set org-agenda-mode-map "C-c x" #'+org-toggle-next-up))
+
+;; Use shackle to pin agenda to the right; match both mode and buffer name.
+(my/window-rule! org-agenda-mode :align right :size 0.4 :select nil :reuse t)
 (my/window-rule! "*Org Agenda.*" :regexp t :align right :size 0.4 :select nil :reuse t)
-(my/with-popper! "*Org Agenda.*")
+(my/with-popper! "*Org Agenda.*"))
 
 (use-package org-project-capture
   :custom

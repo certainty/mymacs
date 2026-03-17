@@ -256,6 +256,7 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("A" . (cons "Agenda Global" 'org-agenda))
     ("c" . (cons "Capture" 'org-capture))
     ("l" . (cons "Open Log" '+goto-log))
+    ("x" . (cons "Toggle Next Up" '+org-toggle-next-up))
     ("t" . (cons "Capture Task" '+capture-task))
     ("e" . (cons "Capture Event" '+capture-event))
     ("n".  (cons "Capture Note" '+capture-note))
