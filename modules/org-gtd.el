@@ -105,8 +105,7 @@
               (org-agenda-sorting-strategy '(priority-down deadline-up scheduled-up))
               (org-agenda-remove-tags nil)
               (org-agenda-max-entries 12)
-              (org-agenda-prefix-format "%s  %?-2i %?-12c ")
-              (org-agenda-todo-keyword-format "")))
+              (org-agenda-prefix-format "  ")))
 
            (todo "NEXT|TODO"
              ((org-agenda-overriding-header "⚡ Ready\n")
@@ -115,7 +114,7 @@
                (org-agenda-use-time-grid t)
                (org-agenda-max-entries 12)
                (org-agenda-deadline-leaders '(" Deadline: " " In %2d d.: " "%2d d. ago: "))
-               (org-agenda-prefix-format "%s  %?-2i %?-12c ")))
+               (org-agenda-prefix-format "  ")))
 
            (todo "BLOCKED|WAITING"
              ((org-agenda-overriding-header "\n⚡ Blocked\n")
@@ -124,8 +123,7 @@
                (org-agenda-max-entries 12)
                (org-agenda-show-inherited-tags t)
                (org-agenda-deadline-leaders '(" Deadline: " " In %2d d.: " "%2d d. ago: "))
-               (org-agenda-prefix-format "%s  %?-2i %?-12c ")
-               (org-agenda-todo-keyword-format "")))
+               (org-agenda-prefix-format "  ")))
 
            (agenda ""
              ((org-agenda-overriding-header "\n🗓️ Upcoming\n")
@@ -220,88 +218,88 @@
       (org-toggle-tag "nextup" 'toggle)
       (save-buffer)))
 
-(defun +capture-task ()
-  (interactive)
-  (org-capture nil "t"))
+  (defun +capture-task ()
+    (interactive)
+    (org-capture nil "t"))
 
-(defun +capture-note ()
-  (interactive)
-  (org-capture nil "n"))
+  (defun +capture-note ()
+    (interactive)
+    (org-capture nil "n"))
 
-(defun +capture-event ()
-  (interactive)
-  (org-capture nil "e"))
+  (defun +capture-event ()
+    (interactive)
+    (org-capture nil "e"))
 
-(defun +capture-project ()
-  (interactive)
-  (org-capture nil "p"))
+  (defun +capture-project ()
+    (interactive)
+    (org-capture nil "p"))
 
-(defun +capture-decision ()
-  (interactive)
-  (org-capture nil "d"))
+  (defun +capture-decision ()
+    (interactive)
+    (org-capture nil "d"))
 
-(defun +browse-org ()
-  (interactive)
-  (dired my/org-path))
+  (defun +browse-org ()
+    (interactive)
+    (dired my/org-path))
 
-(defun +sort-all-by-todo ()
-  (interactive)
-  (mark-whole-buffer)
-  (org-sort-entries nil ?o)
-  (deactivate-mark))
+  (defun +sort-all-by-todo ()
+    (interactive)
+    (mark-whole-buffer)
+    (org-sort-entries nil ?o)
+    (deactivate-mark))
 
-(defun +collapse-all ()
-  (interactive)
-  ;; run org-cycle with universal argument to collapse all
-  (universal-argument)
-  (org-cycle))
+  (defun +collapse-all ()
+    (interactive)
+    ;; run org-cycle with universal argument to collapse all
+    (universal-argument)
+    (org-cycle))
 
-(defun my/goto-special-org-file (name)
-  (interactive "sFile name (without .org): ")
-  (let ((file-path (concat org-directory "/" name ".org")))
-    (unless (file-exists-p file-path)
-      (with-temp-buffer
-        (write-file file-path)))
-    (find-file-other-window file-path)))
+  (defun my/goto-special-org-file (name)
+    (interactive "sFile name (without .org): ")
+    (let ((file-path (concat org-directory "/" name ".org")))
+      (unless (file-exists-p file-path)
+        (with-temp-buffer
+          (write-file file-path)))
+      (find-file-other-window file-path)))
 
-(defun +goto-log ()
-  (interactive)
-  (my/goto-special-org-file "log"))
+  (defun +goto-log ()
+    (interactive)
+    (my/goto-special-org-file "log"))
 
-(defun +goto-tasks ()
-  (interactive)
-  (my/goto-special-org-file "tasks"))
+  (defun +goto-tasks ()
+    (interactive)
+    (my/goto-special-org-file "tasks"))
 
-(defun +goto-contacts ()
-  (interactive)
-  (my/goto-special-org-file "contacts"))
+  (defun +goto-contacts ()
+    (interactive)
+    (my/goto-special-org-file "contacts"))
 
-(defun +org-ripgrep ()
-  (interactive)
-  (consult-ripgrep org-directory))
+  (defun +org-ripgrep ()
+    (interactive)
+    (consult-ripgrep org-directory))
 
-(defun +org-grep ()
-  (interactive)
-  (let ((default-directory org-directory))
-    (call-interactively #'grep)))
+  (defun +org-grep ()
+    (interactive)
+    (let ((default-directory org-directory))
+      (call-interactively #'grep)))
 
-(setopt org-agenda-files
-  (list
-    (concat org-directory "/log.org")
-    (concat org-directory "/tasks.org")))
+  (setopt org-agenda-files
+    (list
+      (concat org-directory "/log.org")
+      (concat org-directory "/tasks.org")))
 
-:init
-(with-eval-after-load 'embark
-  (keymap-set embark-org-heading-map
-    "i" #'org-id-get-create))
+  :init
+  (with-eval-after-load 'embark
+    (keymap-set embark-org-heading-map
+      "i" #'org-id-get-create))
 
-(with-eval-after-load 'org-agenda
-  (keymap-set org-agenda-mode-map "C-c x" #'+org-toggle-next-up))
+  (with-eval-after-load 'org-agenda
+    (keymap-set org-agenda-mode-map "C-c n" #'+org-toggle-next-up))
 
-;; Use shackle to pin agenda to the right; match both mode and buffer name.
-(my/window-rule! org-agenda-mode :align right :size 0.4 :select nil :reuse t)
-(my/window-rule! "*Org Agenda.*" :regexp t :align right :size 0.4 :select nil :reuse t)
-(my/with-popper! "*Org Agenda.*"))
+  ;; Use shackle to pin agenda to the right; match both mode and buffer name.
+  (my/window-rule! org-agenda-mode :align right :size 0.4 :select nil :reuse t)
+  (my/window-rule! "*Org Agenda.*" :regexp t :align right :size 0.4 :select nil :reuse t)
+  (my/with-popper! "*Org Agenda.*"))
 
 (use-package org-project-capture
   :custom
