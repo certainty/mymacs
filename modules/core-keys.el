@@ -181,7 +181,7 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("m" . (cons "Config Module" '+edit-config-module))
     ("n" . (cons "Notes Directory" '+browse-notes))
     ("N" . (cons "Managed Documents" '+browse-managed-documents))
-    ("o" . (cons "Outline" 'imenu))
+    ("o" . (cons "Outline" 'consult-imenu))
     ("O" . (cons "Org Directory" '+browse-org))
     ("v" . (cons "VC Root Log" 'vc-print-root-log))
     ("p" . (cons "Project Dired" 'project-dired))
