@@ -100,14 +100,21 @@
               (org-agenda-todo-keyword-format "")))))
 
        ("y" "My Agenda"
-         ((todo "NEXT|TODO"
-            ((org-agenda-overriding-header "⚡ Ready\n")
-              (org-agenda-sorting-strategy '(deadline-up scheduled-up priority-down))
+         ((tags-todo "+nextup+TODO=\"NEXT\"|+nextup+TODO=\"TODO\""
+            ((org-agenda-overriding-header "⭐ Next Up\n")
+              (org-agenda-sorting-strategy '(priority-down deadline-up scheduled-up))
               (org-agenda-remove-tags nil)
-              (org-agenda-use-time-grid t)
               (org-agenda-max-entries 12)
-              (org-agenda-deadline-leaders '(" Deadline: " " In %2d d.: " "%2d d. ago: "))
-              (org-agenda-prefix-format "%s  %?-2i %?-12c ")))
+              (org-agenda-prefix-format "  ")))
+
+           (todo "NEXT|TODO"
+             ((org-agenda-overriding-header "⚡ Ready\n")
+               (org-agenda-sorting-strategy '(deadline-up scheduled-up priority-down))
+               (org-agenda-remove-tags nil)
+               (org-agenda-use-time-grid t)
+               (org-agenda-max-entries 12)
+               (org-agenda-deadline-leaders '(" Deadline: " " In %2d d.: " "%2d d. ago: "))
+               (org-agenda-prefix-format "  ")))
 
            (todo "BLOCKED|WAITING"
              ((org-agenda-overriding-header "\n⚡ Blocked\n")
@@ -116,8 +123,7 @@
                (org-agenda-max-entries 12)
                (org-agenda-show-inherited-tags t)
                (org-agenda-deadline-leaders '(" Deadline: " " In %2d d.: " "%2d d. ago: "))
-               (org-agenda-prefix-format "%s  %?-2i %?-12c ")
-               (org-agenda-todo-keyword-format "")))
+               (org-agenda-prefix-format "  ")))
 
            (agenda ""
              ((org-agenda-overriding-header "\n🗓️ Upcoming\n")
@@ -193,6 +199,25 @@
     (interactive)
     (org-agenda nil "y"))
 
+  (defun +org-toggle-next-up ()
+    (interactive)
+    (if (derived-mode-p 'org-agenda-mode)
+      (let* ((marker (or (get-text-property (point) 'org-hd-marker)
+                       (get-text-property (point) 'org-marker)))
+              (agenda-window (get-buffer-window (current-buffer) 0))
+              (keep-top-visible (and agenda-window
+                                  (= (window-start agenda-window) (point-min)))))
+        (unless marker
+          (user-error "No Org item at point"))
+        (org-with-point-at marker
+          (org-toggle-tag "nextup" 'toggle)
+          (save-buffer))
+        (org-agenda-redo)
+        (when keep-top-visible
+          (set-window-start agenda-window (point-min) t)))
+      (org-toggle-tag "nextup" 'toggle)
+      (save-buffer)))
+
   (defun +capture-task ()
     (interactive)
     (org-capture nil "t"))
@@ -263,20 +288,18 @@
       (concat org-directory "/log.org")
       (concat org-directory "/tasks.org")))
 
-  (when (my/context-private-p)
-    (add-to-list 'org-agenda-files (concat org-directory "/caldav_tasks.org"))
-    (add-to-list 'org-agenda-files (concat org-directory "/calendar.org"))
-    (add-to-list 'org-agenda-files (concat org-directory "/caldav_calendar.org")))
-
   :init
   (with-eval-after-load 'embark
     (keymap-set embark-org-heading-map
       "i" #'org-id-get-create))
 
+  (with-eval-after-load 'org-agenda
+    (keymap-set org-agenda-mode-map "C-c n" #'+org-toggle-next-up))
+
   ;; Use shackle to pin agenda to the right; match both mode and buffer name.
-  (my/window-rule! org-agenda-mode :align right :size 0.4 :select nil :reuse t))
-(my/window-rule! "*Org Agenda.*" :regexp t :align right :size 0.4 :select nil :reuse t)
-(my/with-popper! "*Org Agenda.*")
+  (my/window-rule! org-agenda-mode :align right :size 0.4 :select nil :reuse t)
+  (my/window-rule! "*Org Agenda.*" :regexp t :align right :size 0.4 :select nil :reuse t)
+  (my/with-popper! "*Org Agenda.*"))
 
 (use-package org-project-capture
   :custom
