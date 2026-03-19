@@ -78,6 +78,9 @@
 (when (my/context-work-p)
   (require 'writing-asciidoc))
 
+(when (my/context-private-p)
+  (require 'citizen-science))
+
 ;;; GTD
 (require 'org-gtd)
 
@@ -87,7 +90,9 @@
 (require 'tools-terminal)
 (require 'tools-tmr)
 
-(require 'ai-gptel)
+(when (my/context-private-p)
+  (require 'ai-gptel))
+
 (require 'ai-agent-shell)
 
 (when (my/context-work-p)

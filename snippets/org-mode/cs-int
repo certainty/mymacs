@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: ecological interaction
+# key: cs-int
+# --
+** Interaction: ${1:brief description}
+:PROPERTIES:
+:TYPE:     ${2:$(yas-choose-value '("predation" "parasitism" "herbivory" "competition" "mutualism" "commensalism" "pollination" "seed-dispersal" "decomposition" "symbiosis" "other"))}
+:ACTOR:    ${3:species initiating}
+:SUBJECT:  ${4:species receiving}
+:OUTCOME:  $5
+:CONFIDENCE: ${6:$(yas-choose-value '("certain" "probable" "possible"))}
+:END:
+
+$0

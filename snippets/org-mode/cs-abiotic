@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: abiotic observation
+# key: cs-abiotic
+# --
+** Abiotic: ${1:brief description}
+:PROPERTIES:
+:TYPE:        ${2:$(yas-choose-value '("soil" "water-quality" "hydrology" "geology" "sediment" "light" "temperature" "other"))}
+:MEASUREMENT: $3
+:UNIT:        $4
+:METHOD:      ${5:$(yas-choose-value '("visual" "probe" "sample" "sensor" "estimate"))}
+:LOCATION:    $6
+:END:
+
+$0

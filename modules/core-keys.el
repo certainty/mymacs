@@ -285,10 +285,12 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
     ("l" . (cons "Log File" 'magit-log-buffer-file))
     ("L" . (cons "Log All" 'magit-log-all))))
 
-(when (or (my/context-work-p) (my/context-private-p))
+(when (my/context-private-p)
+  (define-prefix-command '+citizen-science)
   (my/leader-bindings!
     (my/leader-map
-      ("a" . (cons "AI" +ai)))
+      ("a" . (cons "AI" +ai))
+      ("n" . (cons "Field Science" +citizen-science)))
     (+ai
       ("s" . (cons "Shell" 'agent-shell))
       ("S" . (cons "Send Screenshot" 'agent-shell-send-screenshot))
@@ -307,7 +309,19 @@ Each group has the shape: (MAP (KEY . DEF) ...)."
 (when (my/context-work-p)
   (my/leader-bindings!
     (my/leader-map
-      ("," . (cons "Codex Start" 'my/start-codex)))
+      ("," . (cons "Codex Start" 'my/start-codex))
+      ("a". (cons "AI" +ai)))
+    (+ai
+      ("s" . (cons "Shell" 'agent-shell))
+      ("S" . (cons "Send Screenshot" 'agent-shell-send-screenshot))
+      ("A" . (cons "New Shell" 'agent-shell-new-shell))
+      ("p" . (cons "Compose Prompt" 'agent-shell-prompt-compose))
+      ("t" . (cons "Toggle Shell" 'agent-shell-toggle))
+      ("h" . (cons "Help" 'agent-shell-help-menu))
+      ("r" . (cons "Review" 'agent-review))
+      ("d" . (cons "Attention Dashboard" 'agent-shell-attention-dashboard))
+      ("j" . (cons "Attention Jump" 'agent-shell-attention-jump))
+      ("m" . (cons "Shell Manager" 'agent-shell-manager-toggle)))
     (+find
       ("q" . (cons "Quicklink" '+quicklink))
       ("P" . (cons "PMD projects" '+pmd-projects))

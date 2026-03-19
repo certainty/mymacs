@@ -107,6 +107,20 @@ targets."
 (use-package ws-butler
   :hook (after-init . ws-butler-global-mode))
 
+(use-package yasnippet
+  :hook (after-init . yas-global-mode)
+  :custom
+  (yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory)))
+  :config
+  ;; Don't shadow TAB (used by corfu); expand snippets with M-/
+  (keymap-unset yas-minor-mode-map "<tab>")
+  (keymap-unset yas-minor-mode-map "TAB")
+  (keymap-set yas-minor-mode-map "M-/" #'yas-expand))
+
+;; Browse and insert snippets via completing-read
+(use-package consult-yasnippet
+  :after (yasnippet consult))
+
 
 (provide 'core-editing)
 ;;; core-editing.el ends here

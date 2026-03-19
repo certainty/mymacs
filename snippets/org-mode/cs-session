@@ -1,0 +1,26 @@
+# -*- mode: snippet -*-
+# name: citizen science field session
+# key: cs-session
+# --
+* Session Metadata
+:PROPERTIES:
+:DATE:        `(format-time-string "%Y-%m-%d")`
+:START_TIME:  ${1:HH:MM}
+:END_TIME:    ${2:HH:MM}
+:LOCATION:    ${3:patch name}
+:SKY:         ${4:$(yas-choose-value '("clear" "partly-cloudy" "overcast" "fog" "light-rain" "rain" "storm"))}
+:TEMP_C:      $5
+:WIND:        ${6:$(yas-choose-value '("calm" "light-breeze" "moderate" "strong"))}
+:WATER_LEVEL: ${7:$(yas-choose-value '("low" "normal" "high" "flooded"))}
+:VISIBILITY:  ${8:$(yas-choose-value '("excellent" "good" "moderate" "poor"))}
+:END:
+
+* Conditions
+$9
+
+* Observations
+$0
+
+* Images
+
+* Notes

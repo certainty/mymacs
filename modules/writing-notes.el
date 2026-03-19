@@ -61,6 +61,7 @@
   (denote-rename-buffer-mode 1)
 
 
+
   (defalias 'denote-new 'denote)
   (defalias 'denote-find 'denote-open-or-create))
 
@@ -75,6 +76,7 @@
   :config
   (setq denote-silo-directories
     (list denote-directory
+      "~/Documents/Cloud/CitizenScience"
       my/library-path
       my/managed-documents-path)))
 
@@ -118,6 +120,8 @@
   "Search in org directory using p-search."
   (interactive)
   (my/search-in-directory my/org-path))
+
+
 
 (provide 'writing-notes)
 ;;; writing-notes.el ends here

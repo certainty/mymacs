@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: plant / fungus / moss / lichen observation
+# key: cs-plant
+# --
+** ${1:Common name} (/${2:Scientific name}/)
+:PROPERTIES:
+:TAXON_GROUP: ${3:$(yas-choose-value '("flowering-plant" "fern" "horsetail" "moss" "liverwort" "hornwort" "lichen" "fungus" "alga"))}
+:ABUNDANCE:   ${4:$(yas-choose-value '("dominant" "abundant" "frequent" "occasional" "rare"))}
+:PHENOLOGY:   ${5:$(yas-choose-value '("dormant" "vegetative" "budding" "flowering" "fruiting" "seeding" "senescent" "n/a"))}
+:SUBSTRATE:   ${6:$(yas-choose-value '("soil" "rock" "bark" "wood" "leaf-litter" "water" "other-plant" "dung" "other"))}
+:MICROHABITAT:$7
+:CONFIDENCE:  ${8:$(yas-choose-value '("certain" "probable" "possible"))}
+:COMMON_DE:   $9
+:END:
+
+$0
