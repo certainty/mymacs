@@ -20,6 +20,7 @@
      (project-vc-dir "VC" ?v)))
 
   :init
+  (keymap-set project-prefix-map "c" #'project-compile)
   (keymap-set project-prefix-map "s" #'consult-ripgrep)
   (keymap-set project-prefix-map "e" #'project-dired)
 
@@ -38,9 +39,6 @@
   :custom
   (compilation-buffer-name-function
    #'projection-customize-compilation-buffer-name-function)
-  :bind
-  (:map project-prefix-map
-        ("C" . projection-customize-compilation)))
 
 (use-package ansi-color
   :straight (:type built-in)
@@ -83,7 +81,7 @@
   :after projection
   :bind
   (:map project-prefix-map
-        ("c" . projection-multi-compile)))
+        ("C" . projection-multi-compile)))
 
 (use-package projection-multi-embark
   :straight (:type git :host github :repo "mohkale/projection")
