@@ -107,7 +107,7 @@
 (keymap-set '+window "p" 'popper-cycle)
 
 ;;; Project / Worpspace
-(keymap-set project-prefix-map "." 'tab-switch)g
+(keymap-set project-prefix-map "." 'tab-switch)
 
 ;;; Language group (noun: language / code)
 
