@@ -36,6 +36,15 @@
     (and path
          (string-match-p "/test/.*_test\\.rb\\'" path))))
 
+(defun my/ruby--test-framework (&optional file)
+  "Return the Ruby test framework for FILE or the current buffer.
+Return `rspec' for RSpec specs, `minitest' for Minitest tests, or nil when
+the buffer does not look like a Ruby test file."
+  (cond
+   ((my/ruby--spec-file-p file) 'rspec)
+   ((my/ruby--minitest-file-p file) 'minitest)
+   (t nil)))
+
 (defun my/ruby--rspec-target (&optional line)
   "Return the RSpec target for the current buffer and optional LINE."
   (let ((file (and buffer-file-name
@@ -93,38 +102,34 @@
 (defun +ruby-test-dwim ()
   "Run the current Ruby test, dispatching between RSpec and Minitest."
   (interactive)
-  (cond
-   ((my/ruby--spec-file-p)
-    (my/ruby--run-rspec
-     (or (my/ruby--rspec-target (line-number-at-pos))
-         (read-string "RSpec target: "))))
-   ((my/ruby--minitest-file-p)
-    (pcase-let ((`(,file ,test-name)
-                 (or (my/ruby--minitest-target (my/ruby--minitest-test-name))
-                     (list (read-string "Minitest file: ") nil))))
-      (my/ruby--run-minitest file test-name)))
-   (buffer-file-name
-    (my/ruby--run-rspec (read-string "Ruby test target: ")))
-   (t
-    (user-error "Not visiting a Ruby file"))))
+  (pcase (my/ruby--test-framework)
+    ('rspec
+     (my/ruby--run-rspec
+      (or (my/ruby--rspec-target (line-number-at-pos))
+          (read-string "RSpec target: "))))
+    ('minitest
+     (pcase-let ((`(,file ,test-name)
+                  (or (my/ruby--minitest-target (my/ruby--minitest-test-name))
+                      (list (read-string "Minitest file: ") nil))))
+       (my/ruby--run-minitest file test-name)))
+    (_
+     (user-error "Not visiting an RSpec or Minitest test file"))))
 
 (defun +ruby-test-file ()
   "Run the current Ruby test file."
   (interactive)
-  (cond
-   ((my/ruby--spec-file-p)
-    (my/ruby--run-rspec
-     (or (my/ruby--rspec-target)
-         (read-string "RSpec target: "))))
-   ((my/ruby--minitest-file-p)
-    (pcase-let ((`(,file ,test-name)
-                 (or (my/ruby--minitest-target)
-                     (list (read-string "Minitest file: ") nil))))
-      (my/ruby--run-minitest file test-name)))
-   (buffer-file-name
-    (my/ruby--run-rspec (read-string "Ruby test target: ")))
-   (t
-    (user-error "Not visiting a Ruby file"))))
+  (pcase (my/ruby--test-framework)
+    ('rspec
+     (my/ruby--run-rspec
+      (or (my/ruby--rspec-target)
+          (read-string "RSpec target: "))))
+    ('minitest
+     (pcase-let ((`(,file ,test-name)
+                  (or (my/ruby--minitest-target)
+                      (list (read-string "Minitest file: ") nil))))
+       (my/ruby--run-minitest file test-name)))
+    (_
+     (user-error "Not visiting an RSpec or Minitest test file"))))
 
 ;;; Ruby tree-sitter mode
 (use-package ruby-ts-mode
