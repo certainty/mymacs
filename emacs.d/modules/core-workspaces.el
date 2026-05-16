@@ -38,7 +38,7 @@
   :hook (compilation-mode . projection-customize-compilation-mode)
   :custom
   (compilation-buffer-name-function
-   #'projection-customize-compilation-buffer-name-function)
+   #'projection-customize-compilation-buffer-name-function))
 
 (use-package ansi-color
   :straight (:type built-in)
