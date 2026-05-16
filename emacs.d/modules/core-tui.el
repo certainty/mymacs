@@ -13,9 +13,7 @@
   :init
   (xterm-mouse-mode 1)
   :config
-  (defconst my/tui-border-glyph-candidates
-    '(?▏ ?▕ ?\s ?│ ?┃ ?¦ ?|)
-    "Preferred glyphs for terminal window borders, in fallback order.")
+  (require 'color)
 
   (defun my/tui--display-table-glyph (char &optional face)
     "Return a display table glyph vector for CHAR using FACE."
@@ -23,44 +21,36 @@
                 (make-glyph-code char face)
               char)))
 
-  (defun my/tui-border-glyph ()
-    "Return the best available glyph for terminal window borders."
-    (or (seq-find #'char-displayable-p my/tui-border-glyph-candidates)
-        ?|))
-
   (defun my/tui-border-color ()
     "Return a theme-aware color for terminal borders."
-    (or (face-foreground 'shadow nil t)
-        "brightblack"))
-
-  (defun my/tui-space-border-p (glyph)
-    "Return non-nil when GLYPH should be rendered as a filled separator."
-    (eq glyph ?\s))
+    (let* ((background (or (face-background 'default nil t) "#000000"))
+           (shadow (or (face-foreground 'shadow nil t) background)))
+      (or (ignore-errors (color-darken-name shadow 12))
+          (ignore-errors (color-lighten-name background 8))
+          shadow)))
 
   (defun my/tui-refresh-ui ()
     "Apply terminal-specific face and border tuning."
     (unless standard-display-table
       (setq standard-display-table (make-display-table)))
 
-    (let* ((border-glyph (my/tui-border-glyph))
-           (border-color (my/tui-border-color))
-           (filled-border (my/tui-space-border-p border-glyph)))
+    (let ((border-color (my/tui-border-color)))
       (set-display-table-slot standard-display-table 'vertical-border
                               (my/tui--display-table-glyph
-                               border-glyph
+                               ?\s
                                'vertical-border))
       (set-face-attribute 'vertical-border nil
                           :foreground border-color
-                          :background (if filled-border border-color 'unspecified))
+                          :background border-color)
       (set-face-attribute 'window-divider nil
                           :foreground border-color
-                          :background (if filled-border border-color 'unspecified))
+                          :background border-color)
       (set-face-attribute 'window-divider-first-pixel nil
                           :foreground border-color
-                          :background (if filled-border border-color 'unspecified))
+                          :background border-color)
       (set-face-attribute 'window-divider-last-pixel nil
                           :foreground border-color
-                          :background (if filled-border border-color 'unspecified)))
+                          :background border-color))
     (set-display-table-slot standard-display-table 'truncation
                             (my/tui--display-table-glyph ?… 'shadow))
     (set-display-table-slot standard-display-table 'wrap
