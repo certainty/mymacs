@@ -106,6 +106,9 @@
 (keymap-set '+window "m" 'toggle-frame-maximized)
 (keymap-set '+window "p" 'popper-cycle)
 
+;;; Project / Worpspace
+(keymap-set project-prefix-map "." 'tab-switch)g
+
 ;;; Language group (noun: language / code)
 
 (keymap-set '+language "d" 'xref-find-definitions)
