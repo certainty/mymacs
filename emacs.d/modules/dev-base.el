@@ -53,6 +53,9 @@
   (treesit-auto-install 'prompt)
   :config
   (setq treesit-language-source-alist (treesit-auto--build-treesit-source-alist))
+  ;; Add markdown-inline which is often missing from treesit-auto recipes
+  (add-to-list 'treesit-language-source-alist
+               '(markdown-inline "https://github.com/tree-sitter-grammars/tree-sitter-markdown" nil "tree-sitter-markdown-inline/src"))
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode 1))
 

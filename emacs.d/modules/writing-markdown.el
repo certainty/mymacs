@@ -2,9 +2,16 @@
 
 ;;; Code:
 
+(use-package markdown-mode)
+
 (use-package markdown-ts-mode
-  :mode (("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
+  :after markdown-mode
+  :mode (("\\.md\\'" . markdown-ts-mode)
+         ("\\.markdown\\'" . markdown-ts-mode))
+  :init
+  (with-eval-after-load 'treesit
+    (add-to-list 'treesit-language-source-alist
+                 '(markdown-inline "https://github.com/tree-sitter-grammars/tree-sitter-markdown" nil "tree-sitter-markdown-inline/src")))
   :custom
   (markdown-command "multimarkdown")
   (markdown-fontify-code-blocks-natively t)
