@@ -34,6 +34,10 @@
 (use-package projection
   :straight (:type git :host github :repo "mohkale/projection")
   :hook (after-init . global-projection-hook-mode)
+  :hook (compilation-mode . projection-customize-compilation-mode)
+  :custom
+  (compilation-buffer-name-function
+   #'projection-customize-compilation-buffer-name-function)
   :bind
   (:map project-prefix-map
         ("C" . projection-customize-compilation)))
