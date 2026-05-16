@@ -50,9 +50,19 @@
   (defun my/disable-corfu-auto ()
     "Disable automatic corfu popup in the current buffer."
     (setq-local corfu-auto nil))
+
+  (defun my/corfu-popupinfo-supported-p ()
+    "Return non-nil when Corfu popupinfo can render on this frame."
+    (or (display-graphic-p)
+        (featurep 'tty-child-frames)))
+
+  (defun my/corfu-enable-popupinfo-maybe ()
+    "Enable `corfu-popupinfo-mode' only when child-frame popups work."
+    (when (my/corfu-popupinfo-supported-p)
+      (corfu-popupinfo-mode 1)))
   :hook
   ((after-init . global-corfu-mode)
-   (corfu-mode . corfu-popupinfo-mode)
+   (corfu-mode . my/corfu-enable-popupinfo-maybe)
    (org-mode . my/disable-corfu-auto))
   :bind
   (:map corfu-map
@@ -83,6 +93,14 @@
     (add-to-list 'savehist-additional-variables 'corfu-history))
 
   (diminish 'corfu-mode))
+
+(use-package corfu-terminal
+  :if (and (not (display-graphic-p))
+           (not (featurep 'tty-child-frames)))
+  :after corfu
+  :straight (:type git :host codeberg :repo "akib/emacs-corfu-terminal")
+  :config
+  (corfu-terminal-mode 1))
 
 (use-package nerd-icons-corfu
   :init

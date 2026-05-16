@@ -13,11 +13,20 @@
   :init
   (xterm-mouse-mode 1)
   :config
+  (defconst my/tui-border-glyph-candidates
+    '(?▕ ?│ ?┃ ?¦ ?|)
+    "Preferred glyphs for terminal window borders, in fallback order.")
+
   (defun my/tui--display-table-glyph (char &optional face)
     "Return a display table glyph vector for CHAR using FACE."
     (vector (if face
                 (make-glyph-code char face)
               char)))
+
+  (defun my/tui-border-glyph ()
+    "Return the best available glyph for terminal window borders."
+    (or (seq-find #'char-displayable-p my/tui-border-glyph-candidates)
+        ?|))
 
   (defun my/tui-refresh-ui ()
     "Apply terminal-specific face and border tuning."
@@ -25,7 +34,9 @@
       (setq standard-display-table (make-display-table)))
 
     (set-display-table-slot standard-display-table 'vertical-border
-                            (my/tui--display-table-glyph ?│ 'shadow))
+                            (my/tui--display-table-glyph
+                             (my/tui-border-glyph)
+                             'shadow))
     (set-display-table-slot standard-display-table 'truncation
                             (my/tui--display-table-glyph ?… 'shadow))
     (set-display-table-slot standard-display-table 'wrap
