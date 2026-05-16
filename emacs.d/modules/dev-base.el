@@ -52,15 +52,28 @@
   :custom
   (treesit-auto-install 'prompt)
   :config
+  (setq treesit-language-source-alist (treesit-auto--build-treesit-source-alist))
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode 1))
 
-(defun +treesit-install-all-grammars ()
-  "Install Tree-sitter grammars for all languages supported by this profile."
-  (interactive)
+(defun +treesit-install-all-grammars (&optional force)
+  "Install Tree-sitter grammars for all languages supported by this profile.
+With FORCE prefix, re-install even if already present."
+  (interactive "P")
   (if (>= emacs-major-version 31)
       (message "Emacs 31+ handles grammar installation automatically.")
-    (treesit-auto-install-all)))
+    (require 'treesit-auto)
+    (let ((treesit-language-source-alist (treesit-auto--build-treesit-source-alist))
+          (langs (if force
+                     treesit-auto-langs
+                   (seq-filter (lambda (lang) (not (treesit-ready-p lang t)))
+                               treesit-auto-langs))))
+      (if langs
+          (progn
+            (message "Installing %d grammars..." (length langs))
+            (mapc #'treesit-install-language-grammar langs)
+            (message "Grammar installation complete."))
+        (message "All grammars are already installed (use prefix to force).")))))
 
 ;;; Flymake (Linting)
 (use-package flymake
