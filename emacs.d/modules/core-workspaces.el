@@ -45,9 +45,33 @@
 (use-package ansi-color
   :straight (:type built-in)
   :preface
+  (defvar-local my/compilation-status nil
+    "Visual status of the current compilation buffer.")
+
+  (defun my/compilation-status-segment ()
+    "Return a mode-line segment describing the current compilation state."
+    (pcase my/compilation-status
+      ('running (propertize " ↻" 'face 'mode-line-emphasis))
+      ('success (propertize " ✓" 'face 'success))
+      ('error (propertize " ✕" 'face 'error))
+      (_ "")))
+
+  (defun my/compilation-finish-status (buffer status)
+    "Update BUFFER mode line after compilation finishes with STATUS."
+    (when (buffer-live-p buffer)
+      (with-current-buffer buffer
+        (setq-local my/compilation-status
+                    (if (string-prefix-p "finished" status) 'success 'error))
+        (force-mode-line-update t))))
+
   (defun my/enable-ansi-color-in-compilation ()
-    "Enable ANSI color translation in the current compilation buffer."
+    "Enable ANSI color translation and status display in compilation buffers."
+    (setq-local compilation-scroll-output t)
     (setq-local ansi-color-for-compilation-mode t)
+    (setq-local my/compilation-status 'running)
+    (setq-local mode-line-format
+                (append mode-line-format '((:eval (my/compilation-status-segment)))))
+    (add-hook 'compilation-finish-functions #'my/compilation-finish-status nil t)
     (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter nil t))
   :hook (compilation-mode . my/enable-ansi-color-in-compilation))
 

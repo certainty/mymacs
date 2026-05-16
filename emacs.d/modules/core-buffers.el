@@ -140,7 +140,7 @@ If REGEXP is non-nil, CONDITION is treated as a regular expression."
   (my/register-side-popup 'info-mode)
   (my/register-side-popup 'help-mode)
   (my/register-side-popup 'helpful-mode)
-  (my/register-bottom-popup 'compilation-mode t)
+  (my/register-side-popup 'compilation-mode t)
   (my/register-bottom-popup 'org-capture-mode t)
   (my/register-bottom-popup "\\*Messages\\*" nil t)
   (my/register-bottom-popup "\\*Warnings\\*" nil t)
