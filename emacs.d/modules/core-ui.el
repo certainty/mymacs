@@ -143,13 +143,13 @@ near-black for modeline and gutters."
 
 ;;; Modeline: Mood-line
 (defconst my/mood-line-checker-glyphs
-  '((:checker-info . ?\uf05a)
-    (:checker-issues . ?\uf071)
-    (:checker-good . ?\uf00c)
-    (:checker-checking . ?\uf110)
-    (:checker-errored . ?\uf00d)
-    (:checker-interrupted . ?\uf04c))
-  "Checker glyphs mapping to Nerd Font codepoints.")
+  '((:checker-info . ?ℹ)
+    (:checker-issues . ?!)
+    (:checker-good . ?✓)
+    (:checker-checking . ?↻)
+    (:checker-errored . ?✕)
+    (:checker-interrupted . ?⏸))
+  "Checker glyphs chosen for reliable rendering across GUI and TTY frames.")
 
 (use-package mood-line
   :hook after-init
