@@ -42,6 +42,15 @@
   (:map project-prefix-map
         ("C" . projection-customize-compilation)))
 
+(use-package ansi-color
+  :straight (:type built-in)
+  :preface
+  (defun my/enable-ansi-color-in-compilation ()
+    "Enable ANSI color translation in the current compilation buffer."
+    (setq-local ansi-color-for-compilation-mode t)
+    (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter nil t))
+  :hook (compilation-mode . my/enable-ansi-color-in-compilation))
+
 (use-package projection-find
   :straight (:type git :host github :repo "mohkale/projection"))
 
