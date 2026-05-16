@@ -1,0 +1,81 @@
+;;; core-workspaces.el --- Workspaces and projects -*- lexical-binding: t; -*-
+;;
+;;; Commentary:
+;;
+;; Configures project.el for project management and tabspaces for
+;; workspace isolation based on tab-bar-mode.
+;;
+;;; Code:
+
+;;; Project Management
+(use-package project
+  :straight (:type built-in)
+  :custom
+  (project-vc-extra-root-markers '(".project" ".git" ".node_modules"))
+  (project-switch-commands
+   '((project-find-file "Find file" ?f)
+     (consult-ripgrep "Ripgrep" ?s)
+     (project-dired "Dired" ?d)
+     (magit-project-status "Magit" ?g)
+     (project-vc-dir "VC" ?v)))
+
+  :init
+  (keymap-set project-prefix-map "s" #'consult-ripgrep)
+  (keymap-set project-prefix-map "e" #'project-dired)
+
+  :preface
+  (defun +find-symbol ()
+    "Search for symbol at point in project using ripgrep."
+    (interactive)
+    (consult-ripgrep (project-root (project-current t))
+                     (thing-at-point 'symbol))))
+
+;;; Projection (Project-type awareness and multi-target compilation)
+(use-package projection
+  :straight (:type git :host github :repo "mohkale/projection")
+  :hook (after-init . global-projection-hook-mode)
+  :bind
+  (:map project-prefix-map
+        ("C" . projection-customize-compilation)))
+
+(use-package projection-find
+  :straight (:type git :host github :repo "mohkale/projection"))
+
+(use-package projection-multi
+  :straight (:type git :host github :repo "mohkale/projection")
+  :after projection
+  :bind
+  (:map project-prefix-map
+        ("c" . projection-multi-compile)))
+
+(use-package projection-multi-embark
+  :straight (:type git :host github :repo "mohkale/projection")
+  :after (projection-multi embark)
+  :config
+  (projection-multi-embark-setup-command-map))
+
+;; Projection integration for `dape'
+(use-package projection-dape
+  :bind (:map projection-map ("D" . #'projection-dape)))
+
+;;; Workspaces via tab-bar
+(use-package tabspaces
+  :hook (after-init . tabspaces-mode)
+  :commands (tabspaces-switch-or-create-workspace
+             tabspaces-open-or-create-project-and-workspace)
+  :custom
+  (tabspaces-use-filtered-buffers-as-default t)
+  (tabspaces-default-tab "Default")
+  (tabspaces-remove-to-default t)
+  (tabspaces-include-buffers '("*scratch*"))
+  (tabspaces-session t)
+  (tabspaces-session-auto-restore nil)
+  :bind
+  (:map project-prefix-map
+        ("p" . tabspaces-open-or-create-project-and-workspace)
+        ("b" . tabspaces-switch-to-buffer)
+        ("k" . tabspaces-kill-buffers-close-workspace)
+        ("x" . tabspaces-close-workspace)))
+
+(provide 'core-workspaces)
+;;; core-workspaces.el ends here

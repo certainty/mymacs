@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: minitest setup
-# key: mt_setup
-# --
-def setup
-  $0
-end

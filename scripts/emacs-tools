@@ -1,0 +1,315 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ROOT="${EMACS_CONFIG_ROOT:-$(pwd)}"
+EMACS="${EMACS:-emacs}"
+INIT_DIR="${EMACS_CONFIG_ROOT:-}"
+
+usage() {
+  cat <<EOF
+Usage:
+  emacs-tools <subcommand> [args...]
+
+Subcommands:
+  vanilla
+      Start Emacs with -Q
+
+  debug
+      Start Emacs with --debug-init
+
+  batch-load <file>
+      Load a file in batch mode
+
+  eval <elisp>
+      Evaluate arbitrary elisp in batch mode
+
+  check-parens <file>
+      Check parentheses balance in an elisp file
+
+  byte-compile <file...>
+      Byte compile one or more files
+
+  native-compile <file...>
+      Native compile one or more files
+
+  batch-check
+      Load init.el in batch mode
+
+  doctor
+      Run basic config diagnostics:
+        - load init.el
+        - byte compile all .el files
+        - check parens for all .el files
+
+  startup-log [logfile]
+      Run startup with --debug-init and capture logs
+
+  describe-function <symbol>
+      Print function documentation.
+      Uses --init-directory when EMACS_CONFIG_ROOT is set so
+      third-party packages are available for inspection.
+
+  describe-variable <symbol>
+      Print variable documentation.
+      Uses --init-directory when EMACS_CONFIG_ROOT is set so
+      third-party packages are available for inspection.
+
+  find-library <library>
+      Locate an Emacs library.
+      Uses --init-directory when EMACS_CONFIG_ROOT is set so
+      third-party packages are available for lookup.
+
+  manual [topic]
+      Open an Info manual
+      Examples:
+        emacs-tools manual emacs
+        emacs-tools manual elisp
+        emacs-tools manual org
+
+  ert <test-file>
+      Run ERT tests in batch mode
+
+Examples:
+  emacs-tools check-parens init.el
+  emacs-tools byte-compile lisp/foo.el
+  emacs-tools eval "(message \"hello\")"
+  emacs-tools doctor
+  emacs-tools manual elisp
+
+  With EMACS_CONFIG_ROOT set, describe/lookup commands load
+  the profile's packages before inspection:
+    EMACS_CONFIG_ROOT=profiles/05-2026 emacs-tools describe-variable corfu-auto
+EOF
+}
+
+require_arg() {
+  if [[ $# -lt 1 ]]; then
+    echo "missing argument" >&2
+    exit 1
+  fi
+}
+
+find_elisp_files() {
+  find "${ROOT}" -path "${ROOT}/straight" -prune -o -type f -name "*.el" -print
+}
+
+emacs_args_with_profile() {
+  local args=()
+  if [[ -n "${INIT_DIR}" ]]; then
+    args+=("--init-directory=${INIT_DIR}")
+    if [[ -d "${INIT_DIR}/modules" ]]; then
+      args+=("-L" "${INIT_DIR}/modules")
+    fi
+  else
+    args+=("-Q")
+  fi
+  echo "${args[@]}"
+}
+
+cmd="${1:-}"
+shift || true
+
+case "${cmd}" in
+  vanilla)
+    exec "${EMACS}" -Q
+    ;;
+
+  debug)
+    profile_args=$(emacs_args_with_profile)
+    exec "${EMACS}" ${profile_args} --debug-init "$@"
+    ;;
+
+  batch-load)
+    require_arg "$@"
+    profile_args=$(emacs_args_with_profile)
+    exec "${EMACS}" ${profile_args} --batch -l "$1"
+    ;;
+
+  eval)
+    require_arg "$@"
+    profile_args=$(emacs_args_with_profile)
+    load_init=()
+    if [[ -n "${INIT_DIR}" && -f "${ROOT}/init.el" ]]; then
+      load_init+=("-l" "${ROOT}/init.el")
+    fi
+
+    exec "${EMACS}" ${profile_args} "${load_init[@]}" --batch \
+      --eval "$1"
+    ;;
+
+  check-parens)
+    require_arg "$@"
+    file="$1"
+    profile_args=$(emacs_args_with_profile)
+
+    exec "${EMACS}" ${profile_args} --batch \
+      --eval "
+      (condition-case err
+          (progn
+            (find-file \"${file}\")
+            (check-parens)
+            (message \"OK: parentheses balanced\"))
+        (error
+          (message \"%s\" err)
+          (kill-emacs 1)))
+      "
+    ;;
+
+  byte-compile)
+    require_arg "$@"
+    profile_args=$(emacs_args_with_profile)
+    load_init=()
+    if [[ -n "${INIT_DIR}" && -f "${ROOT}/init.el" ]]; then
+      load_init+=("-l" "${ROOT}/init.el")
+    fi
+
+    exec "${EMACS}" ${profile_args} "${load_init[@]}" --batch \
+      -f batch-byte-compile \
+      "$@"
+    ;;
+
+  native-compile)
+    require_arg "$@"
+    profile_args=$(emacs_args_with_profile)
+    load_init=()
+    if [[ -n "${INIT_DIR}" && -f "${ROOT}/init.el" ]]; then
+      load_init+=("-l" "${ROOT}/init.el")
+    fi
+
+    exec "${EMACS}" ${profile_args} "${load_init[@]}" --batch \
+      -f batch-native-compile \
+      "$@"
+    ;;
+
+  batch-check)
+    profile_args=$(emacs_args_with_profile)
+    exec "${EMACS}" ${profile_args} --batch \
+      -l "${ROOT}/init.el"
+    ;;
+
+  doctor)
+    profile_args=$(emacs_args_with_profile)
+    echo "==> loading init.el"
+    "${EMACS}" ${profile_args} --batch \
+      -l "${ROOT}/init.el"
+
+    echo
+    echo "==> checking parens"
+
+    while IFS= read -r file; do
+      echo "checking ${file}"
+
+      "${EMACS}" ${profile_args} --batch \
+        --eval "
+        (condition-case err
+            (progn
+              (find-file \"${file}\")
+              (check-parens))
+          (error
+            (message \"%s\" err)
+            (kill-emacs 1)))
+        "
+    done < <(find_elisp_files)
+
+    echo
+    echo "==> byte compiling"
+
+    mapfile -t files < <(find_elisp_files)
+
+    "${EMACS}" ${profile_args} --batch \
+      -f batch-byte-compile \
+      "${files[@]}"
+
+    echo
+    echo "doctor completed successfully"
+    ;;
+
+  startup-log)
+    logfile="${1:-startup.log}"
+    profile_args=$(emacs_args_with_profile)
+
+    exec bash -c "
+      \"${EMACS}\" ${profile_args} --debug-init --batch \
+        --eval '(message \"startup complete\")' \
+        > \"${logfile}\" 2>&1
+    "
+    ;;
+
+  describe-function)
+    require_arg "$@"
+    symbol="$1"
+    profile_args=$(emacs_args_with_profile)
+    load_init=()
+    if [[ -n "${INIT_DIR}" && -f "${ROOT}/init.el" ]]; then
+      load_init+=("-l" "${ROOT}/init.el")
+    fi
+
+    exec "${EMACS}" ${profile_args} "${load_init[@]}" --batch \
+      --eval "
+      (princ
+        (documentation
+          (quote ${symbol})))
+      "
+    ;;
+
+  describe-variable)
+    require_arg "$@"
+    symbol="$1"
+    profile_args=$(emacs_args_with_profile)
+    load_init=()
+    if [[ -n "${INIT_DIR}" && -f "${ROOT}/init.el" ]]; then
+      load_init+=("-l" "${ROOT}/init.el")
+    fi
+
+    exec "${EMACS}" ${profile_args} "${load_init[@]}" --batch \
+      --eval "
+      (princ
+        (documentation-property
+          (quote ${symbol})
+          'variable-documentation))
+      "
+    ;;
+
+  find-library)
+    require_arg "$@"
+    profile_args=$(emacs_args_with_profile)
+    load_init=()
+    if [[ -n "${INIT_DIR}" && -f "${ROOT}/init.el" ]]; then
+      load_init+=("-l" "${ROOT}/init.el")
+    fi
+
+    exec "${EMACS}" ${profile_args} "${load_init[@]}" --batch \
+      --eval "
+      (princ
+        (locate-library \"$1\"))
+      "
+    ;;
+
+  manual)
+    topic="${1:-emacs}"
+
+    exec "${EMACS}" -Q \
+      --eval "(info \"${topic}\")"
+    ;;
+
+  ert)
+    require_arg "$@"
+    test_file="$1"
+
+    exec "${EMACS}" -Q --batch \
+      -l "${test_file}" \
+      -f ert-run-tests-batch-and-exit
+    ;;
+
+  ""|-h|--help|help)
+    usage
+    ;;
+
+  *)
+    echo "unknown subcommand: ${cmd}" >&2
+    usage
+    exit 1
+    ;;
+esac
+

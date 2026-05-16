@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: someday
-# key: someday
-# --
-* SOMEDAY ${1:Title}
-:PROPERTIES:
-:Created: %(format-time-string "%Y-%m-%d")
-:END:
-$0

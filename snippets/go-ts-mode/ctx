@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: context with timeout
-# key: ctx
-# --
-ctx, cancel := context.WithTimeout(context.Background(), ${1:time.Second})
-defer cancel()
-$0
