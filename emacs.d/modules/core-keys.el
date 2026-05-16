@@ -132,11 +132,10 @@
 
 ;;; VC group (noun: version control)
 
-(keymap-set '+vc "s" 'magit-status)
+(keymap-set '+vc "v" 'magit-status)
 (keymap-set '+vc "d" 'difftastic-magit-diff)
 (keymap-set '+vc "." 'vc-dir)
-(keymap-set '+vc "v" 'project-vc-dir)
-(keymap-set '+vc "g" 'magit-status)
+(keymap-set '+vc "V" 'project-vc-dir)
 (keymap-set '+vc "l" 'magit-log-buffer-file)
 (keymap-set '+vc "L" 'magit-log-all)
 (keymap-set '+vc "p" 'vc-update)
