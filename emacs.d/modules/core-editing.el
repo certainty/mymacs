@@ -91,6 +91,7 @@
 
 ;;; Whitespace management
 (use-package ws-butler
+  :straight (:type git :host github :repo "lewang/ws-butler")
   :hook (after-init . ws-butler-global-mode))
 
 (provide 'core-editing)
