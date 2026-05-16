@@ -42,6 +42,7 @@
 (require 'core-mymacs)
 (require 'core-keys)
 (require 'core-ui)
+(require 'core-tui)
 (require 'core-dashboard)
 (require 'core-editing)
 (require 'core-completion)

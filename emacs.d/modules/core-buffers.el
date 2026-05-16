@@ -101,13 +101,14 @@
 (defvar my/popup-side-size 0.3
   "Default size for side popups.")
 
-(defun my/window-rule! (&rest condition)
-  `(with-eval-after-load 'shackle
-     (add-to-list 'shackle-rules condition)))
+(defun my/window-rule! (condition)
+  (with-eval-after-load 'shackle
+    (add-to-list 'shackle-rules condition)))
 
-(defun my/with-popper! (&rest condition)
-  `(with-eval-after-load 'popper
-     (add-to-list 'popper-reference-buffers condition)))
+(defun my/with-popper! (&rest conditions)
+  (with-eval-after-load 'popper
+    (dolist (condition conditions)
+      (add-to-list 'popper-reference-buffers condition))))
 
 (defun my/register-bottom-popup (condition &optional select regexp no-reuse)
   "Register CONDITION as a bottom popup in Shackle and Popper.
@@ -132,8 +133,9 @@ If REGEXP is non-nil, CONDITION is treated as a regular expression."
 
 ;;; Window Management: Shackle (Placement) + Popper (Toggling)
 (use-package shackle
-  :hook after-init
+  :demand t
   :config
+  (shackle-mode 1)
   ;; Shackle is the absolute authority on where popups open.
   (my/register-side-popup 'info-mode)
   (my/register-side-popup 'help-mode)
@@ -148,7 +150,7 @@ If REGEXP is non-nil, CONDITION is treated as a regular expression."
   (my/register-bottom-popup "\\*Backtrace\\*" t t))
 
 (use-package popper
-  :hook after-init
+  :hook (after-init . popper-mode)
   :custom
   ;; Crucial: Set display control to nil so Popper only tracks/toggles buffers,
   ;; while Shackle (above) is allowed to handle the actual placement rules.

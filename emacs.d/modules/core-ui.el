@@ -7,6 +7,35 @@
 ;;
 ;;; Code:
 
+(defun my/ui-graphic-p (&optional frame)
+  "Return non-nil when FRAME or the selected frame is graphical."
+  (display-graphic-p frame))
+
+(defun +font-regular ()
+  "Switch to the regular font preset, or reset text scaling in TTY."
+  (interactive)
+  (if (and (my/ui-graphic-p) (fboundp 'fontaine-set-preset))
+      (fontaine-set-preset 'regular)
+    (text-scale-set 0)))
+
+(defun +font-bigger ()
+  "Toggle larger fonts, or increase text scaling in TTY."
+  (interactive)
+  (if (and (my/ui-graphic-p) (fboundp 'fontaine-set-preset))
+      (if (eq fontaine-current-preset 'bigger)
+          (fontaine-set-preset 'regular)
+        (fontaine-set-preset 'bigger))
+    (text-scale-increase 1)))
+
+(defun +font-presentation ()
+  "Toggle presentation fonts, or use a larger text scale in TTY."
+  (interactive)
+  (if (and (my/ui-graphic-p) (fboundp 'fontaine-set-preset))
+      (if (eq fontaine-current-preset 'presentation)
+          (fontaine-set-preset 'regular)
+        (fontaine-set-preset 'presentation))
+    (text-scale-set 3)))
+
 (use-package emacs
   :custom
   (ring-bell-function 'ignore)
@@ -39,10 +68,10 @@
   :custom
   (modus-themes-custom-auto-reload t)
   (modus-themes-disable-other-themes nil)
-  (modus-themes-mixed-fonts t)
+  (modus-themes-mixed-fonts (my/ui-graphic-p))
   (modus-themes-italic-constructs t)
   (modus-themes-bold-constructs t)
-  (modus-themes-variable-pitch-ui t)
+  (modus-themes-variable-pitch-ui (my/ui-graphic-p))
   (modus-themes-prompts '(extrabold italic))
   (modus-themes-paren-match '(bold intense))
   (modus-themes-org-blocks 'tinted-background)
@@ -66,13 +95,20 @@
                                             (bg-hl-line "#111111"))))
 
   (setopt modus-themes-headings
-          '((1 . (variable-pitch 1.1))
-            (t . (1.0))))
+          (if (my/ui-graphic-p)
+              '((1 . (variable-pitch 1.1))
+                (t . (1.0)))
+            '((1 . (1.0))
+              (t . (1.0)))))
 
   (defun my/adjust-line-number-faces ()
-    "Set line number backgrounds to match the theme background."
-    (set-face-attribute 'line-number nil :background "#000000")
-    (set-face-attribute 'line-number-current-line nil :background "#000000"))
+    "Tune line number faces for the current display type."
+    (if (my/ui-graphic-p)
+        (progn
+          (set-face-attribute 'line-number nil :background "#000000")
+          (set-face-attribute 'line-number-current-line nil :background "#000000"))
+      (set-face-attribute 'line-number nil :background 'unspecified)
+      (set-face-attribute 'line-number-current-line nil :background 'unspecified :weight 'bold)))
 
   (add-hook 'modus-themes-after-load-theme-hook #'my/adjust-line-number-faces))
 
@@ -132,27 +168,8 @@ near-black for modeline and gutters."
 
 ;;; Fonts
 (use-package fontaine
+  :if (my/ui-graphic-p)
   :demand t
-  :preface
-  (defun +font-regular ()
-    "Switch to the regular font preset."
-    (interactive)
-    (fontaine-set-preset 'regular))
-
-  (defun +font-bigger ()
-    "Toggle between regular and bigger font presets."
-    (interactive)
-    (if (eq fontaine-current-preset 'bigger)
-        (fontaine-set-preset 'regular)
-      (fontaine-set-preset 'bigger)))
-
-  (defun +font-presentation ()
-    "Toggle between regular and presentation font presets."
-    (interactive)
-    (if (eq fontaine-current-preset 'presentation)
-        (fontaine-set-preset 'regular)
-      (fontaine-set-preset 'presentation)))
-
   :custom
   (x-underline-at-descent-line nil)
   (fontaine-presets
@@ -219,8 +236,7 @@ near-black for modeline and gutters."
   (+font-regular))
 
 ;;; Nerd Icons
-(use-package nerd-icons
-  :if (display-graphic-p))
+(use-package nerd-icons)
 
 ;;; HL-Todo
 (use-package hl-todo
