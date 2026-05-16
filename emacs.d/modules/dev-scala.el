@@ -12,6 +12,14 @@
 (use-package scala-ts-mode
   :mode ("\\.scala\\'" "\\.sc\\'" "\\.sbt\\'")
   :hook (scala-ts-mode . eglot-ensure)
+  :bind
+  (:map scala-ts-mode-map
+        ("C-c C-k" . sbt-do-clean)
+        ("C-c C-c" . sbt-do-compile)
+        ("C-c C-t" . sbt-do-test)
+        ("C-c C-o" . +scala-test-only)
+        ("C-c C-r" . sbt-command)
+        ("C-c C-x" . +scala-run-main))
   :custom
   (scala-ts-mode-indent-offset 2))
 
@@ -28,15 +36,6 @@
    'minibuffer-complete-word
    'self-insert-command
    minibuffer-local-completion-map)
-
-  :bind
-  (:map scala-ts-mode-map
-        ("C-c C-k" . sbt-do-clean)
-        ("C-c C-c" . sbt-do-compile)
-        ("C-c C-t" . sbt-do-test)
-        ("C-c C-o" . +scala-test-only)
-        ("C-c C-r" . sbt-command)
-        ("C-c C-x" . +scala-run-main))
 
   :preface
   (declare-function project-current "project")

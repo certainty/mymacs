@@ -29,7 +29,7 @@
           (ignore-errors (color-lighten-name background 8))
           shadow)))
 
-  (defun my/tui-refresh-ui ()
+  (defun my/tui-refresh-ui (&rest _ignored)
     "Apply terminal-specific face and border tuning."
     (unless standard-display-table
       (setq standard-display-table (make-display-table)))
