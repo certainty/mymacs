@@ -45,7 +45,8 @@
            (native-comp-available-p))
   (with-no-warnings
     (setq native-comp-async-report-warnings-errors 'silent
-          native-comp-jit-compilation t
+          ;; Avoid async native-comp cache races in batch/tooling sessions.
+          native-comp-jit-compilation (not noninteractive)
           native-comp-async-jobs-number (max 2 (1- (num-processors)))
           native-comp-speed 2
           native-comp-prune-cache t)))

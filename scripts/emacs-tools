@@ -94,6 +94,13 @@ find_elisp_files() {
   find "${ROOT}" -path "${ROOT}/straight" -prune -o -type f -name "*.el" -print
 }
 
+prune_local_elc_files() {
+  find "${ROOT}" -maxdepth 1 -type f -name "*.elc" -delete
+  if [[ -d "${ROOT}/modules" ]]; then
+    find "${ROOT}/modules" -maxdepth 1 -type f -name "*.elc" -delete
+  fi
+}
+
 emacs_args_with_profile() {
   local args=()
   if [[ -n "${INIT_DIR}" ]]; then
@@ -103,6 +110,19 @@ emacs_args_with_profile() {
     fi
   else
     args+=("-Q")
+  fi
+  echo "${args[@]}"
+}
+
+profile_load_args() {
+  local args=()
+  if [[ -n "${INIT_DIR}" ]]; then
+    if [[ -f "${ROOT}/early-init.el" ]]; then
+      args+=("-l" "${ROOT}/early-init.el")
+    fi
+    if [[ -f "${ROOT}/init.el" ]]; then
+      args+=("-l" "${ROOT}/init.el")
+    fi
   fi
   echo "${args[@]}"
 }
@@ -129,12 +149,9 @@ case "${cmd}" in
   eval)
     require_arg "$@"
     profile_args=$(emacs_args_with_profile)
-    load_init=()
-    if [[ -n "${INIT_DIR}" && -f "${ROOT}/init.el" ]]; then
-      load_init+=("-l" "${ROOT}/init.el")
-    fi
+    load_init=$(profile_load_args)
 
-    exec "${EMACS}" ${profile_args} "${load_init[@]}" --batch \
+    exec "${EMACS}" ${profile_args} ${load_init} --batch \
       --eval "$1"
     ;;
 
@@ -158,41 +175,39 @@ case "${cmd}" in
 
   byte-compile)
     require_arg "$@"
+    prune_local_elc_files
     profile_args=$(emacs_args_with_profile)
-    load_init=()
-    if [[ -n "${INIT_DIR}" && -f "${ROOT}/init.el" ]]; then
-      load_init+=("-l" "${ROOT}/init.el")
-    fi
+    load_init=$(profile_load_args)
 
-    exec "${EMACS}" ${profile_args} "${load_init[@]}" --batch \
+    exec "${EMACS}" ${profile_args} ${load_init} --batch \
       -f batch-byte-compile \
       "$@"
     ;;
 
   native-compile)
     require_arg "$@"
+    prune_local_elc_files
     profile_args=$(emacs_args_with_profile)
-    load_init=()
-    if [[ -n "${INIT_DIR}" && -f "${ROOT}/init.el" ]]; then
-      load_init+=("-l" "${ROOT}/init.el")
-    fi
+    load_init=$(profile_load_args)
 
-    exec "${EMACS}" ${profile_args} "${load_init[@]}" --batch \
+    exec "${EMACS}" ${profile_args} ${load_init} --batch \
       -f batch-native-compile \
       "$@"
     ;;
 
   batch-check)
+    prune_local_elc_files
     profile_args=$(emacs_args_with_profile)
-    exec "${EMACS}" ${profile_args} --batch \
-      -l "${ROOT}/init.el"
+    load_init=$(profile_load_args)
+    exec "${EMACS}" ${profile_args} ${load_init} --batch
     ;;
 
   doctor)
+    prune_local_elc_files
     profile_args=$(emacs_args_with_profile)
+    load_init=$(profile_load_args)
     echo "==> loading init.el"
-    "${EMACS}" ${profile_args} --batch \
-      -l "${ROOT}/init.el"
+    "${EMACS}" ${profile_args} ${load_init} --batch
 
     echo
     echo "==> checking parens"
@@ -217,7 +232,7 @@ case "${cmd}" in
 
     mapfile -t files < <(find_elisp_files)
 
-    "${EMACS}" ${profile_args} --batch \
+    "${EMACS}" ${profile_args} ${load_init} --batch \
       -f batch-byte-compile \
       "${files[@]}"
 
@@ -240,12 +255,9 @@ case "${cmd}" in
     require_arg "$@"
     symbol="$1"
     profile_args=$(emacs_args_with_profile)
-    load_init=()
-    if [[ -n "${INIT_DIR}" && -f "${ROOT}/init.el" ]]; then
-      load_init+=("-l" "${ROOT}/init.el")
-    fi
+    load_init=$(profile_load_args)
 
-    exec "${EMACS}" ${profile_args} "${load_init[@]}" --batch \
+    exec "${EMACS}" ${profile_args} ${load_init} --batch \
       --eval "
       (princ
         (documentation
@@ -257,12 +269,9 @@ case "${cmd}" in
     require_arg "$@"
     symbol="$1"
     profile_args=$(emacs_args_with_profile)
-    load_init=()
-    if [[ -n "${INIT_DIR}" && -f "${ROOT}/init.el" ]]; then
-      load_init+=("-l" "${ROOT}/init.el")
-    fi
+    load_init=$(profile_load_args)
 
-    exec "${EMACS}" ${profile_args} "${load_init[@]}" --batch \
+    exec "${EMACS}" ${profile_args} ${load_init} --batch \
       --eval "
       (princ
         (documentation-property
@@ -274,12 +283,9 @@ case "${cmd}" in
   find-library)
     require_arg "$@"
     profile_args=$(emacs_args_with_profile)
-    load_init=()
-    if [[ -n "${INIT_DIR}" && -f "${ROOT}/init.el" ]]; then
-      load_init+=("-l" "${ROOT}/init.el")
-    fi
+    load_init=$(profile_load_args)
 
-    exec "${EMACS}" ${profile_args} "${load_init[@]}" --batch \
+    exec "${EMACS}" ${profile_args} ${load_init} --batch \
       --eval "
       (princ
         (locate-library \"$1\"))
@@ -312,4 +318,3 @@ case "${cmd}" in
     exit 1
     ;;
 esac
-

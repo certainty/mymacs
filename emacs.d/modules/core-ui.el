@@ -79,10 +79,15 @@
 ;;; Catppuccin Theme
 (use-package catppuccin-theme
   :demand t
+  :no-require t
   :custom
   (catppuccin-flavor 'mocha)
   (catppuccin-italic-comments t)
   (catppuccin-dark-line-numbers-background t)
+  :init
+  ;; This theme library does not provide `catppuccin-theme'; load its
+  ;; autoloads so `custom-theme-load-path' is populated before `load-theme'.
+  (load (locate-library "catppuccin-theme-autoloads") nil t)
   :config
   (defun my/adjust-catppuccin ()
     "Override catppuccin mocha backgrounds: pure black for editing area,

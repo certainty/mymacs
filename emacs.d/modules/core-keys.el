@@ -203,7 +203,7 @@
 
 ;;; Previous group (Meow normal-state prefix: [)
 
-(keymap-set '+next "[" 'backward-paragraph)
+(keymap-set '+previous "[" 'backward-paragraph)
 (keymap-set '+previous "b" 'previous-buffer)
 (keymap-set '+previous "p" 'backward-paragraph)
 (keymap-set '+previous "c" 'flymake-goto-prev-error)

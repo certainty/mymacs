@@ -48,35 +48,36 @@
     (setopt treesit-enabled-modes t)))
 
 (use-package treesit-auto
-  :unless (>= emacs-major-version 31)
-  :custom
-  (treesit-auto-install 'prompt)
   :config
+  ;; `treesit-language-source-alist' is empty by default, so keep it populated
+  ;; from `treesit-auto' recipes even on Emacs 31 where built-in installation
+  ;; is available.
   (setq treesit-language-source-alist (treesit-auto--build-treesit-source-alist))
   ;; Add markdown-inline which is often missing from treesit-auto recipes
   (add-to-list 'treesit-language-source-alist
                '(markdown-inline "https://github.com/tree-sitter-grammars/tree-sitter-markdown" nil "tree-sitter-markdown-inline/src"))
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode 1))
+  (if (>= emacs-major-version 31)
+      (setopt treesit-auto-install nil)
+    (setopt treesit-auto-install 'prompt)
+    (treesit-auto-add-to-auto-mode-alist 'all)
+    (global-treesit-auto-mode 1)))
 
 (defun +treesit-install-all-grammars (&optional force)
   "Install Tree-sitter grammars for all languages supported by this profile.
 With FORCE prefix, re-install even if already present."
   (interactive "P")
-  (if (>= emacs-major-version 31)
-      (message "Emacs 31+ handles grammar installation automatically.")
-    (require 'treesit-auto)
-    (let ((treesit-language-source-alist (treesit-auto--build-treesit-source-alist))
-          (langs (if force
-                     treesit-auto-langs
-                   (seq-filter (lambda (lang) (not (treesit-ready-p lang t)))
-                               treesit-auto-langs))))
-      (if langs
-          (progn
-            (message "Installing %d grammars..." (length langs))
-            (mapc #'treesit-install-language-grammar langs)
-            (message "Grammar installation complete."))
-        (message "All grammars are already installed (use prefix to force).")))))
+  (require 'treesit-auto)
+  (let ((treesit-language-source-alist (treesit-auto--build-treesit-source-alist))
+        (langs (if force
+                   treesit-auto-langs
+                 (seq-filter (lambda (lang) (not (treesit-ready-p lang t)))
+                             treesit-auto-langs))))
+    (if langs
+        (progn
+          (message "Installing %d grammars..." (length langs))
+          (mapc #'treesit-install-language-grammar langs)
+          (message "Grammar installation complete."))
+      (message "All grammars are already installed (use prefix to force)."))))
 
 ;;; Flymake (Linting)
 (use-package flymake

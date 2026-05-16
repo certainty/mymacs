@@ -7,6 +7,13 @@
 ;;
 ;;; Code:
 
+;; Emacs 31 pre-releases such as 31.0.50 can lack `set-local', while newer
+;; package releases already call it and `compat' does not backfill it on 31.x.
+(unless (fboundp 'set-local)
+  (defun set-local (variable value)
+    "Make VARIABLE buffer-local and set it to VALUE."
+    (set (make-local-variable variable) value)))
+
 ;;; Straight.el bootstrap
 (setq straight-vc-use-snapshot-installation t
       straight-use-package-by-default t
