@@ -14,7 +14,7 @@
   (xterm-mouse-mode 1)
   :config
   (defconst my/tui-border-glyph-candidates
-    '(?\s ?▕ ?│ ?┃ ?¦ ?|)
+    '(?▏ ?▕ ?\s ?│ ?┃ ?¦ ?|)
     "Preferred glyphs for terminal window borders, in fallback order.")
 
   (defun my/tui--display-table-glyph (char &optional face)
@@ -28,15 +28,39 @@
     (or (seq-find #'char-displayable-p my/tui-border-glyph-candidates)
         ?|))
 
+  (defun my/tui-border-color ()
+    "Return a theme-aware color for terminal borders."
+    (or (face-foreground 'shadow nil t)
+        "brightblack"))
+
+  (defun my/tui-space-border-p (glyph)
+    "Return non-nil when GLYPH should be rendered as a filled separator."
+    (eq glyph ?\s))
+
   (defun my/tui-refresh-ui ()
     "Apply terminal-specific face and border tuning."
     (unless standard-display-table
       (setq standard-display-table (make-display-table)))
 
-    (set-display-table-slot standard-display-table 'vertical-border
-                            (my/tui--display-table-glyph
-                             (my/tui-border-glyph)
-                             'vertical-border))
+    (let* ((border-glyph (my/tui-border-glyph))
+           (border-color (my/tui-border-color))
+           (filled-border (my/tui-space-border-p border-glyph)))
+      (set-display-table-slot standard-display-table 'vertical-border
+                              (my/tui--display-table-glyph
+                               border-glyph
+                               'vertical-border))
+      (set-face-attribute 'vertical-border nil
+                          :foreground border-color
+                          :background (if filled-border border-color 'unspecified))
+      (set-face-attribute 'window-divider nil
+                          :foreground border-color
+                          :background (if filled-border border-color 'unspecified))
+      (set-face-attribute 'window-divider-first-pixel nil
+                          :foreground border-color
+                          :background (if filled-border border-color 'unspecified))
+      (set-face-attribute 'window-divider-last-pixel nil
+                          :foreground border-color
+                          :background (if filled-border border-color 'unspecified)))
     (set-display-table-slot standard-display-table 'truncation
                             (my/tui--display-table-glyph ?… 'shadow))
     (set-display-table-slot standard-display-table 'wrap
@@ -45,18 +69,6 @@
     (set-face-attribute 'mode-line nil :box nil :inverse-video nil)
     (set-face-attribute 'mode-line-inactive nil :box nil :inverse-video nil)
     (set-face-attribute 'header-line nil :box nil)
-    (set-face-attribute 'vertical-border nil
-                        :foreground "brightblack"
-                        :background "brightblack")
-    (set-face-attribute 'window-divider nil
-                        :foreground "brightblack"
-                        :background "brightblack")
-    (set-face-attribute 'window-divider-first-pixel nil
-                        :foreground "brightblack"
-                        :background "brightblack")
-    (set-face-attribute 'window-divider-last-pixel nil
-                        :foreground "brightblack"
-                        :background "brightblack")
     (set-face-attribute 'fringe nil :background 'unspecified)
     (set-face-attribute 'line-number nil :background 'unspecified)
     (set-face-attribute 'line-number-current-line nil
@@ -64,6 +76,7 @@
                         :weight 'bold))
 
   (add-hook 'tty-setup-hook #'my/tui-refresh-ui)
+  (add-hook 'enable-theme-functions #'my/tui-refresh-ui)
   (with-eval-after-load 'modus-themes
     (add-hook 'modus-themes-after-load-theme-hook #'my/tui-refresh-ui))
   (my/tui-refresh-ui))
