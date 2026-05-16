@@ -14,7 +14,7 @@
   (xterm-mouse-mode 1)
   :config
   (defconst my/tui-border-glyph-candidates
-    '(?▕ ?│ ?┃ ?¦ ?|)
+    '(?\s ?▕ ?│ ?┃ ?¦ ?|)
     "Preferred glyphs for terminal window borders, in fallback order.")
 
   (defun my/tui--display-table-glyph (char &optional face)
@@ -36,7 +36,7 @@
     (set-display-table-slot standard-display-table 'vertical-border
                             (my/tui--display-table-glyph
                              (my/tui-border-glyph)
-                             'shadow))
+                             'vertical-border))
     (set-display-table-slot standard-display-table 'truncation
                             (my/tui--display-table-glyph ?… 'shadow))
     (set-display-table-slot standard-display-table 'wrap
@@ -45,10 +45,18 @@
     (set-face-attribute 'mode-line nil :box nil :inverse-video nil)
     (set-face-attribute 'mode-line-inactive nil :box nil :inverse-video nil)
     (set-face-attribute 'header-line nil :box nil)
-    (set-face-attribute 'vertical-border nil :foreground "brightblack")
-    (set-face-attribute 'window-divider nil :foreground "brightblack")
-    (set-face-attribute 'window-divider-first-pixel nil :foreground "brightblack")
-    (set-face-attribute 'window-divider-last-pixel nil :foreground "brightblack")
+    (set-face-attribute 'vertical-border nil
+                        :foreground "brightblack"
+                        :background "brightblack")
+    (set-face-attribute 'window-divider nil
+                        :foreground "brightblack"
+                        :background "brightblack")
+    (set-face-attribute 'window-divider-first-pixel nil
+                        :foreground "brightblack"
+                        :background "brightblack")
+    (set-face-attribute 'window-divider-last-pixel nil
+                        :foreground "brightblack"
+                        :background "brightblack")
     (set-face-attribute 'fringe nil :background 'unspecified)
     (set-face-attribute 'line-number nil :background 'unspecified)
     (set-face-attribute 'line-number-current-line nil
