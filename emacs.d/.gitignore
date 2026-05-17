@@ -1,4 +1,9 @@
 custom.el
+/.cache
+/auto-save
+/tramp-autosave
+/backups
+/eshell
 /eln-cache
 /history
 /agent

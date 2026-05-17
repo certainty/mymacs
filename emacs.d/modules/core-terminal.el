@@ -7,6 +7,8 @@
 ;;
 ;;; Code:
 
+(use-package ghostel)
+
 (defun my/vterm-setup ()
   "Configure vterm buffer for meow insert state."
   (setq-local meow-cursor-type 'bar))
@@ -17,8 +19,8 @@
   (vterm-max-scrollback 10000)
   (vterm-kill-buffer-on-exit t)
   (vterm-tramp-shells '(("ssh" "/bin/bash")
-                        ("docker" "/bin/sh")
-                        (t "/bin/sh")))
+                         ("docker" "/bin/sh")
+                         (t "/bin/sh")))
   :hook (vterm-mode . my/vterm-setup))
 
 (use-package vterm-toggle
