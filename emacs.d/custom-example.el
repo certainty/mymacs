@@ -26,7 +26,6 @@
 ;;  my/ai-enable-aci t
 ;;  my/ai-enable-eca t
 ;;  my/ai-aci-backend 'codex
-;;  my/ai-eca-backend 'opencode-go
 ;;  my/enable-writing t
 ;;  my/enable-dev-ruby t
 ;;  my/enable-dev-scala nil

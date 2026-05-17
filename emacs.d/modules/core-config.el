@@ -45,22 +45,10 @@
   :group 'mymacs)
 
 (defcustom my/ai-aci-backend 'codex
-  "Backend used by AI Code Interface.
-
-Supported values are `codex', `opencode-go', and `eca'."
+  "Backend used by AI Code Interface."
   :type '(choice (const :tag "OpenAI Codex" codex)
-                 (const :tag "OpenCode Go" opencode-go)
+                 (const :tag "OpenCode" opencode)
                  (const :tag "ECA" eca))
-  :group 'mymacs)
-
-(defcustom my/ai-eca-backend 'codex
-  "Backend configuration used by Editor Code Assistant.
-
-Supported values are `codex', `opencode-go', and `eca'.  `opencode-go'
-preconfigures provider authentication through ECA; `codex' and `eca'
-leave ECA to use its own native provider selection and login flow."
-  :type '(choice (const :tag "OpenAI Codex" codex)
-                 (const :tag "OpenCode Go" opencode-go))
   :group 'mymacs)
 
 (defcustom my/enable-writing t
