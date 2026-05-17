@@ -12,6 +12,7 @@
   :if (not (display-graphic-p))
   :init
   (xterm-mouse-mode 1)
+  (setopt interprogram-cut-function #'gui-select-text)
   :config
   (require 'color)
 

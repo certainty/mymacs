@@ -30,6 +30,12 @@
 ;;; Disable package.el -- straight.el manages packages
 (setq package-enable-at-startup nil)
 
+;;; Terminal clipboard integration
+;; Enable OSC 52 clipboard export during terminal initialization.
+(unless (display-graphic-p)
+  (defvar xterm-extra-capabilities nil)
+  (add-to-list 'xterm-extra-capabilities 'setSelection))
+
 ;;; Frame defaults -- remove decorations early to avoid flicker
 (push '(undecorated . t) default-frame-alist)
 (push '(menu-bar-lines . 0) default-frame-alist)
