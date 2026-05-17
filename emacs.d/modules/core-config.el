@@ -66,6 +66,11 @@
   :type 'boolean
   :group 'mymacs)
 
+(defcustom my/enable-tsk nil
+  "When non-nil, load org-tsk ranking views for Org agenda."
+  :type 'boolean
+  :group 'mymacs)
+
 
 (defcustom my/enable-dev-scala nil
   "When non-nil, load Scala language support."
