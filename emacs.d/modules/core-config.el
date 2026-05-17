@@ -30,20 +30,37 @@
 
 ;;; Feature toggles
 (defcustom my/enable-ai nil
-  "When non-nil, load the AI assistant modules."
+  "Legacy compatibility toggle for enabling both AI integrations."
   :type 'boolean
   :group 'mymacs)
 
-(defcustom my/ai-provider 'opencode-go
-  "AI backend used by the Emacs AI integration.
+(defcustom my/ai-enable-aci nil
+  "When non-nil, load AI Code Interface."
+  :type 'boolean
+  :group 'mymacs)
 
-Supported values are:
-- `codex' for OpenAI Codex CLI
-- `opencode-go' for OpenCode / Opencode Go
-- `eca' for Editor Code Assistant"
+(defcustom my/ai-enable-eca nil
+  "When non-nil, load Editor Code Assistant."
+  :type 'boolean
+  :group 'mymacs)
+
+(defcustom my/ai-aci-backend 'codex
+  "Backend used by AI Code Interface.
+
+Supported values are `codex', `opencode-go', and `eca'."
   :type '(choice (const :tag "OpenAI Codex" codex)
                  (const :tag "OpenCode Go" opencode-go)
                  (const :tag "ECA" eca))
+  :group 'mymacs)
+
+(defcustom my/ai-eca-backend 'codex
+  "Backend configuration used by Editor Code Assistant.
+
+Supported values are `codex', `opencode-go', and `eca'.  `opencode-go'
+preconfigures provider authentication through ECA; `codex' and `eca'
+leave ECA to use its own native provider selection and login flow."
+  :type '(choice (const :tag "OpenAI Codex" codex)
+                 (const :tag "OpenCode Go" opencode-go))
   :group 'mymacs)
 
 (defcustom my/enable-writing t

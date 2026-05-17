@@ -58,7 +58,7 @@
 (when my/enable-writing
   (keymap-set my/leader-map "j" '+notes)
   (keymap-set my/leader-map "o" '+org))
-(when my/enable-ai
+(when (or my/enable-ai my/ai-enable-aci my/ai-enable-eca)
   (keymap-set my/leader-map "a" '+ai))
 
 ;;; Direct leader shortcuts (most frequent actions)
@@ -178,10 +178,12 @@
 
 ;;; AI group (noun: ai / agent)
 
-(when my/enable-ai
-  (keymap-set '+ai "a" 'agent-shell)
-  (keymap-set '+ai "n" 'agent-shell-new-shell)
-  (keymap-set '+ai "t" 'agent-shell-toggle))
+(when (or my/enable-ai my/ai-enable-aci my/ai-enable-eca)
+  (keymap-set '+ai "a" 'ai-code-menu))
+
+(when my/ai-enable-eca
+  (keymap-set '+ai "c" 'eca)
+  (keymap-set '+ai "C" 'eca-transient-menu))
 
 ;;; Goto group (Meow normal-state prefix: g)
 
@@ -238,7 +240,12 @@
   :config
   (diminish 'which-key-mode)
   (which-key-add-keymap-based-replacements my/leader-map
-    "p" "+project")
+    "p" "+project"
+    "a" "+ai")
+  (which-key-add-keymap-based-replacements '+ai
+    "a" "AI Code"
+    "c" "ECA"
+    "C" "ECA Menu")
   (with-eval-after-load 'meow
     (defun my/meow-keypad-which-key (keymap)
       (when (and (featurep 'which-key)

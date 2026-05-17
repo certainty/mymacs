@@ -1,55 +1,32 @@
-;;; ai-base.el --- AI assistant integration -*- lexical-binding: t; -*-
+;;; ai-base.el --- AI compatibility helpers -*- lexical-binding: t; -*-
 ;;
 ;;; Commentary:
 ;;
-;; AI Code Interface is the main frontend.  It provides one stable menu and
-;; backend selection layer, while ECA remains available as an optional backend.
-;; Backend choice is centralized in `core-config.el' via `my/ai-provider'.
+;; Compatibility aliases for the older `agent-shell' key entry points.
+;; The actual integrations live in `ai-aci.el' and `ai-eca.el'.
 ;;
 ;;; Code:
 
-(defun my/ai-code-backend ()
-  "Return the `ai-code' backend symbol selected by `my/ai-provider'."
-  (pcase my/ai-provider
-    ('codex 'codex)
-    ('opencode-go 'opencode)
-    ('eca 'eca)
-    (_ (user-error "Unknown AI provider: %s" my/ai-provider))))
+(defun my/ai-available-p ()
+  "Return non-nil when any AI integration is enabled."
+  (or my/enable-ai
+      my/ai-enable-aci
+      my/ai-enable-eca))
 
-(defun my/ai-configure-backend ()
-  "Apply the configured AI backend."
-  (when (fboundp 'ai-code-set-backend)
-    (ai-code-set-backend (my/ai-code-backend))))
-
-(defun my/ai-menu ()
-  "Open the AI assistant menu."
+(defun my/ai-command ()
+  "Dispatch the legacy AI entry point to the enabled integration."
   (interactive)
-  (if (fboundp 'ai-code-menu)
-      (ai-code-menu)
-    (user-error "AI Code menu is not available")))
+  (cond
+   ((and (or my/enable-ai my/ai-enable-aci) (fboundp 'ai-code-menu))
+    (ai-code-menu))
+   ((and my/ai-enable-eca (fboundp 'eca))
+    (call-interactively #'eca))
+   (t
+    (user-error "No AI integration is enabled"))))
 
-;; Preserve the existing leader-key entry points while moving the
-;; implementation to ai-code-interface.el.
-(defalias 'agent-shell #'my/ai-menu)
-(defalias 'agent-shell-new-shell #'my/ai-menu)
-(defalias 'agent-shell-toggle #'my/ai-menu)
-
-(use-package ai-code
-  :straight (:type git :host github :repo "tninja/ai-code-interface.el")
-  :commands (ai-code-menu
-             ai-code-set-backend
-             ai-code-select-backend
-             ai-code-install-backend-skills)
-  :config
-  (my/ai-configure-backend))
-
-(use-package eca
-  :straight (:type git :host github :repo "editor-code-assistant/eca-emacs")
-  :commands (eca
-             eca-session
-             eca-chat-open
-             eca-chat-send-prompt
-             eca-chat--get-last-buffer))
+(defalias 'agent-shell #'my/ai-command)
+(defalias 'agent-shell-new-shell #'my/ai-command)
+(defalias 'agent-shell-toggle #'my/ai-command)
 
 (provide 'ai-base)
 ;;; ai-base.el ends here

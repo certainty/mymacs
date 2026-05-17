@@ -89,8 +89,14 @@
   (require 'dev-web))
 
 ;;; AI modules (conditional)
-(when my/enable-ai
+(when (or my/enable-ai my/ai-enable-aci my/ai-enable-eca)
   (require 'ai-base))
+
+(when (or my/enable-ai my/ai-enable-aci)
+  (require 'ai-aci))
+
+(when (or my/enable-ai my/ai-enable-eca)
+  (require 'ai-eca))
 
 (provide 'init)
 ;;; init.el ends here
