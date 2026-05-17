@@ -178,7 +178,7 @@
 
 ;;; AI group (noun: ai / agent)
 
-(when (or my/enable-ai my/ai-enable-aci my/ai-enable-eca)
+(when (or my/enable-ai my/ai-enable-aci)
   (keymap-set '+ai "a" 'ai-code-menu))
 
 (when my/ai-enable-eca
@@ -240,12 +240,17 @@
   :config
   (diminish 'which-key-mode)
   (which-key-add-keymap-based-replacements my/leader-map
-    "p" "+project"
-    "a" "+ai")
-  (which-key-add-keymap-based-replacements '+ai
-    "a" "AI Code"
-    "c" "ECA"
-    "C" "ECA Menu")
+    "p" "+project")
+  (when (or my/enable-ai my/ai-enable-aci my/ai-enable-eca)
+    (which-key-add-keymap-based-replacements my/leader-map
+      "a" "+ai"))
+  (when (or my/enable-ai my/ai-enable-aci)
+    (which-key-add-keymap-based-replacements '+ai
+      "a" "AI Code"))
+  (when my/ai-enable-eca
+    (which-key-add-keymap-based-replacements '+ai
+      "c" "ECA"
+      "C" "ECA Menu"))
   (with-eval-after-load 'meow
     (defun my/meow-keypad-which-key (keymap)
       (when (and (featurep 'which-key)
