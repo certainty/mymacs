@@ -473,7 +473,8 @@ If no region is active, set the mark at point first."
   (:map mymacs-mode-map
     ("C-o" . meow-pop-to-global-mark))
   :config
-  (add-to-list 'meow-mode-state-list '(vterm-mode . insert))
+  (add-to-list 'meow-mode-state-list '(vterm-mode . passthrough))
+  (add-to-list 'meow-mode-state-list '(ghostel-mode . passthrough))
   (add-to-list 'meow-mode-state-list '(eshell-mode . insert))
   (dolist (m '(magit-status-mode magit-log-mode magit-diff-mode magit-revision-mode magit-process-mode magit-popup-mode magit-mode))
     (add-to-list 'meow-mode-state-list (cons m 'motion)))
