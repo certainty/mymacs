@@ -1,39 +1,55 @@
-;;; ai-base.el --- AI agent interaction via ACP -*- lexical-binding: t; -*-
+;;; ai-base.el --- AI assistant integration -*- lexical-binding: t; -*-
 ;;
 ;;; Commentary:
 ;;
-;; Agent-shell provides a native Emacs comint shell for interacting with
-;; LLM agents via the Agent Client Protocol (ACP).  Configured here for
-;; OpenCode as the primary agent.
-;;
-;; Requirements:
-;;   - opencode CLI installed: https://opencode.ai/
-;;   - Authenticated via `opencode auth login'
-;;
-;; TRAMP Awareness:
-;;   Agent-shell runs locally as a subprocess (uses shell-maker/comint).
-;;   The opencode agent process itself runs on the local machine but can
-;;   access and edit remote files when working in TRAMP buffers via
-;;   Emacs' buffer-local context.
+;; AI Code Interface is the main frontend.  It provides one stable menu and
+;; backend selection layer, while ECA remains available as an optional backend.
+;; Backend choice is centralized in `core-config.el' via `my/ai-provider'.
 ;;
 ;;; Code:
 
-;;; Agent Shell with OpenCode via ACP
+(defun my/ai-code-backend ()
+  "Return the `ai-code' backend symbol selected by `my/ai-provider'."
+  (pcase my/ai-provider
+    ('codex 'codex)
+    ('opencode-go 'opencode)
+    ('eca 'eca)
+    (_ (user-error "Unknown AI provider: %s" my/ai-provider))))
 
-(use-package agent-shell
-  :commands (agent-shell
-             agent-shell-new-shell
-             agent-shell-toggle
-             agent-shell-opencode-start-agent)
-  :custom
-  ;; Use opencode as the default agent
-  (agent-shell-preferred-agent-config (agent-shell-opencode-make-agent-config))
-  ;; Prompt for session handling on new shells
-  (agent-shell-session-strategy 'prompt)
+(defun my/ai-configure-backend ()
+  "Apply the configured AI backend."
+  (when (fboundp 'ai-code-set-backend)
+    (ai-code-set-backend (my/ai-code-backend))))
+
+(defun my/ai-menu ()
+  "Open the AI assistant menu."
+  (interactive)
+  (if (fboundp 'ai-code-menu)
+      (ai-code-menu)
+    (user-error "AI Code menu is not available")))
+
+;; Preserve the existing leader-key entry points while moving the
+;; implementation to ai-code-interface.el.
+(defalias 'agent-shell #'my/ai-menu)
+(defalias 'agent-shell-new-shell #'my/ai-menu)
+(defalias 'agent-shell-toggle #'my/ai-menu)
+
+(use-package ai-code
+  :straight (:type git :host github :repo "tninja/ai-code-interface.el")
+  :commands (ai-code-menu
+             ai-code-set-backend
+             ai-code-select-backend
+             ai-code-install-backend-skills)
   :config
-  ;; Register as side popup if the helper exists
-  (when (fboundp 'my/register-side-popup)
-    (my/register-side-popup 'agent-shell-mode t nil)))
+  (my/ai-configure-backend))
+
+(use-package eca
+  :straight (:type git :host github :repo "editor-code-assistant/eca-emacs")
+  :commands (eca
+             eca-session
+             eca-chat-open
+             eca-chat-send-prompt
+             eca-chat--get-last-buffer))
 
 (provide 'ai-base)
 ;;; ai-base.el ends here

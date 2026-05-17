@@ -23,6 +23,7 @@
 
 ;;  ;;; Features
 ;;  my/enable-ai t
+;;  my/ai-provider 'opencode-go
 ;;  my/enable-writing t
 ;;  my/enable-dev-ruby t
 ;;  my/enable-dev-scala nil

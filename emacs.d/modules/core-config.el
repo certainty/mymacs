@@ -30,8 +30,20 @@
 
 ;;; Feature toggles
 (defcustom my/enable-ai nil
-  "When non-nil, load AI-related modules (gptel, agent-shell)."
+  "When non-nil, load the AI assistant modules."
   :type 'boolean
+  :group 'mymacs)
+
+(defcustom my/ai-provider 'opencode-go
+  "AI backend used by the Emacs AI integration.
+
+Supported values are:
+- `codex' for OpenAI Codex CLI
+- `opencode-go' for OpenCode / Opencode Go
+- `eca' for Editor Code Assistant"
+  :type '(choice (const :tag "OpenAI Codex" codex)
+                 (const :tag "OpenCode Go" opencode-go)
+                 (const :tag "ECA" eca))
   :group 'mymacs)
 
 (defcustom my/enable-writing t
