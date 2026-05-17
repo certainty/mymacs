@@ -51,6 +51,11 @@
                  (const :tag "ECA" eca))
   :group 'mymacs)
 
+(defcustom my/ai-aci-enable-magit-integration nil
+  "When non-nil, add AI Code commands to Magit transients."
+  :type 'boolean
+  :group 'mymacs)
+
 (defcustom my/enable-writing t
   "When non-nil, load writing modules (spell-check, notes, org)."
   :type 'boolean
