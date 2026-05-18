@@ -36,7 +36,7 @@
   :hook (org-after-todo-state-change . save-buffer)
   :init
   (my/register-side-popup 'org-agenda-mode)
-  (my/register-side-popup "Org Agenda.*")
+  (my/register-side-popup "Org Agenda.*" t t)
 
   :custom
   ;; TODO states
