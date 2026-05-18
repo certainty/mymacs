@@ -29,7 +29,7 @@
 (use-package ghostel
   :init
   (my/register-side-popup 'ghostel-mode t nil)
-  (my/register-side-popup "\\*ghostel\\*" t t))
+  (my/register-side-popup "\\.*-ghostel\\*" t t))
 
 ;;; Vterm
 
