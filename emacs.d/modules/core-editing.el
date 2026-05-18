@@ -49,6 +49,8 @@
        (window-parameters (mode-line-format . none))))
 
   :custom
+  ;; Use Vertico to list Embark actions directly in the minibuffer.
+  (embark-prompter #'embark-completing-read-prompter)
   (embark-indicators
     '(embark-highlight-indicator
        embark-isearch-highlight-indicator)))
