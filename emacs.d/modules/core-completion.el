@@ -25,13 +25,16 @@
   :init
   (vertico-mode)
   :custom
-  (vertico-cycle t))
+  (vertico-cycle t)
+  :config
+  (vertico-multiform-mode)
+  (add-to-list 'vertico-multiform-categories '(embark-keybinding grid)))
 
 (use-package orderless
   :custom
   (completion-styles '(orderless basic))
   (orderless-matching-styles
-   '(orderless-initialism orderless-literal orderless-prefixes))
+    '(orderless-initialism orderless-literal orderless-prefixes))
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles partial-completion orderless)))))
 
@@ -42,7 +45,7 @@
   :after (marginalia nerd-icons)
   :hook
   ((after-init . nerd-icons-completion-mode)
-   (marginalia-mode . nerd-icons-completion-marginalia-setup)))
+    (marginalia-mode . nerd-icons-completion-marginalia-setup)))
 
 ;;; In-Buffer
 (use-package corfu
@@ -54,7 +57,7 @@
   (defun my/corfu-popupinfo-supported-p ()
     "Return non-nil when Corfu popupinfo can render on this frame."
     (or (display-graphic-p)
-        (featurep 'tty-child-frames)))
+      (featurep 'tty-child-frames)))
 
   (defun my/corfu-enable-popupinfo-maybe ()
     "Enable `corfu-popupinfo-mode' only when child-frame popups work."
@@ -62,16 +65,16 @@
       (corfu-popupinfo-mode 1)))
   :hook
   ((after-init . global-corfu-mode)
-   (corfu-mode . my/corfu-enable-popupinfo-maybe)
-   (org-mode . my/disable-corfu-auto))
+    (corfu-mode . my/corfu-enable-popupinfo-maybe)
+    (org-mode . my/disable-corfu-auto))
   :bind
   (:map corfu-map
-        ("C-y" . corfu-insert)
-        ("TAB" . corfu-next)
-        ("<tab>" . corfu-next)
-        ("S-TAB" . corfu-previous)
-        ("<backtab>" . corfu-previous)
-        ("C-SPC" . corfu-show))
+    ("C-y" . corfu-insert)
+    ("TAB" . corfu-next)
+    ("<tab>" . corfu-next)
+    ("S-TAB" . corfu-previous)
+    ("<backtab>" . corfu-previous)
+    ("C-SPC" . corfu-show))
   :custom
   (corfu-auto t)
   (corfu-quit-no-match 'separator)
@@ -96,7 +99,7 @@
 
 (use-package corfu-terminal
   :if (and (not (display-graphic-p))
-           (not (featurep 'tty-child-frames)))
+        (not (featurep 'tty-child-frames)))
   :after corfu
   :straight (:type git :host codeberg :repo "akib/emacs-corfu-terminal")
   :config

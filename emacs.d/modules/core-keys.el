@@ -221,61 +221,11 @@
 
 (defvar-keymap my/surround-map :doc "Surround/embrace prefix map.")
 
-;;; Which-key (Built-in)
+;;; Help with keys
 
-(use-package which-key
-  :straight (:type built-in)
-  :hook (after-init . which-key-mode)
-  :custom
-  (which-key-sort-order 'which-key-prefix-then-key-order)
-  (which-key-max-display-columns 10)
-  (which-key-show-early-on-C-h t)
-  (which-key-show-prefix nil)
-  (which-key-idle-delay .75)
-  (which-key-idle-secondary-delay 0.05)
-  (which-key-popup-type 'side-window)
-  (which-key-side-window-location 'bottom)
-  (which-key-separator " • ")
-  (which-key-prefix-prefix nil)
-  :config
-  (diminish 'which-key-mode)
-  (which-key-add-keymap-based-replacements my/leader-map
-    "p" "+project")
-  (when (or my/enable-ai my/ai-enable-aci my/ai-enable-eca)
-    (which-key-add-keymap-based-replacements my/leader-map
-      "a" "+ai"))
-  (when (or my/enable-ai my/ai-enable-aci)
-    (which-key-add-keymap-based-replacements '+ai
-      "a" "AI Code"))
-  (when my/ai-enable-eca
-    (which-key-add-keymap-based-replacements '+ai
-      "c" "ECA"
-      "C" "ECA Menu"))
-  (with-eval-after-load 'meow
-    (defun my/meow-keypad-which-key (keymap)
-      (when (and (featurep 'which-key)
-              (fboundp 'which-key--show-keymap)
-              (keymapp keymap))
-        (which-key--show-keymap "Leader" keymap nil nil t)))
-
-    (defun my/meow-keypad-clear-which-key ()
-      (when (and (featurep 'which-key)
-              (fboundp 'which-key--hide-popup-ignore-command))
-        (which-key--hide-popup-ignore-command)))
-
-    (setq meow-keypad-describe-keymap-function #'my/meow-keypad-which-key
-      meow-keypad-clear-describe-keymap-function #'my/meow-keypad-clear-which-key)))
-
-;;; Repeat-fu
-
-(use-package repeat-fu
-  :straight (repeat-fu :type git :host codeberg :repo "ideasman42/emacs-repeat-fu")
-  :after meow
-  :config
-  (setq repeat-fu-preset 'meow)
-  (keymap-set meow-normal-state-keymap "'" #'repeat-fu-execute)
-  :hook
-  (meow-mode . (lambda () (unless (minibufferp) (repeat-fu-mode 1)))))
+;; we rely on default help with embark support instead of which-key
+(with-eval-after-load 'embark-act
+  (setopt prefix-help-command #'embark-prefix-help-command))
 
 ;;; Expansion / Selection
 
@@ -430,6 +380,19 @@ If no region is active, set the mark at point first."
     '("z" . meow-pop-selection)
     '("Z" . meow-cancel-selection)))
 
+(defun my/meow-keypad-title(def)
+  "Return DEF title without the local prefix-map naming marker."
+  (let ((title (meow-keypad-get-title def)))
+    (if (and (symbolp title)
+          (not (commandp title))
+          (or (and (fboundp title)
+                (keymapp (symbol-function title)))
+            (and (boundp title)
+              (keymapp (symbol-value title))))
+          (string-prefix-p "+" (symbol-name title)))
+      (intern (substring (symbol-name title) 1))
+      title)))
+
 (use-package meow
   :demand t
   :custom
@@ -473,6 +436,7 @@ If no region is active, set the mark at point first."
   (:map mymacs-mode-map
     ("C-o" . meow-pop-to-global-mark))
   :config
+  (setq meow-keypad-get-title-function #'my/meow-keypad-title)
   (add-to-list 'meow-mode-state-list '(vterm-mode . insert))
   (add-to-list 'meow-mode-state-list '(eshell-mode . insert))
   (dolist (m '(magit-status-mode magit-log-mode magit-diff-mode magit-revision-mode magit-process-mode magit-popup-mode magit-mode))
