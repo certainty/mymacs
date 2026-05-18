@@ -437,8 +437,8 @@ If no region is active, set the mark at point first."
     ("C-o" . meow-pop-to-global-mark))
   :config
   (setq meow-keypad-get-title-function #'my/meow-keypad-title)
-  (add-to-list 'meow-mode-state-list '(vterm-mode . insert))
-  (add-to-list 'meow-mode-state-list '(eshell-mode . insert))
+  (add-to-list 'meow-mode-state-list '(vterm-mode . passthrough))
+  (add-to-list 'meow-mode-state-list '(ghostel-mode . passthrough))
   (dolist (m '(magit-status-mode magit-log-mode magit-diff-mode magit-revision-mode magit-process-mode magit-popup-mode magit-mode))
     (add-to-list 'meow-mode-state-list (cons m 'motion)))
   (add-to-list 'meow-mode-state-list '(helpful-mode . motion))

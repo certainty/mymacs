@@ -2,14 +2,36 @@
 ;;
 ;;; Commentary:
 ;;
-;; Terminal emulation using `vterm'. Supports project-local terminals
-;; and handles TRAMP connections for remote terminals.
+;; Terminal emulation using `vterm' and `ghostel'. Supports project-local
+;; terminals and handles TRAMP connections for remote terminals.
+;; Uses a meow passthrough state so that keys go straight to the
+;; terminal. C-SPC dispatches to the leader map, and C-c ESC exits
+;; to normal state.
 ;;
 ;;; Code:
 
-(defun my/vterm-setup ()
-  "Configure vterm buffer for meow insert state."
-  (setq-local meow-cursor-type 'bar))
+;;; Meow passthrough state for terminals
+
+(defvar meow-passthrough-keymap (make-keymap)
+  "Keymap for meow passthrough state.")
+
+(meow-define-state passthrough
+  "Terminal passthrough state. All keys go to the terminal."
+  :lighter " [T]"
+  :keymap meow-passthrough-keymap)
+
+(meow-define-keys 'passthrough
+  '("C-SPC" . meow-keypad)
+  '("C-c ESC" . meow-insert-exit))
+
+;;; Ghostel
+
+(use-package ghostel
+  :init
+  (my/register-side-popup 'ghostel-mode t nil)
+  (my/register-side-popup "\\*ghostel" t t))
+
+;;; Vterm
 
 (use-package vterm
   :commands vterm
@@ -17,16 +39,15 @@
   (vterm-max-scrollback 10000)
   (vterm-kill-buffer-on-exit t)
   (vterm-tramp-shells '(("ssh" "/bin/bash")
-                        ("docker" "/bin/sh")
-                        (t "/bin/sh")))
-  :hook (vterm-mode . my/vterm-setup))
+                         ("docker" "/bin/sh")
+                         (t "/bin/sh"))))
 
 (use-package vterm-toggle
   :after vterm
   :custom
   (vterm-toggle-fullscreen-p nil)
   (vterm-toggle-scope 'project)
-  :config
+  :init
   (my/register-side-popup 'vterm-mode t nil)
   (my/register-side-popup "\\*vterm\\*" t t))
 
@@ -36,7 +57,7 @@
 
 ;;; Project integration
 (with-eval-after-load 'project
-  (add-to-list 'project-switch-commands '(vterm-toggle "Terminal" ?t) t))
+  (add-to-list 'project-switch-commands '(ghostel-project "Terminal" ?t) t))
 
 (provide 'core-terminal)
 ;;; core-terminal.el ends here

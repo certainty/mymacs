@@ -66,6 +66,9 @@
   ;; TODO: change name to gtd-base
   (require 'writing-gtd))
 
+(when (and my/enable-gtd my/enable-tsk)
+  (require 'org-tsk))
+
 ;;; Development modules (always loaded)
 (require 'dev-base)
 (require 'dev-format)
