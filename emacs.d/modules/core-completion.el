@@ -53,19 +53,8 @@
   (defun my/disable-corfu-auto ()
     "Disable automatic corfu popup in the current buffer."
     (setq-local corfu-auto nil))
-
-  (defun my/corfu-popupinfo-supported-p ()
-    "Return non-nil when Corfu popupinfo can render on this frame."
-    (or (display-graphic-p)
-      (featurep 'tty-child-frames)))
-
-  (defun my/corfu-enable-popupinfo-maybe ()
-    "Enable `corfu-popupinfo-mode' only when child-frame popups work."
-    (when (my/corfu-popupinfo-supported-p)
-      (corfu-popupinfo-mode 1)))
   :hook
   ((after-init . global-corfu-mode)
-    (corfu-mode . my/corfu-enable-popupinfo-maybe)
     (org-mode . my/disable-corfu-auto))
   :bind
   (:map corfu-map
@@ -87,15 +76,15 @@
   (corfu-preselect 'valid)
   (corfu-popupinfo-delay '(1.25 . 0.5))
 
-  :config
-  (with-eval-after-load 'savehist
-    (use-package corfu-history
-      :straight (:type built-in)
-      :hook corfu-mode)
-    (corfu-history-mode 1)
-    (add-to-list 'savehist-additional-variables 'corfu-history))
+  :config)
+(with-eval-after-load 'savehist
+  (use-package corfu-history
+    :straight (:type built-in)
+    :hook corfu-mode)
+  (corfu-history-mode 1)
+  (add-to-list 'savehist-additional-variables 'corfu-history))
 
-  (diminish 'corfu-mode))
+(diminish 'corfu-mode)
 
 (use-package corfu-terminal
   :if (and (not (display-graphic-p))
