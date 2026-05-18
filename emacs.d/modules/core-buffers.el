@@ -49,7 +49,7 @@
   :bind
   (:map mymacs-mode-map
     ("M-o" . other-window)
-    ("c-g" . +escape)))
+    ("C-g" . +escape)))
 
 ;;; Built-in buffer hygiene
 (use-package uniquify
