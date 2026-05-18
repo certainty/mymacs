@@ -48,7 +48,8 @@
 (use-package emacs
   :bind
   (:map mymacs-mode-map
-    ("C-g" . +escape)))
+    ("M-o" . other-window)
+    ("c-g" . +escape)))
 
 ;;; Built-in buffer hygiene
 (use-package uniquify
