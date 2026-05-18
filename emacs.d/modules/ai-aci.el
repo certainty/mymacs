@@ -14,17 +14,19 @@
 (defun my/ai-aci-setup-magit ()
   "Enable optional AI Code integration with Magit."
   (when (and my/ai-aci-enable-magit-integration
-             (fboundp 'ai-code-magit-setup-transients))
+          (fboundp 'ai-code-magit-setup-transients))
     (ai-code-magit-setup-transients)))
 
 (when (or my/enable-ai my/ai-enable-aci)
   (use-package ai-code
     :straight (:type git :host github :repo "tninja/ai-code-interface.el")
     :commands (ai-code-menu
-               ai-code-magit-setup-transients
-               ai-code-set-backend
-               ai-code-select-backend
-               ai-code-install-backend-skills)
+                ai-code-magit-setup-transients
+                ai-code-set-backend
+                ai-code-select-backend
+                ai-code-install-backend-skills)
+    :custom
+    (ai-code-backends-infra-terminal-backend 'ghostel)
     :config
     (my/ai-aci-configure-backend)
     (with-eval-after-load 'magit
