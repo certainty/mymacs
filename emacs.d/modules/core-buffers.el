@@ -159,6 +159,7 @@ If REGEXP is non-nil, CONDITION is treated as a regular expression."
   :bind
   (:map mymacs-mode-map
     ("C-/" . popper-toggle)
+    ("C-_" . popper-toggle)
     ("M-/" . popper-cycle)
     ("C-M-/" . popper-toggle-type))
   :config
