@@ -14,12 +14,12 @@
   :hook (scala-ts-mode . eglot-ensure)
   :bind
   (:map scala-ts-mode-map
-        ("C-c C-k" . sbt-do-clean)
-        ("C-c C-c" . sbt-do-compile)
-        ("C-c C-t" . sbt-do-test)
-        ("C-c C-o" . +scala-test-only)
-        ("C-c C-r" . sbt-command)
-        ("C-c C-x" . +scala-run-main))
+    ("C-c C-k" . sbt-do-clean)
+    ("C-c C-c" . sbt-do-compile)
+    ("C-c C-t" . sbt-do-test)
+    ("C-c C-o" . +scala-test-only)
+    ("C-c C-r" . sbt-command)
+    ("C-c C-x" . +scala-run-main))
   :custom
   (scala-ts-mode-indent-offset 2))
 
@@ -37,37 +37,37 @@
   (save-excursion
     (goto-char (point-min))
     (or (when (re-search-forward
-               "^\\s-*\\(?:case\\s-+\\)?\\(?:class\\|object\\|trait\\)\\s-+\\([[:word:]_][[:word:]_0-9]*\\)\\s-+extends\\s-+.*\\<Specification\\>"
-               nil t)
+                "^\\s-*\\(?:case\\s-+\\)?\\(?:class\\|object\\|trait\\)\\s-+\\([[:word:]_][[:word:]_0-9]*\\)\\s-+extends\\s-+.*\\<Specification\\>"
+                nil t)
           (match-string-no-properties 1))
-        (when (re-search-forward
-               "^\\s-*\\(?:case\\s-+\\)?\\(?:class\\|object\\|trait\\)\\s-+\\([[:word:]_][[:word:]_0-9]*\\)"
-               nil t)
-          (match-string-no-properties 1)))))
+      (when (re-search-forward
+              "^\\s-*\\(?:case\\s-+\\)?\\(?:class\\|object\\|trait\\)\\s-+\\([[:word:]_][[:word:]_0-9]*\\)"
+              nil t)
+        (match-string-no-properties 1)))))
 
 (defun my/scala--package-from-path (&optional file)
   "Infer a Scala package from FILE relative to the project root."
   (let* ((path (or file buffer-file-name))
-         (root (and path (my/scala--project-root)))
-         (rel (and root (file-relative-name path root))))
+          (root (and path (my/scala--project-root)))
+          (rel (and root (file-relative-name path root))))
     (when (and rel
-               (string-match
-                "\\`src/\\(?:test\\|it\\)/scala/\\(.+\\)/[^/]+\\.scala\\'" rel))
+            (string-match
+              "\\`src/\\(?:test\\|it\\)/scala/\\(.+\\)/[^/]+\\.scala\\'" rel))
       (replace-regexp-in-string "/" "." (match-string 1 rel)))))
 
 (defun my/scala--spec-target ()
   "Return the fully qualified test target for the current Scala file."
   (let* ((package (or (my/scala--package-from-path)
-                      (save-excursion
-                        (goto-char (point-min))
-                        (when (re-search-forward
-                               "^\\s-*package\\s-+\\([[:word:]_.]+\\)"
-                               nil t)
-                          (match-string-no-properties 1)))))
-         (name (or (my/scala--top-level-name)
-                   (and buffer-file-name (file-name-base buffer-file-name)))))
+                    (save-excursion
+                      (goto-char (point-min))
+                      (when (re-search-forward
+                              "^\\s-*package\\s-+\\([[:word:]_.]+\\)"
+                              nil t)
+                        (match-string-no-properties 1)))))
+          (name (or (my/scala--top-level-name)
+                  (and buffer-file-name (file-name-base buffer-file-name)))))
     (if package
-        (format "%s.%s" package name)
+      (format "%s.%s" package name)
       name)))
 
 (defun my/scala--run-test-target (target)
@@ -85,9 +85,9 @@
   :config
   ;; Allow spaces in sbt minibuffer input
   (substitute-key-definition
-   'minibuffer-complete-word
-   'self-insert-command
-   minibuffer-local-completion-map)
+    'minibuffer-complete-word
+    'self-insert-command
+    minibuffer-local-completion-map)
 
   (defun +scala-run-main ()
     "Run Scala main class with sbt."
@@ -99,7 +99,7 @@
     "Run the current Scala test or prompt for a class name."
     (interactive)
     (let ((test-class (or (and buffer-file-name (my/scala--spec-target))
-                          (read-string "Test class: "))))
+                        (read-string "Test class: "))))
       (my/scala--run-test-target test-class))))
 
 ;;; Metals LSP configuration
@@ -112,10 +112,9 @@
   (cl-defmethod eglot-initialization-options ((_server eglot-metals))
     "Metals initialization options."
     `(:isHttpEnabled t
-                     :statusBarProvider "log-message"
-                     :compilerOptions (:snippetAutoIndent t
-                                                          :overrideDefFormat "unicode")
-                     :scalafixConfigPath ".scalafix.conf")))
+       :statusBarProvider "log-message"
+       :compilerOptions (:snippetAutoIndent t :overrideDefFormat "unicode")
+       :scalafixConfigPath ".scalafix.conf")))
 
 ;;; Dape integration (debug via Metals DAP)
 ;;
@@ -129,23 +128,23 @@ If NO-DEBUG is non-nil, run without breakpoints (run mode)."
   (unless (and (fboundp 'eglot-current-server) (eglot-current-server))
     (user-error "Eglot is not active in this buffer"))
   (let* ((server (eglot-current-server))
-         (params `(:targets [(:uri ,(concat "file://" (buffer-file-name)))]
-                            :noDebug ,(if no-debug t :json-false)
-                            :dataKind "scala-main-class"
-                            :data (:class "" :arguments [] :jvmOptions []
-                                          :environmentVariables [] :shellCommand "")))
-         (response (jsonrpc-request server :metals/debugAdapterStart params)))
+          (params `(:targets [(:uri ,(concat "file://" (buffer-file-name)))]
+                     :noDebug ,(if no-debug t :json-false)
+                     :dataKind "scala-main-class"
+                     :data (:class "" :arguments [] :jvmOptions []
+                             :environmentVariables [] :shellCommand "")))
+          (response (jsonrpc-request server :metals/debugAdapterStart params)))
     (when-let* ((uri (plist-get response :uri)))
       (let* ((parsed (url-generic-parse-url uri))
-             (host (url-host parsed))
-             (port (url-port parsed)))
+              (host (url-host parsed))
+              (port (url-port parsed)))
         (dape `(metals-attach
-                modes (scala-ts-mode)
-                host ,host
-                port ,port
-                :type "scala"
-                :request "attach"
-                :name "Metals Debug"))))))
+                 modes (scala-ts-mode)
+                 host ,host
+                 port ,port
+                 :type "scala"
+                 :request "attach"
+                 :name "Metals Debug"))))))
 
 (defun +scala-debug ()
   "Start a Metals debug session (respects breakpoints)."

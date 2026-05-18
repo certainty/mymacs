@@ -129,9 +129,9 @@
 
 ;;; Terminal group (noun: terminal)
 
-(keymap-set '+terminal "t" 'vterm-toggle)
-(keymap-set '+terminal "n" 'multi-vterm-project)
-(keymap-set '+terminal "T" 'multi-vterm)
+(keymap-set '+terminal "t" 'ghostel-project)
+(keymap-set '+terminal "T" 'ghostel)
+(keymap-set '+terminal "v" 'vterm-toggle)
 
 ;;; VC group (noun: version control)
 
