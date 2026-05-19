@@ -443,7 +443,19 @@ If no region is active, set the mark at point first."
     (add-to-list 'meow-mode-state-list (cons m 'motion)))
   (add-to-list 'meow-mode-state-list '(helpful-mode . motion))
   (my/meow-setup)
-  (meow-global-mode 1))
+  (meow-global-mode 1)
+
+  (defvar meow-passthrough-keymap (make-keymap)
+    "Keymap for meow passthrough state.")
+
+  (meow-define-state passthrough
+    "Terminal passthrough state. All keys go to the terminal."
+    :lighter " [T]"
+    :keymap meow-passthrough-keymap)
+
+  (meow-define-keys 'passthrough
+    '("C-SPC" . meow-keypad)
+    '("C-c ESC" . meow-insert-exit)))
 
 ;;; Meow Tree-sitter
 

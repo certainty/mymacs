@@ -12,26 +12,12 @@
 
 ;;; Meow passthrough state for terminals
 
-(defvar meow-passthrough-keymap (make-keymap)
-  "Keymap for meow passthrough state.")
-
-(meow-define-state passthrough
-  "Terminal passthrough state. All keys go to the terminal."
-  :lighter " [T]"
-  :keymap meow-passthrough-keymap)
-
-(meow-define-keys 'passthrough
-  '("C-SPC" . meow-keypad)
-  '("C-c ESC" . meow-insert-exit))
 
 ;;; Ghostel
 
 (use-package ghostel
   :init
-  ;; `display-buffer-alist' conditions must use a buffer matcher form.
-  ;; A bare `ghostel-mode' symbol does not match there, so use
-  ;; explicit `major-mode' rules for both the default and project names.
-  (my/register-side-popup '(major-mode . ghostel-mode) t)
+  (my/register-side-popup 'ghostel-mode t)
   (my/register-side-popup "^\\*ghostel\\*$" t t)
   (my/register-side-popup "^\\*.*-ghostel\\*$" t t))
 
@@ -42,29 +28,28 @@ and whose cdr is the argument list.
 If BUFFER-NAME exists, switch to it.  Otherwise create the buffer and
 run COMMAND in it."
   (pcase-let* ((`(,program . ,args)
-                (if (consp command)
-                    command
-                  (cons command nil)))
-               (buffer (get-buffer buffer-name))
-         (window (and buffer (get-buffer-window buffer t)))
-         (display-action (append display-buffer--same-window-action
-                                 '((category . comint)))))
+                 (if (consp command)
+                   command
+                   (cons command nil)))
+                (buffer (get-buffer buffer-name))
+                (window (and buffer (get-buffer-window buffer t)))
+                (display-action nil))
     (cond
-     (window
-      (quit-window nil window))
-     (buffer
-      (pop-to-buffer buffer display-action))
-     (t
-      (setq buffer (get-buffer-create buffer-name))
-      (ghostel-exec buffer program args)
-      (pop-to-buffer buffer display-action)))))
+      (window
+        (quit-window nil window))
+      (buffer
+        (display-buffer buffer display-action))
+      (t
+        (setq buffer (get-buffer-create buffer-name))
+        (ghostel-exec buffer program args)
+        (display-buffer buffer display-action)))))
 
 (defun ghostel-toggle-project ()
   "Toggle a project-local Ghostel shell running interactive zsh."
   (interactive)
   (let* ((project (project-current t))
-         (default-directory (project-root project))
-         (buffer-name (project-prefixed-buffer-name "ghostel")))
+          (default-directory (project-root project))
+          (buffer-name (project-prefixed-buffer-name "ghostel")))
     (ghostel-toggle '("/bin/zsh" "-i") buffer-name)))
 
 ;;; Vterm
@@ -84,7 +69,7 @@ run COMMAND in it."
   (vterm-toggle-fullscreen-p nil)
   (vterm-toggle-scope 'project)
   :init
-  (my/register-side-popup '(major-mode . vterm-mode) t)
+  (my/register-side-popup 'vterm-mode t)
   (my/register-side-popup "\\*vterm\\*" t t))
 
 (use-package multi-vterm
