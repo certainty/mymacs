@@ -99,6 +99,16 @@
               (repo (pmd--dig data "git" "repo")))
         (format "%s/%s" account repo))))
 
+  (defun pmd--projects-forge-name (repo-url)
+    "Return a local forge name derived from REPO-URL."
+    (when-let* ((parsed-url (url-generic-parse-url repo-url))
+                (host (url-host parsed-url)))
+      (pcase host
+        ("github.com" "github")
+        ("codeberg.org" "codeberg")
+        ("gitlab.com" "gitlab")
+        (_ host))))
+
   (defun pmd--projects-preferred-clone-url (repo-url)
     "Return clone URL for REPO-URL, preferring SSH when URL uses HTTPS."
     (if (string-prefix-p "https://" repo-url)
@@ -114,7 +124,11 @@
       (user-error "Clone base path is not configured"))
     (when-let* ((repo-url (pmd--projects-repository-url project))
                  (repo-slug (pmd--projects-repository-slug project)))
-      (let* ((target-dir (expand-file-name repo-slug (file-name-as-directory base-path)))
+      (let* ((forge (or (pmd--projects-forge-name repo-url)
+                        (user-error "Could not derive forge from %s" repo-url)))
+             (target-dir (expand-file-name
+                           repo-slug
+                           (expand-file-name forge (file-name-as-directory base-path))))
               (clone-url (pmd--projects-preferred-clone-url repo-url)))
         (if (file-directory-p target-dir)
           (message "Repository already exists: %s" target-dir)

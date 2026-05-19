@@ -52,6 +52,14 @@
   (should (equal (pmd--projects-preferred-clone-url "git@github.com:acme/widgets")
             "git@github.com:acme/widgets")))
 
+(ert-deftest pmd-projects-forge-name-maps-known-hosts ()
+  (should (equal (pmd--projects-forge-name "https://github.com/acme/widgets")
+            "github"))
+  (should (equal (pmd--projects-forge-name "https://codeberg.org/acme/widgets")
+            "codeberg"))
+  (should (equal (pmd--projects-forge-name "https://gitlab.com/acme/widgets")
+            "gitlab")))
+
 (ert-deftest pmd-projects-clone-permanent-clones-into-code-path ()
   (let* ((tmp-root (make-temp-file "pmd-code-" t))
           (pmd--entities-data (make-hash-table :test 'equal))
@@ -74,12 +82,12 @@
                      (insert "ok"))
                    0)))
       (+pmd-clone-repository-permanent "p1")
-      (should (equal (directory-file-name created-dir) (expand-file-name "acme" tmp-root)))
+      (should (equal (directory-file-name created-dir) (expand-file-name "github/acme" tmp-root)))
       (should (equal cloned-args
-                (list "git" "clone" "git@github.com:acme/widgets" (expand-file-name "acme/widgets" tmp-root))))
+                (list "git" "clone" "git@github.com:acme/widgets" (expand-file-name "github/acme/widgets" tmp-root))))
       (should (equal bookmark-args
                 (list "acme/widgets"
-                  `((filename . ,(expand-file-name "acme/widgets" tmp-root)))
+                  `((filename . ,(expand-file-name "github/acme/widgets" tmp-root)))
                   nil))))))
 
 (ert-deftest pmd-projects-clone-permanent-skips-existing-directory ()
@@ -88,7 +96,7 @@
           (my/code-path tmp-root)
           (clone-called nil))
     (pmd-test--store-project "p1" (pmd-test--project-data "acme" "widgets" "https://github.com"))
-    (make-directory (expand-file-name "acme/widgets" tmp-root) t)
+    (make-directory (expand-file-name "github/acme/widgets" tmp-root) t)
     (cl-letf (((symbol-function 'call-process)
                 (lambda (&rest _args)
                   (setq clone-called t)
