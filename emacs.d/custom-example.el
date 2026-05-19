@@ -26,6 +26,10 @@
 ;;  my/ai-enable-aci t
 ;;  my/ai-enable-eca t
 ;;  my/ai-aci-backend 'codex
+;;  my/ai-remote-agent-enable t
+;;  my/ai-remote-agent-backend 'opencode
+;;  my/ai-remote-agent-instance-name "lima-dev"
+;;  my/ai-remote-agent-path-map '(("/Users/user/code" . "/home/user/code"))
 ;;  my/ai-aci-enable-magit-integration nil
 ;;  my/enable-writing t
 ;;  my/enable-dev-ruby t

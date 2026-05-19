@@ -56,6 +56,32 @@
   :type 'boolean
   :group 'mymacs)
 
+(defgroup my/ai-remote-agent nil
+  "Configuration for remote AI agent shells."
+  :group 'mymacs)
+
+(defcustom my/ai-remote-agent-enable nil
+  "When non-nil, enable remote agent launch commands."
+  :type 'boolean
+  :group 'my/ai-remote-agent)
+
+(defcustom my/ai-remote-agent-backend 'opencode
+  "Agent to invoke in the remote Lima VM."
+  :type '(choice (const :tag "OpenCode" opencode)
+                 (const :tag "Codex" codex))
+  :group 'my/ai-remote-agent)
+
+(defcustom my/ai-remote-agent-instance-name "lima-dev"
+  "Lima instance that hosts the remote agent."
+  :type 'string
+  :group 'my/ai-remote-agent)
+
+(defcustom my/ai-remote-agent-path-map nil
+  "Alist mapping local project roots to Lima VM roots.
+The first matching local prefix wins."
+  :type '(repeat (cons string string))
+  :group 'my/ai-remote-agent)
+
 (defcustom my/enable-writing t
   "When non-nil, load writing modules (spell-check, notes, org)."
   :type 'boolean

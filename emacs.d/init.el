@@ -101,5 +101,8 @@
 (when (or my/enable-ai my/ai-enable-eca)
   (require 'ai-eca))
 
+(when my/ai-remote-agent-enable
+  (require 'ai-remote-agent))
+
 (provide 'init)
 ;;; init.el ends here
