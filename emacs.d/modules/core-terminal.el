@@ -32,17 +32,20 @@ run COMMAND in it."
                    command
                    (cons command nil)))
                 (buffer (get-buffer buffer-name))
-                (window (and buffer (get-buffer-window buffer t)))
-                (display-action nil))
+                (process (and buffer (buffer-local-value 'ghostel--process buffer)))
+                (live-p (and process (process-live-p process)))
+                (window (and live-p (get-buffer-window buffer t))))
     (cond
       (window
         (quit-window nil window))
+      (live-p
+        (display-buffer buffer))
       (buffer
-        (display-buffer buffer display-action))
+        (display-buffer buffer))
       (t
         (setq buffer (get-buffer-create buffer-name))
         (ghostel-exec buffer program args)
-        (display-buffer buffer display-action)))))
+        (display-buffer buffer)))))
 
 (defun ghostel-toggle-project ()
   "Toggle a project-local Ghostel shell running interactive zsh."

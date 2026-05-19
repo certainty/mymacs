@@ -91,16 +91,6 @@
 (when my/enable-dev-web
   (require 'dev-web))
 
-;;; AI modules (conditional)
-(when (or my/enable-ai my/ai-enable-aci my/ai-enable-eca)
-  (require 'ai-base))
-
-(when (or my/enable-ai my/ai-enable-aci)
-  (require 'ai-aci))
-
-(when (or my/enable-ai my/ai-enable-eca)
-  (require 'ai-eca))
-
 (when my/ai-remote-agent-enable
   (require 'ai-remote-agent))
 

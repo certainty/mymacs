@@ -29,33 +29,6 @@
   :group 'mymacs)
 
 ;;; Feature toggles
-(defcustom my/enable-ai nil
-  "Legacy compatibility toggle for enabling both AI integrations."
-  :type 'boolean
-  :group 'mymacs)
-
-(defcustom my/ai-enable-aci nil
-  "When non-nil, load AI Code Interface."
-  :type 'boolean
-  :group 'mymacs)
-
-(defcustom my/ai-enable-eca nil
-  "When non-nil, load Editor Code Assistant."
-  :type 'boolean
-  :group 'mymacs)
-
-(defcustom my/ai-aci-backend 'codex
-  "Backend used by AI Code Interface."
-  :type '(choice (const :tag "OpenAI Codex" codex)
-                 (const :tag "OpenCode" opencode)
-                 (const :tag "ECA" eca))
-  :group 'mymacs)
-
-(defcustom my/ai-aci-enable-magit-integration nil
-  "When non-nil, add AI Code commands to Magit transients."
-  :type 'boolean
-  :group 'mymacs)
-
 (defgroup my/ai-remote-agent nil
   "Configuration for remote AI agent shells."
   :group 'mymacs)

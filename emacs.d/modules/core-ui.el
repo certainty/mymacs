@@ -163,11 +163,15 @@ near-black for modeline and gutters."
      (insert . ("\x1f158 " . font-lock-string-face))
      (keypad . ("\x1f15a " . font-lock-keyword-face))
      (beacon . ("\x1f151 " . font-lock-type-face))
-     (motion . ("\x1f15c " . font-lock-constant-face))))
+     (motion . ("\x1f15c " . font-lock-constant-face))
+     (passthrough . ("T" . font-lock-warning-face))))
   :config
   (let ((glyphs (copy-tree mood-line-glyphs-unicode)))
     (dolist (pair my/mood-line-checker-glyphs)
       (setf (alist-get (car pair) glyphs) (cdr pair)))
+    ;; Use a branch glyph for the clean VC state so the mode line reads
+    ;; like branch information instead of a checkmark.
+    (setf (alist-get :vc-good glyphs) ?)
     (setq mood-line-glyph-alist glyphs)))
 
 ;;; Fonts

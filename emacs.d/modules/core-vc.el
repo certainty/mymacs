@@ -71,6 +71,15 @@
   (when (eq system-type 'darwin)
     (setopt magit-git-executable "/opt/homebrew/bin/git")))
 
+
+(use-package consult-gh
+  :after consult)
+
+(use-package consult-gh-embark
+  :after consult-gh
+  :config
+  (consult-gh-embark-mode +1))
+
 ;;; Magit Delta (Modern diff highlighting)
 ;; Requires `delta` CLI installed on your system.
 ;; (use-package magit-delta

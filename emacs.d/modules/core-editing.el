@@ -29,6 +29,11 @@
   (:map mymacs-mode-map
     ("C-." . embark-act)
     ("C-," . embark-dwim))
+  (:map minibuffer-mode-map
+    ("C-c C-c" . embark-collect)
+    ("C-c C-e" . embark-export)
+    ("C-c C-m" . embark-select)
+    ("C-c C-a" . embark-act-all))
   (:map minibuffer-local-map
     ("C-c C-c" . embark-collect)
     ("C-c C-e" . embark-export)
@@ -36,6 +41,7 @@
     ("C-c C-a" . embark-act-all))
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
+  ;; TODO: do I really need this here again?
   (keymap-set global-map "C-." 'embark-act)
   (keymap-set global-map "C-," 'embark-dwim)
 

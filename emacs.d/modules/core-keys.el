@@ -58,8 +58,7 @@
 (when my/enable-writing
   (keymap-set my/leader-map "j" '+notes)
   (keymap-set my/leader-map "o" '+org))
-(when (or my/enable-ai my/ai-enable-aci my/ai-enable-eca)
-  (keymap-set my/leader-map "a" '+ai))
+(keymap-set my/leader-map "a" '+ai)
 
 ;;; Direct leader shortcuts (most frequent actions)
 
@@ -118,6 +117,7 @@
 (keymap-set '+language "a" 'eglot-code-actions)
 (keymap-set '+language "i" 'eglot-find-implementation)
 (keymap-set '+language "t" 'eglot-find-typeDefinition)
+(keymap-set '+language "h" 'consult-info)
 (keymap-set '+language "R" 'eglot-rename)
 (keymap-set '+language "c" 'consult-flymake)
 (keymap-set '+language "f" '+format-buffer)
@@ -129,9 +129,14 @@
 
 ;;; Terminal group (noun: terminal)
 
-(keymap-set '+terminal "t" 'ghostel-project)
-(keymap-set '+terminal "T" 'ghostel)
-(keymap-set '+terminal "v" 'vterm-toggle)
+(keymap-set '+terminal "T" 'ghostel-toggle)
+(keymap-set '+terminal "t" 'ghostel-toggle-project)
+(keymap-set '+terminal "v" 'multi-vterm-project)
+
+;;; AI group (noun: ai / agent)
+
+(keymap-set '+ai "a" '+ai-remote-agent)
+(keymap-set '+ai "s" '+ai-remote-agent-shell)
 
 ;;; VC group (noun: version control)
 
@@ -175,15 +180,6 @@
   (keymap-set '+org "A" 'org-agenda)
   (keymap-set '+org "c" 'org-capture)
   (keymap-set '+org "x" '+org-toggle-next-up))
-
-;;; AI group (noun: ai / agent)
-
-(when (or my/enable-ai my/ai-enable-aci)
-  (keymap-set '+ai "a" 'ai-code-menu))
-
-(when my/ai-enable-eca
-  (keymap-set '+ai "c" 'eca)
-  (keymap-set '+ai "C" 'eca-transient-menu))
 
 ;;; Goto group (Meow normal-state prefix: g)
 
