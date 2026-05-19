@@ -16,18 +16,18 @@
 
 ;;; Straight.el bootstrap
 (setq straight-vc-use-snapshot-installation t
-      straight-use-package-by-default t
-      straight-enable-use-package-integration t)
+  straight-use-package-by-default t
+  straight-enable-use-package-integration t)
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 7))
+        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+       (bootstrap-version 7))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
+      (url-retrieve-synchronously
+        "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+        'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
@@ -93,6 +93,17 @@
 
 (when my/ai-remote-agent-enable
   (require 'ai-remote-agent))
+
+(when my/enable-pmd
+  (use-package consult-pmd
+    :straight `(consult-pmd
+                 :type nil
+                 :local-repo ,(expand-file-name "local-packages/consult-pmd" user-emacs-directory)
+                 :files ("*.el"))
+    :custom
+    (my/code-path my/repositories-path)
+    (my/code-temp-path "~/tmp/")
+    :commands (+pmd-projects +pmd-servicegroups +pmd-teams)))
 
 (provide 'init)
 ;;; init.el ends here

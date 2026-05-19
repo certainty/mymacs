@@ -41,7 +41,7 @@
 (defcustom my/ai-remote-agent-backend 'opencode
   "Agent to invoke in the remote Lima VM."
   :type '(choice (const :tag "OpenCode" opencode)
-                 (const :tag "Codex" codex))
+           (const :tag "Codex" codex))
   :group 'my/ai-remote-agent)
 
 (defcustom my/ai-remote-agent-instance-name "lima-dev"
@@ -54,6 +54,11 @@
 The first matching local prefix wins."
   :type '(repeat (cons string string))
   :group 'my/ai-remote-agent)
+
+(defcustom my/enable-pmd t
+  "When non-nil, install the pmd package to interact with project-metadat"
+  :type 'boolean
+  :group 'mymacs)
 
 (defcustom my/enable-writing t
   "When non-nil, load writing modules (spell-check, notes, org)."

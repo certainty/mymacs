@@ -39,14 +39,13 @@
 (define-prefix-command '+previous nil "Previous")
 (define-prefix-command '+next nil "Next")
 (define-prefix-command '+ai nil "AI")
+(define-prefix-command '+tools nil "Tools")
 
 ;;; Leader Map Setup
 
 (defvar-keymap my/leader-map :doc "Authority for leader-key bindings.")
 
 ;;; Base Leader Bindings (nouns)
-
-
 (keymap-set my/leader-map "b" '+buffer)
 (keymap-set my/leader-map "f" '+file)
 (keymap-set my/leader-map "w" '+window)
@@ -55,10 +54,22 @@
 (keymap-set my/leader-map "t" '+terminal)
 (keymap-set my/leader-map "v" '+vc)
 (keymap-set my/leader-map "s" '+settings)
+
 (when my/enable-writing
-  (keymap-set my/leader-map "j" '+notes)
+  (keymap-set my/leader-map "j" '+notes))
+
+(when my/enable-gtd
   (keymap-set my/leader-map "o" '+org))
-(keymap-set my/leader-map "a" '+ai)
+
+(when my/enable-ai
+  (keymap-set my/leader-map "a" '+ai))
+
+(when my/enable-pmd
+  (keymap-set my/leader-map "," '+tools)
+  (keymap-set +tools "," '+pmd-projects)
+  (keymap-set +tools "t" '+pmd-teams)
+  (keymap-set +tools "p" '+pmd-people)
+  (keymap-set +tools "s" '+pmd-servicegroups))
 
 ;;; Direct leader shortcuts (most frequent actions)
 
@@ -175,7 +186,7 @@
 
 ;;; Org group (noun: org / GTD)
 
-(when my/enable-writing
+(when my/enable-gtd
   (keymap-set '+org "a" '+personal-agenda)
   (keymap-set '+org "A" 'org-agenda)
   (keymap-set '+org "c" 'org-capture)
@@ -189,6 +200,7 @@
 (keymap-set '+goto "l" 'end-of-line)
 (keymap-set '+goto "d" 'xref-find-definitions)
 (keymap-set '+goto "r" 'xref-find-references)
+(keymap-set '+goto "s" 'jinx-next)
 (keymap-set '+goto "?" 'helpful-at-point)
 
 ;;; Next group (Meow normal-state prefix: ])
@@ -199,6 +211,7 @@
 (keymap-set '+next "c" 'flymake-goto-next-error)
 (keymap-set '+next "a" 'hl-todo-next)
 (keymap-set '+next "h" 'diff-hl-next-hunk)
+(keymap-set '+next "s" 'jinx-previous)
 (keymap-set '+next "t" 'vterm-toggle-forward)
 (keymap-set '+next "TAB" 'tab-next)
 

@@ -73,6 +73,28 @@
 
 
 (use-package consult-gh
+  :bind
+  (:map +vc
+    ("b" . consult-gh-dashboard)
+    ("/" . consult-gh-search-repo-list)
+    ("*" . consult-gh-search-code)
+    ("," . consult-gh-pr-list))
+
+  :custom
+  (consult-gh-default-clone-directory "~/tmp")
+  (consult-gh-show-preview t)
+  (consult-gh-preview-key "C-o")
+  (consult-gh-repo-action #'consult-gh--repo-browse-files-action)
+  (consult-gh-large-file-warning-threshold 2500000)
+  (consult-gh-confirm-name-before-fork nil)
+  (consult-gh-confirm-before-clone t)
+  (consult-gh-notifications-show-unread-only nil)
+  (consult-gh-default-interactive-command #'consult-gh-transient)
+  (consult-gh-prioritize-local-folder nil)
+  (consult-gh-group-dashboard-by :reason)
+  :config
+  (add-to-list 'savehist-additional-variables 'consult-gh--known-orgs-list)
+  (add-to-list 'savehist-additional-variables 'consult-gh--known-repos-list)
   :after consult)
 
 (use-package consult-gh-embark
