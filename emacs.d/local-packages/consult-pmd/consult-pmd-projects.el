@@ -118,17 +118,20 @@
         (format "git@%s:%s" host path))
       repo-url))
 
-  (defun pmd--projects-clone-repository (project base-path)
-    "Clone PROJECT to BASE-PATH, reusing existing clones when present."
+  (defun pmd--projects-clone-repository (project base-path &optional include-forge)
+    "Clone PROJECT to BASE-PATH, reusing existing clones when present.
+When INCLUDE-FORGE is non-nil, place the clone under a forge-specific
+subdirectory derived from the repository host."
     (unless (and (stringp base-path) (not (string-empty-p base-path)))
       (user-error "Clone base path is not configured"))
     (when-let* ((repo-url (pmd--projects-repository-url project))
                  (repo-slug (pmd--projects-repository-slug project)))
-      (let* ((forge (or (pmd--projects-forge-name repo-url)
-                        (user-error "Could not derive forge from %s" repo-url)))
-             (target-dir (expand-file-name
-                           repo-slug
-                           (expand-file-name forge (file-name-as-directory base-path))))
+      (let* ((target-root (if include-forge
+                            (let ((forge (or (pmd--projects-forge-name repo-url)
+                                           (user-error "Could not derive forge from %s" repo-url))))
+                              (expand-file-name forge (file-name-as-directory base-path)))
+                            (file-name-as-directory base-path)))
+             (target-dir (expand-file-name repo-slug target-root))
               (clone-url (pmd--projects-preferred-clone-url repo-url)))
         (if (file-directory-p target-dir)
           (message "Repository already exists: %s" target-dir)
@@ -145,7 +148,7 @@
   (defun +pmd-clone-repository-permanent (project)
     "Clone PROJECT to `my/code-path'."
     (interactive "sProject ID: ")
-    (pmd--projects-clone-repository project my/code-path))
+    (pmd--projects-clone-repository project my/code-path t))
 
   (defun +pmd-clone-repository-temporary (project)
     "Clone PROJECT to `my/code-temp-path'."
