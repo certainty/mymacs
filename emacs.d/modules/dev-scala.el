@@ -8,25 +8,11 @@
 ;;
 ;;; Code:
 
-;;; Scala tree-sitter mode
-(use-package scala-ts-mode
-  :mode ("\\.scala\\'" "\\.sc\\'" "\\.sbt\\'")
-  :hook (scala-ts-mode . eglot-ensure)
-  :bind
-  (:map scala-ts-mode-map
-    ("C-c C-k" . sbt-do-clean)
-    ("C-c C-c" . sbt-do-compile)
-    ("C-c C-t" . sbt-do-test)
-    ("C-c C-o" . +scala-test-only)
-    ("C-c C-r" . sbt-command)
-    ("C-c C-x" . +scala-run-main))
-  :custom
-  (scala-ts-mode-indent-offset 2))
-
 ;;; Scala test helpers
 (declare-function project-current "project")
 (declare-function project-root "project")
 (declare-function eglot-current-server "eglot")
+(declare-function sbt-command "sbt-mode" (command))
 (defvar eglot-server-programs)
 
 (defun my/scala--project-root ()
@@ -77,6 +63,33 @@
   (let ((default-directory (or (my/scala--project-root) default-directory)))
     (compile (format "sbt testOnly %s" (shell-quote-argument target)))))
 
+(defun +scala-run-main ()
+  "Run a Scala main class with sbt."
+  (interactive)
+  (let ((main-class (read-string "Main class: ")))
+    (sbt-command (format "runMain %s" main-class))))
+
+(defun +scala-test-only ()
+  "Run the current Scala test or prompt for a class name."
+  (interactive)
+  (let ((test-class (or (and buffer-file-name (my/scala--spec-target))
+                      (read-string "Test class: "))))
+    (my/scala--run-test-target test-class)))
+
+;;; Scala tree-sitter mode
+(use-package scala-ts-mode
+  :mode ("\\.scala\\'" "\\.sc\\'" "\\.sbt\\'")
+  :hook (scala-ts-mode . eglot-ensure)
+  :custom
+  (scala-ts-mode-indent-offset 2)
+  :config
+  (keymap-set scala-ts-mode-map "C-c C-k" #'sbt-do-clean)
+  (keymap-set scala-ts-mode-map "C-c C-c" #'sbt-do-compile)
+  (keymap-set scala-ts-mode-map "C-c C-t" #'sbt-do-test)
+  (keymap-set scala-ts-mode-map "C-c C-o" #'+scala-test-only)
+  (keymap-set scala-ts-mode-map "C-c C-r" #'sbt-command)
+  (keymap-set scala-ts-mode-map "C-c C-x" #'+scala-run-main))
+
 ;;; SBT (build tool / REPL)
 (use-package sbt-mode
   :commands (sbt-start sbt-command sbt-do-compile sbt-do-test sbt-do-clean)
@@ -89,20 +102,7 @@
   (substitute-key-definition
     'minibuffer-complete-word
     'self-insert-command
-    minibuffer-local-completion-map)
-
-  (defun +scala-run-main ()
-    "Run Scala main class with sbt."
-    (interactive)
-    (let ((main-class (read-string "Main class: ")))
-      (sbt-command (format "runMain %s" main-class))))
-
-  (defun +scala-test-only ()
-    "Run the current Scala test or prompt for a class name."
-    (interactive)
-    (let ((test-class (or (and buffer-file-name (my/scala--spec-target))
-                        (read-string "Test class: "))))
-      (my/scala--run-test-target test-class))))
+    minibuffer-local-completion-map))
 
 ;;; Metals LSP configuration
 (defun my/scala-metals-contact ()
