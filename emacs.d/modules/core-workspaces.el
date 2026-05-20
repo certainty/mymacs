@@ -98,6 +98,24 @@
   :hook (after-init . tabspaces-mode)
   :commands (tabspaces-switch-or-create-workspace
              tabspaces-open-or-create-project-and-workspace)
+  :preface
+  (declare-function tabspaces-prompt-project-dir "tabspaces")
+
+  (defun my/tabspaces-open-project-dired (&optional project prefix)
+    "Open PROJECT in a dedicated tabspace and visit its root in Dired.
+With PREFIX, always create a new tab for the project."
+    (interactive
+     (list (tabspaces-prompt-project-dir) current-prefix-arg))
+    (let ((tabspaces-project-switch-commands 'project-dired))
+      (tabspaces-open-or-create-project-and-workspace project prefix))
+    (when-let* ((project-root
+                 (or project
+                     (when-let* ((current-project (project-current nil)))
+                       (project-root current-project)))))
+      (dired project-root)))
+
+  (with-eval-after-load 'dashboard
+    (setopt dashboard-projects-switch-function #'my/tabspaces-open-project-dired))
   :custom
   (tabspaces-project-switch-commands #'project-dired)
   (tabspaces-use-filtered-buffers-as-default t)
@@ -108,7 +126,7 @@
   (tabspaces-session-auto-restore nil)
   :bind
   (:map project-prefix-map
-        ("p" . tabspaces-open-or-create-project-and-workspace)
+        ("p" . my/tabspaces-open-project-dired)
         ("b" . tabspaces-switch-to-buffer)
         ("k" . tabspaces-kill-buffers-close-workspace)
         ("x" . tabspaces-close-workspace)))
