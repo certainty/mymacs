@@ -92,7 +92,7 @@
     "\\*vc-log\\*"
     "\\*vc-annotate\\*")
   (my/register-side-popup my/vc-async-buffer-name-regexp nil t)
-  (my/register-side-popup 'vc-diff-mode))
+  (my/register-side-popup "\\*vc-diff\\*" nil t))
 
 ;;; Magit
 (use-package magit
