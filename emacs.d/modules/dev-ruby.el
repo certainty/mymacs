@@ -99,19 +99,44 @@ the buffer does not look like a Ruby test file."
                (concat " -n "
                        (shell-quote-argument (format "/%s/" test-name))))))))
 
+(defun +ruby-rspec-dwim ()
+  "Run the current Ruby location explicitly with RSpec."
+  (interactive)
+  (my/ruby--run-rspec
+   (or (my/ruby--rspec-target (line-number-at-pos))
+       (read-string "RSpec target: "))))
+
+(defun +ruby-rspec-file ()
+  "Run the current Ruby file explicitly with RSpec."
+  (interactive)
+  (my/ruby--run-rspec
+   (or (my/ruby--rspec-target)
+       (read-string "RSpec target: "))))
+
+(defun +ruby-minitest-dwim ()
+  "Run the current Ruby location explicitly with Minitest."
+  (interactive)
+  (pcase-let ((`(,file ,test-name)
+               (or (my/ruby--minitest-target (my/ruby--minitest-test-name))
+                   (list (read-string "Minitest file: ") nil))))
+    (my/ruby--run-minitest file test-name)))
+
+(defun +ruby-minitest-file ()
+  "Run the current Ruby file explicitly with Minitest."
+  (interactive)
+  (pcase-let ((`(,file ,test-name)
+               (or (my/ruby--minitest-target)
+                   (list (read-string "Minitest file: ") nil))))
+    (my/ruby--run-minitest file test-name)))
+
 (defun +ruby-test-dwim ()
   "Run the current Ruby test, dispatching between RSpec and Minitest."
   (interactive)
   (pcase (my/ruby--test-framework)
     ('rspec
-     (my/ruby--run-rspec
-      (or (my/ruby--rspec-target (line-number-at-pos))
-          (read-string "RSpec target: "))))
+     (+ruby-rspec-dwim))
     ('minitest
-     (pcase-let ((`(,file ,test-name)
-                  (or (my/ruby--minitest-target (my/ruby--minitest-test-name))
-                      (list (read-string "Minitest file: ") nil))))
-       (my/ruby--run-minitest file test-name)))
+     (+ruby-minitest-dwim))
     (_
      (user-error "Not visiting an RSpec or Minitest test file"))))
 
@@ -120,14 +145,9 @@ the buffer does not look like a Ruby test file."
   (interactive)
   (pcase (my/ruby--test-framework)
     ('rspec
-     (my/ruby--run-rspec
-      (or (my/ruby--rspec-target)
-          (read-string "RSpec target: "))))
+     (+ruby-rspec-file))
     ('minitest
-     (pcase-let ((`(,file ,test-name)
-                  (or (my/ruby--minitest-target)
-                      (list (read-string "Minitest file: ") nil))))
-       (my/ruby--run-minitest file test-name)))
+     (+ruby-minitest-file))
     (_
      (user-error "Not visiting an RSpec or Minitest test file"))))
 
@@ -139,8 +159,10 @@ the buffer does not look like a Ruby test file."
          (ruby-ts-mode . (lambda () (setq-local my/external-formatter #'+rufo-buffer))))
   :bind
   (:map ruby-ts-mode-map
-        ("C-c C-t" . +ruby-test-dwim)
-        ("C-c C-o" . +ruby-test-file))
+        ("C-c t t" . +ruby-test-dwim)
+        ("C-c t o" . +ruby-test-file)
+        ("C-c t r" . +ruby-rspec-dwim)
+        ("C-c t m" . +ruby-minitest-dwim))
   :custom
   (ruby-indent-level 2)
   (ruby-insert-encoding-magic-comment nil)

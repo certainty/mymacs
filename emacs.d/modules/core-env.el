@@ -23,7 +23,9 @@
   :demand t
   :custom
   (exec-path-from-shell-variables my/required-environment-variables)
-  (exec-path-from-shell-arguments '("-l"))
+  ;; Use an interactive login shell so tool managers like mise contribute
+  ;; the same PATH ordering that terminal sessions use.
+  (exec-path-from-shell-arguments '("-l" "-i"))
   (exec-path-from-shell-check-startup-files nil)
   :config
   (exec-path-from-shell-initialize))
