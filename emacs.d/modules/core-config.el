@@ -118,6 +118,20 @@ The first matching local prefix wins."
   :type 'boolean
   :group 'mymacs)
 
+(defgroup my/vc nil
+  "Configuration for version control workflows."
+  :group 'mymacs)
+
+(defcustom my/vc-auto-close-async-buffers t
+  "When non-nil, close successful asynchronous VC command windows."
+  :type 'boolean
+  :group 'my/vc)
+
+(defcustom my/vc-auto-close-async-buffers-delay 1.0
+  "Seconds to wait before closing a successful asynchronous VC window."
+  :type 'number
+  :group 'my/vc)
+
 (defcustom my/enable-dev-common-lisp t
   "When non-nil, load Common Lisp support (SBCL, sly)."
   :type 'boolean

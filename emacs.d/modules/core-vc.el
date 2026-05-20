@@ -13,6 +13,36 @@
   :custom
   (vc-follow-symlinks t)
 
+  :preface
+  (defconst my/vc-async-buffer-name-regexp
+    "^\\*vc-[[:alnum:]-]+ : .*\\*$"
+    "Regexp matching asynchronous VC process buffers.")
+
+  (defun my/vc-async-buffer-p (&optional buffer)
+    "Return non-nil when BUFFER is an asynchronous VC process buffer."
+    (with-current-buffer (or buffer (current-buffer))
+      (and (derived-mode-p 'compilation-mode)
+           (string-match-p my/vc-async-buffer-name-regexp
+                           (buffer-name (current-buffer))))))
+
+  (defun my/vc-close-buffer-windows (buffer)
+    "Close all live windows currently showing BUFFER."
+    (when (buffer-live-p buffer)
+      (dolist (window (get-buffer-window-list buffer nil t))
+        (when (window-live-p window)
+          (quit-window nil window)))))
+
+  (defun my/vc-maybe-close-async-buffer (buffer status)
+    "Close BUFFER's window when STATUS indicates successful completion."
+    (when (and my/vc-auto-close-async-buffers
+               (buffer-live-p buffer)
+               (string-prefix-p "finished" status)
+               (my/vc-async-buffer-p buffer))
+      (run-with-timer my/vc-auto-close-async-buffers-delay
+                      nil
+                      #'my/vc-close-buffer-windows
+                      buffer)))
+
   :config
   (require 'vc-annotate)
   (require 'vc-dir)
@@ -53,11 +83,15 @@
   (setopt vc-git-log-edit-summary-target-len 80)
   (setopt vc-git-log-edit-summary-max-len 120)
 
+  (add-hook 'compilation-finish-functions #'my/vc-maybe-close-async-buffer)
+
   :init
   (my/with-popper!
+    my/vc-async-buffer-name-regexp
     "\\*vc-change-log\\*"
     "\\*vc-log\\*"
     "\\*vc-annotate\\*")
+  (my/register-side-popup my/vc-async-buffer-name-regexp nil t)
   (my/register-side-popup 'vc-diff-mode))
 
 ;;; Magit
