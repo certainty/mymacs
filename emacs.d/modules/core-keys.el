@@ -73,6 +73,7 @@
 
 ;;; Direct leader shortcuts (most frequent actions)
 
+
 (keymap-set my/leader-map "e" 'dired-jump)
 (keymap-set my/leader-map "/" 'consult-ripgrep)
 (keymap-set my/leader-map "|" '+split-vertically)
@@ -128,7 +129,6 @@
 (keymap-set '+language "a" 'eglot-code-actions)
 (keymap-set '+language "i" 'eglot-find-implementation)
 (keymap-set '+language "t" 'eglot-find-typeDefinition)
-(keymap-set '+language "h" 'consult-info)
 (keymap-set '+language "R" 'eglot-rename)
 (keymap-set '+language "c" 'consult-flymake)
 (keymap-set '+language "f" '+format-buffer)
@@ -146,8 +146,9 @@
 
 ;;; AI group (noun: ai / agent)
 
-(keymap-set '+ai "a" '+ai-remote-agent)
-(keymap-set '+ai "s" '+ai-remote-agent-shell)
+(when my/enable-ai
+  (keymap-set '+ai "a" '+ai-remote-agent)
+  (keymap-set '+ai "s" '+ai-remote-agent-shell))
 
 ;;; VC group (noun: version control)
 
@@ -335,6 +336,7 @@ If no region is active, set the mark at point first."
 
     '("^" . meow-join)
     '("%" . mark-whole-buffer)
+    '("*" . avy-goto-char-timer)
 
     '("<escape>" . meow-cancel-selection)
     `("[" . ,+previous)
@@ -352,7 +354,7 @@ If no region is active, set the mark at point first."
     '("e" . meow-next-symbol)
     '("E" . meow-next-word)
     '("f" . meow-find)
-    '("F" . avy-goto-char-timer)
+    '("F" . avy-goto-line)
     '("G" . meow-grab)
     `("g" . ,+goto)
     '("h" . meow-left)
@@ -416,7 +418,8 @@ If no region is active, set the mark at point first."
        (motion . "🅜 ")
        (keypad . "🅚 ")
        (insert . "🅘 ")
-       (beacon . "🅑 ")))
+       (beacon . "🅑 ")
+       (passthrough . "🅟 ")))
   (meow-selection-command-fallback
     '((meow-change . meow-change-char)
        (meow-kill . meow-delete)
@@ -464,7 +467,8 @@ If no region is active, set the mark at point first."
 
   (meow-define-keys 'passthrough
     '("C-SPC" . meow-keypad)
-    '("C-c ESC" . meow-insert-exit)))
+    '("C-c ESC" . meow-insert-exit))
+  )
 
 ;;; Meow Tree-sitter
 
@@ -473,8 +477,27 @@ If no region is active, set the mark at point first."
   :config
   (meow-tree-sitter-register-defaults))
 
-;;; Lisp editing (paredit)
+;;; Better repeat
+(use-package repeat-fu
+  :commands (repeat-fu-mode repeat-fu-execute)
 
+  :config
+  (setq repeat-fu-preset 'meow)
+
+  :bind
+  (:map mymacs-mode-map
+    ("M-'" . #'repeat)) ;; normal emacs repeat
+
+  :hook
+  ((meow-mode)
+    .
+    (lambda ()
+      (when (and (not (minibufferp)) (not (derived-mode-p 'special-mode)))
+        (repeat-fu-mode)
+        (define-key meow-normal-state-keymap (kbd "C-'") 'repeat-fu-execute)
+        (define-key meow-insert-state-keymap (kbd "C-'") 'repeat-fu-execute)))))
+
+;;; Lisp editing (paredit)
 (use-package paredit
   :hook ((emacs-lisp-mode lisp-mode clojure-mode racket-mode scheme-mode)
           . paredit-mode)
@@ -495,6 +518,7 @@ If no region is active, set the mark at point first."
       '("M-s" . paredit-kill)
       '("M-m" . paredit-join-sexps)
       '("M-r" . paredit-raise-sexp))))
+
 
 (provide 'core-keys)
 ;;; core-keys.el ends here

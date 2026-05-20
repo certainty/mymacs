@@ -35,6 +35,16 @@
 
 ;;  ;;; Writing / Notes
 ;;  my/org-path "~/Documents/Local/Org"
-;;  my/notes-path "~/Documents/Local/Notes")
+;;  my/notes-path "~/Documents/Local/Notes"
+
+;; my/repositories-path "/path/to/repos"
+
+;; my/enable-pmd
+;; pmd-base-url "http://example.com"
+;; pmd-api-key "foo
+;; pmd-code-path "/path/to/repos"
+;; pmd-code-temp-path "/tmp"
+
+)
 
 ;;; custom-example.el ends here

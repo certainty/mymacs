@@ -29,6 +29,7 @@
     (org-toggle-tag "nextup" 'toggle)
     (save-buffer)))
 
+
 ;;; Org GTD configuration
 
 (use-package org
@@ -43,7 +44,8 @@
   (org-todo-keywords
     '((sequence "INBOX(i)" "NEXT(n)" "TODO(t)" "WAIT(w@/!)" "BLOCKED(b@/!)" "PROJ(p)"
         "|" "DONE(d!)" "CANCELLED(c@)")
-       (sequence "EVT(m)" "|" "DONE(d!)" "CANCELLED(c@)")))
+       (sequence "EVT(m)" "|" "DONE(d!)" "CANCELLED(c@)")
+       (sequence "|" "DECISION(d)")))
   (org-use-fast-todo-selection 'expert)
   (org-enforce-todo-dependencies t)
   (org-priority-default ?B)
@@ -58,8 +60,14 @@
        ("n" "Note" entry (file+olp+datetree "log.org")
          "* %<%H:%M> %?\n:PROPERTIES:\n:CAPTURED: %T\n:END:"
          :tree-type week)
+
+       ("d" "Decision" entry (file+olp+datetree "log.org")
+         "* DECISION %?\n:PROPERTIES:\n:CAPTURED: %T\n:END:"
+         :tree-type week)
+
        ("e" "Event" entry (file+olp+datetree "log.org")
          "* EVT %? :event:\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
+         :tree-type week
          :prepend t)))
 
   ;; Agenda

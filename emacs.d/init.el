@@ -63,11 +63,8 @@
   (require 'writing-org))
 
 (when my/enable-gtd
-  ;; TODO: change name to gtd-base
+  ;; TODO: change name to gtd-basec
   (require 'writing-gtd))
-
-(when (and my/enable-gtd my/enable-tsk)
-  (require 'org-tsk))
 
 ;;; Development modules (always loaded)
 (require 'dev-base)
@@ -100,9 +97,6 @@
                  :type nil
                  :local-repo ,(expand-file-name "local-packages/consult-pmd" user-emacs-directory)
                  :files ("*.el"))
-    :custom
-    (my/code-path my/repositories-path)
-    (my/code-temp-path "~/tmp/")
     :commands (+pmd-projects +pmd-servicegroups +pmd-teams)))
 
 (provide 'init)

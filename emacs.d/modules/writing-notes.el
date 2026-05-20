@@ -33,9 +33,9 @@
   :hook (dired-mode . denote-dired-mode)
   :bind
   (:map dired-mode-map
-        ("C-c C-d C-i" . denote-dired-link-marked-notes)
-        ("C-c C-d C-r" . denote-dired-rename-files)
-        ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords))
+    ("C-c C-d C-i" . denote-dired-link-marked-notes)
+    ("C-c C-d C-r" . denote-dired-rename-files)
+    ("C-c C-d C-k" . denote-dired-rename-marked-files-with-keywords))
   :custom
   (denote-directory my/notes-path)
   (denote-file-type nil)
@@ -43,7 +43,6 @@
   (denonte-sort-keywords t)
   (denote-infer-keywords t)
   (denote-date-prompt-use-org-read-date t)
-  (denote-known-keywords '("draft" "idea" "reference" "project" "article" "oppinion" "rfc" "adr"))
   (denote-link-button-action #'find-file)
   :config
   (setopt denote-known-keywords my/notes-keywords)

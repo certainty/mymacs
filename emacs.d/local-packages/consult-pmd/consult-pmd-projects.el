@@ -14,12 +14,12 @@
 
 (defconst pmd--project-type 'pmd-project)
 
-(defcustom my/code-path "~/code"
+(defcustom pmd-code-path "~/code"
   "Base directory used for permanent project clones."
   :type 'directory
   :group 'consult-pmd)
 
-(defcustom my/code-temp-path temporary-file-directory
+(defcustom pmd-code-temp-path temporary-file-directory
   "Base directory used for temporary project clones."
   :type 'directory
   :group 'consult-pmd)
@@ -102,7 +102,7 @@
   (defun pmd--projects-forge-name (repo-url)
     "Return a local forge name derived from REPO-URL."
     (when-let* ((parsed-url (url-generic-parse-url repo-url))
-                (host (url-host parsed-url)))
+                 (host (url-host parsed-url)))
       (pcase host
         ("github.com" "github")
         ("codeberg.org" "codeberg")
@@ -131,7 +131,7 @@ subdirectory derived from the repository host."
                                            (user-error "Could not derive forge from %s" repo-url))))
                               (expand-file-name forge (file-name-as-directory base-path)))
                             (file-name-as-directory base-path)))
-             (target-dir (expand-file-name repo-slug target-root))
+              (target-dir (expand-file-name repo-slug target-root))
               (clone-url (pmd--projects-preferred-clone-url repo-url)))
         (if (file-directory-p target-dir)
           (message "Repository already exists: %s" target-dir)
@@ -146,14 +146,14 @@ subdirectory derived from the repository host."
                 (user-error "git clone failed for %s (see *pmd-git-clone*)" repo-slug))))))))
 
   (defun +pmd-clone-repository-permanent (project)
-    "Clone PROJECT to `my/code-path'."
+    "Clone PROJECT to `pmd-code-path'."
     (interactive "sProject ID: ")
-    (pmd--projects-clone-repository project my/code-path t))
+    (pmd--projects-clone-repository project pmd-code-path t))
 
   (defun +pmd-clone-repository-temporary (project)
-    "Clone PROJECT to `my/code-temp-path'."
+    "Clone PROJECT to `pmd-code-temp-path'."
     (interactive "sProject ID: ")
-    (pmd--projects-clone-repository project my/code-temp-path))
+    (pmd--projects-clone-repository project pmd-code-temp-path))
 
   (defun +pmd-copy-repo-url (project)
     "Copy the repository URL for `PROJECT' to clipboard."
