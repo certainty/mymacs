@@ -75,6 +75,34 @@ The first matching local prefix wins."
   :type 'boolean
   :group 'mymacs)
 
+(defgroup my/scala nil
+  "Configuration for Scala development."
+  :group 'mymacs)
+
+(defcustom my/scala-metals-command "metals"
+  "Metals launcher command."
+  :type 'string
+  :group 'my/scala)
+
+(defcustom my/scala-metals-java-options nil
+  "JVM options passed to Metals via repeated -J flags."
+  :type '(repeat string)
+  :group 'my/scala)
+
+(defcustom my/scala-metals-server-arguments nil
+  "Additional non-JVM command-line arguments for Metals."
+  :type '(repeat string)
+  :group 'my/scala)
+
+(defcustom my/scala-metals-initialization-options
+  '(:isHttpEnabled t
+    :statusBarProvider "log-message"
+    :compilerOptions (:snippetAutoIndent t :overrideDefFormat "unicode")
+    :scalafixConfigPath ".scalafix.conf")
+  "Initialization options sent to Metals by Eglot."
+  :type 'sexp
+  :group 'my/scala)
+
 (defcustom my/enable-dev-ruby t
   "When non-nil, load Ruby language support."
   :type 'boolean

@@ -26,6 +26,8 @@
 ;;; Scala test helpers
 (declare-function project-current "project")
 (declare-function project-root "project")
+(declare-function eglot-current-server "eglot")
+(defvar eglot-server-programs)
 
 (defun my/scala--project-root ()
   "Return the current project root for Scala commands."
@@ -103,18 +105,17 @@
       (my/scala--run-test-target test-class))))
 
 ;;; Metals LSP configuration
+(defun my/scala-metals-contact ()
+  "Build the Eglot contact spec for Metals."
+  (append
+    (list my/scala-metals-command)
+    (mapcar (lambda (arg) (format "-J%s" arg)) my/scala-metals-java-options)
+    my/scala-metals-server-arguments
+    (list :initializationOptions my/scala-metals-initialization-options)))
+
 (with-eval-after-load 'eglot
-  (add-to-list 'eglot-server-programs '(scala-ts-mode . ("metals")))
-
-  (defclass eglot-metals (eglot-lsp-server) ()
-    :documentation "Metals LSP server for Scala.")
-
-  (cl-defmethod eglot-initialization-options ((_server eglot-metals))
-    "Metals initialization options."
-    `(:isHttpEnabled t
-       :statusBarProvider "log-message"
-       :compilerOptions (:snippetAutoIndent t :overrideDefFormat "unicode")
-       :scalafixConfigPath ".scalafix.conf")))
+  (add-to-list 'eglot-server-programs
+               `(scala-ts-mode . ,(my/scala-metals-contact))))
 
 ;;; Dape integration (debug via Metals DAP)
 ;;
