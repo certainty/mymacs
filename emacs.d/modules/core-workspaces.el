@@ -21,6 +21,7 @@
 
   :init
   (keymap-set project-prefix-map "c" #'project-compile)
+  (keymap-set project-prefix-map "C" #'recompile)
   (keymap-set project-prefix-map "s" #'consult-ripgrep)
   (keymap-set project-prefix-map "e" #'project-dired)
 
@@ -30,15 +31,6 @@
     (interactive)
     (consult-ripgrep (project-root (project-current t))
                      (thing-at-point 'symbol))))
-
-;;; Projection (Project-type awareness and multi-target compilation)
-(use-package projection
-  :straight (:type git :host github :repo "mohkale/projection")
-  :hook (after-init . global-projection-hook-mode)
-  :hook (compilation-mode . projection-customize-compilation-mode)
-  :custom
-  (compilation-buffer-name-function
-   #'projection-customize-compilation-buffer-name-function))
 
 (use-package ansi-color
   :straight (:type built-in)
@@ -72,27 +64,6 @@
     (add-hook 'compilation-finish-functions #'my/compilation-finish-status nil t)
     (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter nil t))
   :hook (compilation-mode . my/enable-ansi-color-in-compilation))
-
-(use-package projection-find
-  :straight (:type git :host github :repo "mohkale/projection"))
-
-(use-package projection-multi
-  :straight (:type git :host github :repo "mohkale/projection")
-  :after projection
-  :bind
-  (:map project-prefix-map
-        ("C" . projection-multi-compile)))
-
-(use-package projection-multi-embark
-  :straight (:type git :host github :repo "mohkale/projection")
-  :after (projection-multi embark)
-  :config
-  (projection-multi-embark-setup-command-map))
-
-;; Projection integration for `dape'
-(use-package projection-dape
-  :straight t
-  :bind (:map projection-map ("D" . #'projection-dape)))
 
 ;;; Workspaces via tab-bar
 (use-package tabspaces

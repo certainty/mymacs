@@ -3,8 +3,7 @@
 ;;; Commentary:
 ;;
 ;; Scala support via scala-ts-mode and Metals (eglot).  Uses sbt-mode
-;; for REPL interaction.  Test/compile targets are provided by
-;; projection-multi-compile (detects build.sbt).
+;; for REPL interaction.
 ;;
 ;;; Code:
 

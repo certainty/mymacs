@@ -86,8 +86,7 @@
         ("Org" (mode . org-mode))
         ("Emacs" (or (name . "^\\*scratch\\*$")
                    (name . "^\\*Messages\\*$")))
-        ("Help" (or (mode . helpful-mode)
-                  (mode . help-mode)
+        ("Help" (or (mode . help-mode)
                   (name . "^\\*Help\\*$")))
         ("Magit" (name . "^magit"))
         ("Programming" (derived-mode . prog-mode))
@@ -142,7 +141,6 @@ If REGEXP is non-nil, CONDITION is treated as a regular expression."
   ;; Shackle is the absolute authority on where popups open.
   (my/register-side-popup 'info-mode)
   (my/register-side-popup 'help-mode)
-  (my/register-side-popup 'helpful-mode)
   (my/register-side-popup 'compilation-mode t)
   (my/register-bottom-popup 'org-capture-mode t)
   (my/register-bottom-popup "\\*Messages\\*" nil t)

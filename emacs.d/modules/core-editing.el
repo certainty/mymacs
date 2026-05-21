@@ -68,10 +68,19 @@
   (embark-collect-mode . consult-preview-at-point-mode))
 
 ;;; Whitespace management
-(use-package ws-butler
-  :straight nil
-  :load-path "vendor"
-  :hook (after-init . ws-butler-global-mode))
+(defun my/delete-trailing-whitespace ()
+  "Delete trailing whitespace in buffers where it is appropriate."
+  (unless (or buffer-read-only
+              (derived-mode-p 'diff-mode 'special-mode))
+    (save-excursion
+      (delete-trailing-whitespace))))
+
+(defun my/enable-trailing-whitespace-cleanup ()
+  "Clean trailing whitespace before saving the current buffer."
+  (add-hook 'before-save-hook #'my/delete-trailing-whitespace nil t))
+
+(add-hook 'prog-mode-hook #'my/enable-trailing-whitespace-cleanup)
+(add-hook 'text-mode-hook #'my/enable-trailing-whitespace-cleanup)
 
 (provide 'core-editing)
 ;;; core-editing.el ends here

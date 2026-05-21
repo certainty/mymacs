@@ -202,7 +202,7 @@
 (keymap-set '+goto "d" 'xref-find-definitions)
 (keymap-set '+goto "r" 'xref-find-references)
 (keymap-set '+goto "s" 'jinx-next)
-(keymap-set '+goto "?" 'helpful-at-point)
+(keymap-set '+goto "?" 'describe-symbol)
 
 ;;; Next group (Meow normal-state prefix: ])
 
@@ -457,7 +457,6 @@ If no region is active, set the mark at point first."
   (add-to-list 'meow-mode-state-list '(ghostel-mode . passthrough))
   (dolist (m '(magit-status-mode magit-log-mode magit-diff-mode magit-revision-mode magit-process-mode magit-popup-mode magit-mode))
     (add-to-list 'meow-mode-state-list (cons m 'motion)))
-  (add-to-list 'meow-mode-state-list '(helpful-mode . motion))
   (my/meow-setup)
   (meow-global-mode 1)
 

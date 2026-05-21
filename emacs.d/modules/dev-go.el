@@ -4,7 +4,6 @@
 ;;
 ;; Go support via go-ts-mode (built-in) and gopls (eglot).
 ;; Formatting is handled by goimports via reformatter.
-;; Test/compile targets are provided by projection-multi-compile.
 ;;
 ;;; Code:
 

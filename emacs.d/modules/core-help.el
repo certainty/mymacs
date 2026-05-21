@@ -2,22 +2,9 @@
 ;;
 ;;; Commentary:
 ;;
-;; Enhancements to the built-in help system. Uses `helpful' to provide more
-;; context-rich help buffers, remapping the default `describe-*' commands.
+;; Small tweaks for the built-in help system.
 ;;
 ;;; Code:
-
-;;; Helpful - better help buffers
-(use-package helpful
-  :straight t
-  :bind
-  (([remap describe-function] . helpful-callable)
-   ([remap describe-variable] . helpful-variable)
-   ([remap describe-key] . helpful-key)
-   ([remap describe-command] . helpful-command)
-   ([remap describe-symbol] . helpful-symbol))
-  :custom
-  (helpful-max-buffers 2))
 
 ;;; Info mode enhancements
 (use-package info

@@ -192,7 +192,7 @@ near-black for modeline and gutters."
       :default-height ,my/presentation-font-size)
      (t
       :default-family ,my/font
-      :default-weight medium
+      :default-weight regular
       :default-slant normal
       :default-height ,my/font-size
       :fixed-pitch-family ,my/font

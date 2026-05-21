@@ -4,7 +4,6 @@
 ;;
 ;; Ruby support via ruby-ts-mode (built-in) and ruby-lsp (eglot).
 ;; Formatting is handled by rufo via reformatter.
-;; Test/compile targets are provided by projection-multi-compile.
 ;;
 ;;; Code:
 
