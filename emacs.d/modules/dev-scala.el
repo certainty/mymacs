@@ -60,7 +60,8 @@
 (defun my/scala--run-test-target (target)
   "Run sbt testOnly for TARGET through `compile'."
   (let ((default-directory (or (my/scala--project-root) default-directory)))
-    (compile (format "sbt testOnly %s" (shell-quote-argument target)))))
+    (compile (format "sbt %s"
+                     (shell-quote-argument (format "testOnly %s" target) t)))))
 
 (defun +scala-run-main ()
   "Run a Scala main class with sbt."
