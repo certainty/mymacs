@@ -16,6 +16,7 @@
     (project-root project)))
 
 (use-package consult
+  :straight t
   :defer 2
   :custom
   (consult-narrow-key "C-<")
@@ -31,12 +32,14 @@
    :preview-key '(:debounce 0.4 any)))
 
 (use-package embark-consult
+  :straight t
   :after embark
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
 ;;; Wgrep - Editable grep buffers
 (use-package wgrep
+  :straight t
   :commands wgrep-change-to-wgrep-mode
   :custom
   (wgrep-auto-save-buffer t)

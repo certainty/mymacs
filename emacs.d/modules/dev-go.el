@@ -32,6 +32,7 @@
 
 ;;; Gotest (test runner integration)
 (use-package gotest
+  :straight t
   :after go-ts-mode
   :bind (:map go-ts-mode-map
               ("C-c t t" . go-test-current-test)
@@ -43,6 +44,7 @@
 
 ;;; Go-tag (struct tag management)
 (use-package go-tag
+  :straight t
   :after go-ts-mode
   :bind (:map go-ts-mode-map
               ("C-c t a" . go-tag-add)

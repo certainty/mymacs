@@ -67,6 +67,7 @@
 
 ;;; Clean up old buffers automatically
 (use-package buffer-terminator
+  :straight t
   :hook after-init
   :custom
   (buffer-terminator-verbose nil)
@@ -134,6 +135,7 @@ If REGEXP is non-nil, CONDITION is treated as a regular expression."
 
 ;;; Window Management: Shackle (Placement) + Popper (Toggling)
 (use-package shackle
+  :straight t
   :demand t
   :config
   (shackle-mode 1)
@@ -151,6 +153,7 @@ If REGEXP is non-nil, CONDITION is treated as a regular expression."
   (my/register-bottom-popup "\\*Backtrace\\*" t t))
 
 (use-package popper
+  :straight t
   :hook (after-init . popper-mode)
   :custom
   ;; Crucial: Set display control to nil so Popper only tracks/toggles buffers,
@@ -180,6 +183,7 @@ If REGEXP is non-nil, CONDITION is treated as a regular expression."
 
 ;;; Window actions
 (use-package ace-window
+  :straight t
   :commands (ace-window ace-swap-window)
   :custom
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))

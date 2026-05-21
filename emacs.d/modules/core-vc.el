@@ -96,6 +96,7 @@
 
 ;;; Magit
 (use-package magit
+  :straight t
   :commands (magit-status magit-file-dispatch magit-log-buffer-file magit-log-all)
   :custom
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
@@ -107,6 +108,7 @@
 
 
 (use-package consult-gh
+  :straight t
   :bind
   (:map +vc
     ("b" . consult-gh-dashboard)
@@ -132,6 +134,7 @@
   :after consult)
 
 (use-package consult-gh-embark
+  :straight t
   :after consult-gh
   :config
   (consult-gh-embark-mode +1))
@@ -144,10 +147,12 @@
 ;;; Difftastic (Structural diffs)
 ;; Requires `difft` CLI installed on your system.
 (use-package difftastic
+  :straight t
   :after magit)
 
 ;;; Gutter indicators
 (use-package diff-hl
+  :straight t
   :hook
   ((after-init . global-diff-hl-mode)
     (magit-post-refresh . diff-hl-magit-post-refresh)))
@@ -173,10 +178,12 @@
     ("C-c p" . smerge-prev)))
 
 (use-package git-modes
+  :straight t
   :mode ("/\\.\\(docker\\|fd\\|rg\\|ag\\|hg\\)?ignore\\'" . gitignore-mode)
   :mode ("/\\.dumbjump\\'" . gitignore-mode))
 
-(use-package diffview)
+(use-package diffview
+  :straight t)
 
 (provide 'core-vc)
 ;;; core-vc.el ends here

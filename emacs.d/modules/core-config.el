@@ -137,6 +137,32 @@ The first matching local prefix wins."
   :type 'boolean
   :group 'mymacs)
 
+;;; Security
+(defgroup my/security nil
+  "Configuration for package and file execution hardening."
+  :group 'mymacs)
+
+(defcustom my/enable-local-eval nil
+  "Controls whether file-local `eval' forms are processed."
+  :type '(choice (const :tag "Allow" t)
+           (const :tag "Ignore" nil)
+           (const :tag "Query" maybe))
+  :group 'my/security)
+
+(defcustom my/enable-local-variables :safe
+  "Controls whether file-local variables are applied when visiting files."
+  :type '(choice (const :tag "Safe only" :safe)
+           (const :tag "Allow safe and query unsafe" t)
+           (const :tag "Allow all" :all)
+           (const :tag "Ignore all" nil)
+           (const :tag "Always query" maybe))
+  :group 'my/security)
+
+(defcustom my/safe-local-variable-directories nil
+  "Directories whose dir-local variables are always trusted."
+  :type '(repeat directory)
+  :group 'my/security)
+
 ;;; Fonts
 ;; TODO: use complete font definitions instead of just font names
 (defcustom my/font "Maple Mono NF"
@@ -196,7 +222,10 @@ The first matching local prefix wins."
   (when (file-exists-p custom-file)
     (load custom-file))
   (setopt user-full-name my/user-full-name
-    user-mail-address my/user-mail-address))
+    user-mail-address my/user-mail-address
+    enable-local-eval my/enable-local-eval
+    enable-local-variables my/enable-local-variables
+    safe-local-variable-directories my/safe-local-variable-directories))
 
 ;;; Minor mode for keybindings
 (define-minor-mode mymacs-mode

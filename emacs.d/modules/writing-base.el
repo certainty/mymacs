@@ -10,6 +10,7 @@
 
 ;;; Jinx (spell-checking via enchant)
 (use-package jinx
+  :straight t
   :hook ((text-mode org-mode) . jinx-mode)
   :bind
   (:map jinx-mode-map
@@ -21,6 +22,7 @@
 
 ;;; Writegood - Detect weak words and passive voice
 (use-package writegood-mode
+  :straight t
   :commands writegood-mode
   :config
   (diminish 'writegood-mode))

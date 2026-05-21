@@ -16,7 +16,9 @@
 
 ;;; Straight.el bootstrap
 (setq straight-vc-use-snapshot-installation t
-  straight-use-package-by-default t
+  straight-vc-git-default-protocol 'https
+  straight-use-package-by-default nil
+  straight-profiles '((nil . "default.el"))
   straight-enable-use-package-integration t)
 
 (defvar bootstrap-version)
@@ -35,7 +37,9 @@
 (add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
 
 (straight-use-package 'use-package)
-(use-package diminish :demand t)
+(use-package diminish
+  :straight t
+  :demand t)
 
 (require 'core-config)
 (require 'core-env)

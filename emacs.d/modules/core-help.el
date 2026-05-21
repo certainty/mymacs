@@ -9,6 +9,7 @@
 
 ;;; Helpful - better help buffers
 (use-package helpful
+  :straight t
   :bind
   (([remap describe-function] . helpful-callable)
    ([remap describe-variable] . helpful-variable)

@@ -8,6 +8,7 @@
 ;;; Code:
 
 (use-package dashboard
+  :straight t
   :custom
   (dashboard-items '((recents . 5)
                       (projects . 5)
@@ -57,6 +58,7 @@
   :config
   ;; Disable mode line on dashboard
   (use-package hide-mode-line
+    :straight t
     :hook (dashboard-mode . hide-mode-line-mode))
 
   ;; Global setup

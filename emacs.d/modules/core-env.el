@@ -19,6 +19,7 @@
     (setenv "PATH" (concat path path-separator (getenv "PATH")))))
 
 (use-package exec-path-from-shell
+  :straight t
   :if (memq window-system '(mac ns))
   :demand t
   :custom

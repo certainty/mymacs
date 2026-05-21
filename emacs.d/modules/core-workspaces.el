@@ -91,10 +91,12 @@
 
 ;; Projection integration for `dape'
 (use-package projection-dape
+  :straight t
   :bind (:map projection-map ("D" . #'projection-dape)))
 
 ;;; Workspaces via tab-bar
 (use-package tabspaces
+  :straight t
   :hook (after-init . tabspaces-mode)
   :commands (tabspaces-switch-or-create-workspace
              tabspaces-open-or-create-project-and-workspace)

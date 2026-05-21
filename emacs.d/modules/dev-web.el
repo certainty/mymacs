@@ -20,6 +20,7 @@
 
 ;;;; Emmet - HTML/CSS abbreviations
 (use-package emmet-mode
+  :straight t
   :hook ((html-ts-mode . emmet-mode)
          (css-ts-mode . emmet-mode)
          (web-mode . emmet-mode)
@@ -30,12 +31,14 @@
 
 ;;;; Rainbow Mode - Show colors inline
 (use-package rainbow-mode
+  :straight t
   :hook ((css-ts-mode . rainbow-mode)
          (html-ts-mode . rainbow-mode)
          (web-mode . rainbow-mode)))
 
 ;;;; Web-mode - for mixed content files
 (use-package web-mode
+  :straight t
   :mode (("\\.html?\\'" . web-mode)
          ("\\.phtml\\'" . web-mode)
          ("\\.erb\\'" . web-mode)

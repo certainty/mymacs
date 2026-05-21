@@ -32,6 +32,9 @@
 ;;  my/enable-dev-web t
 ;;  my/enable-dev-go t
 ;;  my/enable-dev-common-lisp t
+;;  my/enable-local-eval nil
+;;  my/enable-local-variables :safe
+;;  my/safe-local-variable-directories '("/Users/user/code/trusted-project/")
 
 ;;  ;;; Writing / Notes
 ;;  my/org-path "~/Documents/Local/Org"
@@ -45,6 +48,6 @@
 ;; pmd-code-path "/path/to/repos"
 ;; pmd-code-temp-path "/tmp"
 
-)
+;; )
 
 ;;; custom-example.el ends here

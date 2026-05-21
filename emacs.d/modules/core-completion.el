@@ -22,6 +22,7 @@
   (savehist-autosave-interval 100))
 
 (use-package vertico
+  :straight t
   :init
   (vertico-mode)
   :custom
@@ -31,6 +32,7 @@
   (add-to-list 'vertico-multiform-categories '(embark-keybinding grid)))
 
 (use-package orderless
+  :straight t
   :custom
   (completion-styles '(orderless basic))
   (orderless-matching-styles
@@ -39,9 +41,11 @@
   (completion-category-overrides '((file (styles partial-completion orderless)))))
 
 (use-package marginalia
+  :straight t
   :hook after-init)
 
 (use-package nerd-icons-completion
+  :straight t
   :after (marginalia nerd-icons)
   :hook
   ((after-init . nerd-icons-completion-mode)
@@ -49,6 +53,7 @@
 
 ;;; In-Buffer
 (use-package corfu
+  :straight t
   :preface
   (defun my/disable-corfu-auto ()
     "Disable automatic corfu popup in the current buffer."
@@ -86,33 +91,30 @@
 
 (diminish 'corfu-mode)
 
-(use-package corfu-terminal
-  :if (and (not (display-graphic-p))
-        (not (featurep 'tty-child-frames)))
-  :after corfu
-  :straight (:type git :host codeberg :repo "akib/emacs-corfu-terminal")
-  :config
-  (corfu-terminal-mode 1))
-
 (use-package nerd-icons-corfu
+  :straight t
   :init
   (with-eval-after-load 'corfu
     (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)))
 
 (use-package cape
+  :straight t
   :init
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
 (use-package prescient
+  :straight t
   :custom
   (completion-preview-sort-function #'prescient-completion-sort))
 
 (use-package corfu-prescient
+  :straight t
   :hook after-init
   :after corfu)
 
 (use-package vertico-prescient
+  :straight t
   :hook after-init
   :after vertico)
 

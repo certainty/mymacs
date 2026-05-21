@@ -37,6 +37,7 @@
 
 ;; better jump to definition
 (use-package elisp-def
+  :straight t
   :commands (elisp-def elisp-def-mode)
   :config
   (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook lisp-interaction-mode-hook))

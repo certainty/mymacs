@@ -16,6 +16,7 @@
 ;;; Ghostel
 
 (use-package ghostel
+  :straight t
   :init
   (my/register-side-popup 'ghostel-mode t)
   (my/register-side-popup "^\\*ghostel\\*$" t t)
@@ -58,6 +59,7 @@ run COMMAND in it."
 ;;; Vterm
 
 (use-package vterm
+  :straight t
   :commands vterm
   :custom
   (vterm-max-scrollback 10000)
@@ -67,6 +69,7 @@ run COMMAND in it."
                          (t "/bin/sh"))))
 
 (use-package vterm-toggle
+  :straight t
   :after vterm
   :custom
   (vterm-toggle-fullscreen-p nil)
@@ -76,6 +79,7 @@ run COMMAND in it."
   (my/register-side-popup "\\*vterm\\*" t t))
 
 (use-package multi-vterm
+  :straight t
   :after vterm
   :commands (multi-vterm-project multi-vterm))
 

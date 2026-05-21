@@ -48,6 +48,7 @@
     (setopt treesit-enabled-modes t)))
 
 (use-package treesit-auto
+  :straight t
   :config
   ;; `treesit-language-source-alist' is empty by default, so keep it populated
   ;; from `treesit-auto' recipes even on Emacs 31 where built-in installation
@@ -95,6 +96,7 @@ With FORCE prefix, re-install even if already present."
 
 ;;; Flymake-collection (More diagnostic backends)
 (use-package flymake-collection
+  :straight t
   :after flymake)
 
 ;;; Consult-Flymake - Consult integration for flymake
@@ -104,6 +106,7 @@ With FORCE prefix, re-install even if already present."
 
 ;;; Highlight nested parentheses
 (use-package highlight-parentheses
+  :straight t
   :hook prog-mode)
 
 (use-package elec-pair
@@ -112,6 +115,7 @@ With FORCE prefix, re-install even if already present."
 
 ;;; Dape (Debug Adapter Protocol)
 (use-package dape
+  :straight t
   :commands dape
   :custom
   (dape-buffer-window-arrangement 'right)

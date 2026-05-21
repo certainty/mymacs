@@ -64,6 +64,7 @@
 
 ;;; Modus Themes
 (use-package modus-themes
+  :straight t
   :demand t
   :custom
   (modus-themes-custom-auto-reload t)
@@ -118,6 +119,7 @@
 
 ;;; Catppuccin Theme
 (use-package catppuccin-theme
+  :straight t
   :demand t
   :no-require t
   :custom
@@ -156,6 +158,7 @@ near-black for modeline and gutters."
   "Checker glyphs chosen for reliable rendering across GUI and TTY frames.")
 
 (use-package mood-line
+  :straight t
   :hook after-init
   :custom
   (mood-line-segment-modal-meow-state-alist
@@ -176,6 +179,7 @@ near-black for modeline and gutters."
 
 ;;; Fonts
 (use-package fontaine
+  :straight t
   :if (my/ui-graphic-p)
   :demand t
   :custom
@@ -244,10 +248,12 @@ near-black for modeline and gutters."
   (+font-regular))
 
 ;;; Nerd Icons
-(use-package nerd-icons)
+(use-package nerd-icons
+  :straight t)
 
 ;;; HL-Todo
 (use-package hl-todo
+  :straight t
   :hook (prog-mode . hl-todo-mode)
   :custom
   (hl-todo-keyword-faces

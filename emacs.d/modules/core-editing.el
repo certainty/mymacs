@@ -25,6 +25,7 @@
 
 ;;; Embark - Context-sensitive actions
 (use-package embark
+  :straight t
   :bind
   (:map mymacs-mode-map
     ("C-." . embark-act)
@@ -62,6 +63,7 @@
        embark-isearch-highlight-indicator)))
 
 (use-package embark-consult
+  :straight t
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 

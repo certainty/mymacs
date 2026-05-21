@@ -15,7 +15,10 @@ custom.el
 /projects
 /recentf.*
 /recentf
-/straight
+/straight/*
+!/straight/versions/
+!/straight/versions/*.el
+/bookmarks
 /tabsession.el
 /tramp
 /tree-sitter

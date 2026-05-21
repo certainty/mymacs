@@ -34,6 +34,7 @@
 
 ;;; CSV
 (use-package csv-mode
+  :straight t
   :mode ("\\.csv\\'" "\\.tsv\\'")
   :custom
   (csv-separators '("," ";" "\t"))

@@ -70,15 +70,18 @@
   (dired-isearch-filenames 'dwim))
 
 (use-package diredfl
+  :straight t
   :hook (dired-mode . diredfl-mode))
 
 (use-package dired-subtree
+  :straight t
   :after dired
   :bind (:map dired-mode-map
               ("<tab>" . dired-subtree-toggle)
               ("TAB" . dired-subtree-toggle)))
 
 (use-package nerd-icons-dired
+  :straight t
   :hook (dired-mode . nerd-icons-dired-mode))
 
 (use-package wdired
