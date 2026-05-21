@@ -7,8 +7,15 @@
   :type 'string
   :group 'consult-pmd)
 
-(defcustom pmd-api-key "dea"
-  "API key for project metadata. This is simply the team id. It's not a SECRET."
+(defcustom pmd-api-key nil
+  "PMD API key override.
+When nil, resolve the value from `auth-source'."
+  :type '(choice (const :tag "Resolve from auth-source" nil)
+           string)
+  :group 'consult-pmd)
+
+(defcustom pmd-auth-source-user "pmd-api-key"
+  "Auth-source user to search when resolving the PMD API key."
   :type 'string
   :group 'consult-pmd)
 
@@ -52,6 +59,32 @@
   (message "PMD Peek: %S" value)
   value)
 
+(defun pmd--auth-source-host ()
+  "Return the host name to use for PMD auth-source lookups."
+  (url-host (url-generic-parse-url pmd-base-url)))
+
+(defun pmd--auth-source-secret ()
+  "Return the PMD API key from `auth-source', or nil."
+  (require 'auth-source)
+  (when-let* ((host (pmd--auth-source-host))
+              (match (car (auth-source-search
+                           :host host
+                           :user pmd-auth-source-user
+                           :require '(:secret)
+                           :max 1)))
+              (secret (plist-get match :secret)))
+    (if (functionp secret)
+        (funcall secret)
+      secret)))
+
+(defun pmd--api-key ()
+  "Return the configured PMD API key."
+  (or pmd-api-key
+      (pmd--auth-source-secret)
+      (user-error "No PMD API key configured; set pmd-api-key or add an auth-source entry for %s as user %s"
+                  (or (pmd--auth-source-host) pmd-base-url)
+                  pmd-auth-source-user)))
+
 (cl-defun pmd--dig (hsh &rest keys)
   "Dig into a nested hash table `HSH' using `KEYS' and return the value or nil."
   (let ((current hsh))
@@ -82,7 +115,7 @@ If `PARAMS' does not contain :format \"json\" it will be added. "
     (require 'url)
     (require 'json)
     (let ((url-request-extra-headers
-            `(("X-PMD-API-KEY" . ,pmd-api-key))))
+            `(("X-PMD-API-KEY" . ,(pmd--api-key)))))
       (let ((buffer (url-retrieve-synchronously (apply #'pmd--make-url path url-params) t t 10)))
         (unless buffer
           (user-error "PMD request failed"))

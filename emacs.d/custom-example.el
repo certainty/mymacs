@@ -44,7 +44,7 @@
 
 ;; my/enable-pmd
 ;; pmd-base-url "http://example.com"
-;; pmd-api-key "foo
+;; auth-source example: machine project-metadata.nwse.io login pmd-api-key password TEAM_ID
 ;; pmd-code-path "/path/to/repos"
 ;; pmd-code-temp-path "/tmp"
 
