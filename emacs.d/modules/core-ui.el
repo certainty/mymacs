@@ -3,7 +3,7 @@
 ;;; Commentary:
 ;;
 ;; Theme selection (modus-themes, catppuccin), modeline (mood-line),
-;; font management (fontaine), ligatures, nerd-icons, and hl-todo.
+;; font management (fontaine), ligatures, and nerd-icons.
 ;;
 ;;; Code:
 
@@ -250,24 +250,6 @@ near-black for modeline and gutters."
 ;;; Nerd Icons
 (use-package nerd-icons
   :straight t)
-
-;;; HL-Todo
-(use-package hl-todo
-  :straight t
-  :hook (prog-mode . hl-todo-mode)
-  :custom
-  (hl-todo-keyword-faces
-   '(("TODO"    . "#88C0D0")
-     ("FIXME"   . "#BF616A")
-     ("NOTE"    . "#EBCB8B")
-     ("HACK"    . "#D08770")
-     ("REVIEW"  . "#A3BE8C")
-     ("DISCUSS" . "#B48EAD")
-     ("XXX"     . "#BF616A")
-     ("TEMP"    . "#D08770")
-     ("DEBUG"   . "#EBCB8B")))
-  :config
-  (diminish 'hl-todo-mode))
 
 (provide 'core-ui)
 ;;; core-ui.el ends here

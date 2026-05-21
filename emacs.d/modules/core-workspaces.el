@@ -87,8 +87,6 @@ With PREFIX, always create a new tab for the project."
                        (project-root current-project)))))
       (dired project-root)))
 
-  (with-eval-after-load 'dashboard
-    (setopt dashboard-projects-switch-function #'my/tabspaces-open-project-dired))
   :custom
   (tabspaces-project-switch-commands #'project-dired)
   (tabspaces-use-filtered-buffers-as-default t)

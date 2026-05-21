@@ -2,8 +2,7 @@
 ;;
 ;;; Commentary:
 ;;
-;; Writing tools: jinx for spell-checking (enchant backend) and
-;; writegood-mode for detecting weak words and passive voice.
+;; Writing tools: jinx for spell-checking (enchant backend).
 ;; Jinx is preferred over flyspell (faster, fewer false positives).
 ;;
 ;;; Code:
@@ -19,13 +18,6 @@
   (jinx-delay 0.2)
   :config
   (diminish 'jinx-mode))
-
-;;; Writegood - Detect weak words and passive voice
-(use-package writegood-mode
-  :straight t
-  :commands writegood-mode
-  :config
-  (diminish 'writegood-mode))
 
 (provide 'writing-base)
 ;;; writing-base.el ends here
