@@ -152,7 +152,6 @@ the buffer does not look like a Ruby test file."
 
 ;;; Ruby tree-sitter mode
 (use-package ruby-ts-mode
-  :straight (:type built-in)
   :mode ("\\.rb\\'" "Rakefile\\'" "Gemfile\\'" "\\.rake\\'" "\\.gemspec\\'" "\\.ru\\'")
   :hook ((ruby-ts-mode . eglot-ensure)
          (ruby-ts-mode . (lambda () (setq-local my/external-formatter #'+rufo-buffer))))

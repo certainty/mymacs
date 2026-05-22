@@ -9,7 +9,6 @@
 
 ;;; VC
 (use-package vc
-  :straight (:type built-in)
   :custom
   (vc-follow-symlinks t)
 
@@ -96,7 +95,7 @@
 
 ;;; Magit
 (use-package magit
-  :straight t
+  :ensure t
   :commands (magit-status magit-file-dispatch magit-log-buffer-file magit-log-all)
   :custom
   (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1)
@@ -108,7 +107,7 @@
 
 
 (use-package consult-gh
-  :straight t
+  :ensure nil
   :bind
   (:map +vc
     ("b" . consult-gh-dashboard)
@@ -134,7 +133,7 @@
   :after consult)
 
 (use-package consult-gh-embark
-  :straight t
+  :ensure nil
   :after consult-gh
   :config
   (consult-gh-embark-mode +1))
@@ -142,31 +141,30 @@
 ;;; Magit Delta (Modern diff highlighting)
 ;; Requires `delta` CLI installed on your system.
 ;; (use-package magit-delta
+  :ensure t
 ;;   :hook (magit-mode . magit-delta-mode))
 
 ;;; Difftastic (Structural diffs)
 ;; Requires `difft` CLI installed on your system.
 (use-package difftastic
-  :straight t
+  :ensure nil
   :after magit)
 
 ;;; Gutter indicators
 (use-package diff-hl
-  :straight t
+  :ensure t
   :hook
   ((after-init . global-diff-hl-mode)
     (magit-post-refresh . diff-hl-magit-post-refresh)))
 
 ;;; Ediff (side-by-side merge/diff)
 (use-package ediff
-  :straight (:type built-in)
   :custom
   (ediff-split-window-function #'split-window-horizontally)
   (ediff-window-setup-function #'ediff-setup-windows-plain))
 
 ;;; Merge conflict resolution
 (use-package smerge-mode
-  :straight (:type built-in)
   :bind
   (:map smerge-mode-map
     ("C-c m" . smerge-keep-upper)
@@ -178,12 +176,12 @@
     ("C-c p" . smerge-prev)))
 
 (use-package git-modes
-  :straight t
+  :ensure t
   :mode ("/\\.\\(docker\\|fd\\|rg\\|ag\\|hg\\)?ignore\\'" . gitignore-mode)
   :mode ("/\\.dumbjump\\'" . gitignore-mode))
 
 (use-package diffview
-  :straight t)
+  :ensure t)
 
 (provide 'core-vc)
 ;;; core-vc.el ends here

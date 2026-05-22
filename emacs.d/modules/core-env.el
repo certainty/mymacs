@@ -19,9 +19,8 @@
     (setenv "PATH" (concat path path-separator (getenv "PATH")))))
 
 (use-package exec-path-from-shell
-  :straight t
+  :ensure nil
   :if (memq window-system '(mac ns))
-  :demand t
   :custom
   (exec-path-from-shell-variables my/required-environment-variables)
   ;; Use an interactive login shell so tool managers like mise contribute
@@ -52,7 +51,8 @@
   (message "Environment reloaded"))
 
 (use-package mise
-  :straight (:host github :repo "liuyinz/mise.el")
+  :ensure nil
+  :if (locate-library "mise")
   :hook (after-init . global-mise-mode)
   :custom
   (mise-auto-activate t))

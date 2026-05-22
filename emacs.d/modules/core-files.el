@@ -26,7 +26,7 @@
    '(".gz" ".xz" ".zip"
      "/_build/" "/deps/" "/node_modules/"
      "^/\\(?:ssh\\|su\\|sudo\\)?:"
-     "/\\.emacs\\.d/straight/"
+     "/\\.emacs\\.d/elpa/"
      "/\\.emacs\\.d/eln-cache/"
      "\\.elc$"
      "COMMIT_EDITMSG"))
@@ -35,14 +35,12 @@
   (save-place-mode 1))
 
 (use-package bookmark
-  :straight (:type built-in)
   :custom
   (bookmark-save-flag 1)
   (bookmark-default-file (expand-file-name "bookmarks" user-emacs-directory)))
 
 ;;; Dired
 (use-package dired
-  :straight (:type built-in)
   :hook
   ((dired-mode . hl-line-mode))
   :custom
@@ -59,33 +57,30 @@
     (setq dired-use-ls-dired t)))
 
 (use-package dired-x
-  :straight (:type built-in)
   :after dired)
 
 (use-package dired-aux
-  :straight (:type built-in)
   :after dired
   :custom
   (dired-vc-rename-file t)
   (dired-isearch-filenames 'dwim))
 
 (use-package diredfl
-  :straight t
+  :ensure nil
   :hook (dired-mode . diredfl-mode))
 
 (use-package dired-subtree
-  :straight t
+  :ensure nil
   :after dired
   :bind (:map dired-mode-map
               ("<tab>" . dired-subtree-toggle)
               ("TAB" . dired-subtree-toggle)))
 
 (use-package nerd-icons-dired
-  :straight t
+  :ensure nil
   :hook (dired-mode . nerd-icons-dired-mode))
 
 (use-package wdired
-  :straight (:type built-in)
   :after dired
   :bind
   (:map dired-mode-map

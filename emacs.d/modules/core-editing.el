@@ -17,7 +17,6 @@
   (global-auto-revert-mode 1))
 
 (use-package display-line-numbers
-  :straight (:type built-in)
   :hook prog-mode
   :custom
   (display-line-numbers-type t)
@@ -25,7 +24,7 @@
 
 ;;; Embark - Context-sensitive actions
 (use-package embark
-  :straight t
+  :ensure t
   :bind
   (:map mymacs-mode-map
     ("C-." . embark-act)
@@ -63,7 +62,7 @@
        embark-isearch-highlight-indicator)))
 
 (use-package embark-consult
-  :straight t
+  :ensure t
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 

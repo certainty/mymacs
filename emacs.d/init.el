@@ -2,7 +2,7 @@
 ;;
 ;;; Commentary:
 ;;
-;; Bootstrap straight.el, configure use-package, and load core modules.
+;; Configure package.el, configure use-package, and load core modules.
 ;; Feature modules are loaded conditionally based on flags in base-config.
 ;;
 ;;; Code:
@@ -14,31 +14,30 @@
     "Make VARIABLE buffer-local and set it to VALUE."
     (set (make-local-variable variable) value)))
 
-;;; Straight.el bootstrap
-(setq straight-vc-use-snapshot-installation t
-  straight-vc-git-default-protocol 'https
-  straight-use-package-by-default nil
-  straight-profiles '((nil . "default.el"))
-  straight-enable-use-package-integration t)
+(require 'package)
 
-(defvar bootstrap-version)
-(let ((bootstrap-file
-        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-       (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-      (url-retrieve-synchronously
-        "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-        'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+(setopt package-archives
+        '(("gnu" . "https://elpa.gnu.org/packages/")
+          ("nongnu" . "https://elpa.nongnu.org/nongnu/"))
+        package-archive-priorities
+        '(("gnu" . 20)
+          ("nongnu" . 10))
+        package-install-upgrade-built-in t
+        package-check-signature t)
+
+(when (boundp 'package-native-compile)
+  (setopt package-native-compile t))
+
+(when (boundp 'package-quickstart)
+  (setopt package-quickstart t))
 
 (add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
 
-(straight-use-package 'use-package)
+(package-initialize)
+(require 'use-package)
+
 (use-package diminish
-  :straight t
+  :ensure t
   :demand t)
 
 (require 'core-config)
@@ -96,10 +95,8 @@
 
 (when my/enable-pmd
   (use-package consult-pmd
-    :straight `(consult-pmd
-                 :type nil
-                 :local-repo ,(expand-file-name "local-packages/consult-pmd" user-emacs-directory)
-                 :files ("*.el"))
+    :ensure nil
+    :load-path "local-packages/consult-pmd"
     :commands (+pmd-projects +pmd-servicegroups +pmd-teams)))
 
 (provide 'init)

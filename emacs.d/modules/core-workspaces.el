@@ -9,7 +9,6 @@
 
 ;;; Project Management
 (use-package project
-  :straight (:type built-in)
   :custom
   (project-vc-extra-root-markers '(".project" ".git" ".node_modules"))
   (project-switch-commands
@@ -33,7 +32,6 @@
                      (thing-at-point 'symbol))))
 
 (use-package ansi-color
-  :straight (:type built-in)
   :preface
   (defvar-local my/compilation-status nil
     "Visual status of the current compilation buffer.")
@@ -67,7 +65,7 @@
 
 ;;; Workspaces via tab-bar
 (use-package tabspaces
-  :straight t
+  :ensure nil
   :hook (after-init . tabspaces-mode)
   :commands (tabspaces-switch-or-create-workspace
              tabspaces-open-or-create-project-and-workspace)

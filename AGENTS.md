@@ -22,9 +22,16 @@ You achieve that by:
 ## Packages
 
 IMPORTANT: use only GNU Elpa and NONGNU Elpa for additional packages by default.
-All other packages must be added to `user-lisp` directory, as a git-module.
-In emacs prio to version 31, this directoy has to be added to the paths that are searched for packages.
-In emacs >= 31, this happens automatically.
+Prefer GNU ELPA when a package exists in both archives. NonGNU ELPA is the secondary choice.
+All other packages must be added to `user-lisp` as git modules.
+This configuration adds `user-lisp` to `load-path` manually so the same layout works before and after Emacs 31.
+
+Package workflow:
+
+- built-in packages: configure them with `use-package` and no `:ensure`
+- GNU ELPA packages: declare them with `:ensure t`
+- NonGNU ELPA packages: use them only when GNU ELPA does not provide the package, and still declare them with `:ensure t`
+- packages outside ELPA: vendor them into `user-lisp/<package-name>` as git modules and load them with `:ensure nil`
 
 ---
 

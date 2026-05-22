@@ -7,7 +7,6 @@
 ;;; Code:
 
 (use-package emacs
-  :straight (:type built-in)
   :preface
   (defun +config-file ()
     "Find a file in the Emacs config directory."

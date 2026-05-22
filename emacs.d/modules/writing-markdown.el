@@ -3,7 +3,7 @@
 ;;; Code:
 
 (use-package markdown-mode
-  :straight t
+  :ensure t
   :init
   (add-hook 'markdown-mode-hook 'eglot-ensure))
 

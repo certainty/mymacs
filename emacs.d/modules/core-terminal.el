@@ -16,7 +16,12 @@
 ;;; Ghostel
 
 (use-package ghostel
-  :straight t
+  :ensure nil
+  :defer t
+  :commands (ghostel ghostel-project ghostel-other ghostel-next ghostel-previous
+             ghostel-list-buffers ghostel-project-next ghostel-project-previous
+             ghostel-project-list-buffers ghostel-download-module
+             ghostel-module-compile)
   :init
   (my/register-side-popup 'ghostel-mode t)
   (my/register-side-popup "^\\*ghostel\\*$" t t)
@@ -28,6 +33,8 @@ COMMAND may be a program string or a list whose car is the program
 and whose cdr is the argument list.
 If BUFFER-NAME exists, switch to it.  Otherwise create the buffer and
 run COMMAND in it."
+  (unless (featurep 'ghostel)
+    (require 'ghostel))
   (pcase-let* ((`(,program . ,args)
                  (if (consp command)
                    command
@@ -59,7 +66,7 @@ run COMMAND in it."
 ;;; Vterm
 
 (use-package vterm
-  :straight t
+  :ensure nil
   :commands vterm
   :custom
   (vterm-max-scrollback 10000)
@@ -69,7 +76,7 @@ run COMMAND in it."
                          (t "/bin/sh"))))
 
 (use-package vterm-toggle
-  :straight t
+  :ensure nil
   :after vterm
   :custom
   (vterm-toggle-fullscreen-p nil)
@@ -79,7 +86,7 @@ run COMMAND in it."
   (my/register-side-popup "\\*vterm\\*" t t))
 
 (use-package multi-vterm
-  :straight t
+  :ensure nil
   :after vterm
   :commands (multi-vterm-project multi-vterm))
 

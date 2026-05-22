@@ -9,7 +9,7 @@
 
 ;;; Jinx (spell-checking via enchant)
 (use-package jinx
-  :straight t
+  :ensure t
   :hook ((text-mode org-mode) . jinx-mode)
   :bind
   (:map jinx-mode-map

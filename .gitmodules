@@ -1,0 +1,90 @@
+[submodule "user-lisp/buffer-terminator"]
+	path = user-lisp/buffer-terminator
+	url = https://github.com/jamescherti/buffer-terminator.el
+[submodule "user-lisp/consult-gh"]
+	path = user-lisp/consult-gh
+	url = https://github.com/armindarvish/consult-gh
+[submodule "user-lisp/embrace"]
+	path = user-lisp/embrace
+	url = https://github.com/cute-jumper/embrace.el
+[submodule "user-lisp/elisp-def"]
+	path = user-lisp/elisp-def
+	url = https://github.com/Wilfred/elisp-def
+[submodule "user-lisp/emmet-mode"]
+	path = user-lisp/emmet-mode
+	url = https://github.com/smihica/emmet-mode
+[submodule "user-lisp/ghostel"]
+	path = user-lisp/ghostel
+	url = https://github.com/dakra/ghostel
+[submodule "user-lisp/go-tag"]
+	path = user-lisp/go-tag
+	url = https://github.com/brantou/emacs-go-tag
+[submodule "user-lisp/gotest"]
+	path = user-lisp/gotest
+	url = https://github.com/nlamirault/gotest.el
+[submodule "user-lisp/meow-tree-sitter"]
+	path = user-lisp/meow-tree-sitter
+	url = https://github.com/skissue/meow-tree-sitter
+[submodule "user-lisp/mood-line"]
+	path = user-lisp/mood-line
+	url = https://gitlab.com/jessieh/mood-line
+[submodule "user-lisp/multi-vterm"]
+	path = user-lisp/multi-vterm
+	url = https://github.com/suonlight/multi-libvterm
+[submodule "user-lisp/shackle"]
+	path = user-lisp/shackle
+	url = https://depp.brause.cc/shackle.git
+[submodule "user-lisp/tabspaces"]
+	path = user-lisp/tabspaces
+	url = https://github.com/mclear-tools/tabspaces
+[submodule "user-lisp/treesit-auto"]
+	path = user-lisp/treesit-auto
+	url = https://github.com/renzmann/treesit-auto
+[submodule "user-lisp/vterm"]
+	path = user-lisp/vterm
+	url = https://github.com/akermu/emacs-libvterm
+[submodule "user-lisp/vterm-toggle"]
+	path = user-lisp/vterm-toggle
+	url = https://github.com/jixiuf/vterm-toggle
+[submodule "user-lisp/nerd-icons"]
+	path = user-lisp/nerd-icons
+	url = https://github.com/rainstormstudio/nerd-icons.el
+[submodule "user-lisp/prescient"]
+	path = user-lisp/prescient
+	url = https://github.com/radian-software/prescient.el
+[submodule "user-lisp/dired-hacks"]
+	path = user-lisp/dired-hacks
+	url = https://github.com/Fuco1/dired-hacks
+[submodule "user-lisp/diredfl"]
+	path = user-lisp/diredfl
+	url = https://github.com/purcell/diredfl
+[submodule "user-lisp/sbt-mode"]
+	path = user-lisp/sbt-mode
+	url = https://github.com/hvesalai/emacs-sbt-mode
+[submodule "user-lisp/scala-ts-mode"]
+	path = user-lisp/scala-ts-mode
+	url = https://github.com/KaranAhlawat/scala-ts-mode
+[submodule "user-lisp/repeat-fu"]
+	path = user-lisp/repeat-fu
+	url = https://codeberg.org/ideasman42/emacs-repeat-fu
+[submodule "user-lisp/flymake-collection"]
+	path = user-lisp/flymake-collection
+	url = https://github.com/mohkale/flymake-collection
+[submodule "user-lisp/expand-region"]
+	path = user-lisp/expand-region
+	url = https://github.com/magnars/expand-region.el
+[submodule "user-lisp/nerd-icons-completion"]
+	path = user-lisp/nerd-icons-completion
+	url = https://github.com/rainstormstudio/nerd-icons-completion
+[submodule "user-lisp/nerd-icons-corfu"]
+	path = user-lisp/nerd-icons-corfu
+	url = https://github.com/LuigiPiucco/nerd-icons-corfu
+[submodule "user-lisp/nerd-icons-dired"]
+	path = user-lisp/nerd-icons-dired
+	url = https://github.com/rainstormstudio/nerd-icons-dired
+[submodule "user-lisp/difftastic"]
+	path = user-lisp/difftastic
+	url = https://github.com/pkryger/difftastic.el
+[submodule "user-lisp/exec-path-from-shell"]
+	path = user-lisp/exec-path-from-shell
+	url = https://github.com/purcell/exec-path-from-shell

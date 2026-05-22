@@ -2,7 +2,7 @@
 ;;
 ;;; Commentary:
 ;;
-;; Theme selection (modus-themes, catppuccin), modeline (mood-line),
+;; Theme selection (modus-themes), modeline (mood-line),
 ;; font management (fontaine), ligatures, and nerd-icons.
 ;;
 ;;; Code:
@@ -64,7 +64,7 @@
 
 ;;; Modus Themes
 (use-package modus-themes
-  :straight t
+  :ensure t
   :demand t
   :custom
   (modus-themes-custom-auto-reload t)
@@ -117,34 +117,8 @@
 
   (add-hook 'modus-themes-after-load-theme-hook #'my/adjust-line-number-faces))
 
-;;; Catppuccin Theme
-(use-package catppuccin-theme
-  :straight t
-  :demand t
-  :no-require t
-  :custom
-  (catppuccin-flavor 'mocha)
-  (catppuccin-italic-comments t)
-  (catppuccin-dark-line-numbers-background t)
-  :init
-  ;; This theme library does not provide `catppuccin-theme'; load its
-  ;; autoloads so `custom-theme-load-path' is populated before `load-theme'.
-  (load (locate-library "catppuccin-theme-autoloads") nil t)
-  :config
-  (defun my/adjust-catppuccin ()
-    "Override catppuccin mocha backgrounds: pure black for editing area,
-near-black for modeline and gutters."
-    (when (eq catppuccin-flavor 'mocha)
-      (catppuccin-set-color 'base "#000000")
-      (catppuccin-set-color 'mantle "#0e0e16")
-      (catppuccin-set-color 'crust "#060609"))
-    (my/adjust-line-number-faces)))
-
 ;;; Load initial theme
 (load-theme my/default-theme :no-confirm)
-(when (eq my/default-theme 'catppuccin)
-  (my/adjust-catppuccin)
-  (catppuccin-reload))
 (my/adjust-line-number-faces)
 
 ;;; Modeline: Mood-line
@@ -158,7 +132,7 @@ near-black for modeline and gutters."
   "Checker glyphs chosen for reliable rendering across GUI and TTY frames.")
 
 (use-package mood-line
-  :straight t
+  :ensure nil
   :hook after-init
   :custom
   (mood-line-segment-modal-meow-state-alist
@@ -179,7 +153,7 @@ near-black for modeline and gutters."
 
 ;;; Fonts
 (use-package fontaine
-  :straight t
+  :ensure t
   :if (my/ui-graphic-p)
   :demand t
   :custom
@@ -249,7 +223,7 @@ near-black for modeline and gutters."
 
 ;;; Nerd Icons
 (use-package nerd-icons
-  :straight t)
+  :ensure nil)
 
 (provide 'core-ui)
 ;;; core-ui.el ends here

@@ -53,7 +53,6 @@
 
 ;;; Built-in buffer hygiene
 (use-package uniquify
-  :straight (:type built-in)
   :custom
   (uniquify-buffer-name-style 'forward)
   (uniquify-strip-common-suffix t)
@@ -62,12 +61,11 @@
   (uniquify-ignore-buffers-re "^\\*"))
 
 (use-package so-long
-  :straight (:type built-in)
   :hook (after-init . global-so-long-mode))
 
 ;;; Clean up old buffers automatically
 (use-package buffer-terminator
-  :straight t
+  :ensure nil
   :hook after-init
   :custom
   (buffer-terminator-verbose nil)
@@ -76,7 +74,6 @@
 
 ;;; Ibuffer
 (use-package ibuffer
-  :straight (:type built-in)
   :custom
   (ibuffer-expert t)
   (ibuffer-show-empty-filter-groups nil)
@@ -134,7 +131,7 @@ If REGEXP is non-nil, CONDITION is treated as a regular expression."
 
 ;;; Window Management: Shackle (Placement) + Popper (Toggling)
 (use-package shackle
-  :straight t
+  :ensure nil
   :demand t
   :config
   (shackle-mode 1)
@@ -151,7 +148,7 @@ If REGEXP is non-nil, CONDITION is treated as a regular expression."
   (my/register-bottom-popup "\\*Backtrace\\*" t t))
 
 (use-package popper
-  :straight t
+  :ensure t
   :hook (after-init . popper-mode)
   :custom
   ;; Crucial: Set display control to nil so Popper only tracks/toggles buffers,
@@ -181,7 +178,7 @@ If REGEXP is non-nil, CONDITION is treated as a regular expression."
 
 ;;; Window actions
 (use-package ace-window
-  :straight t
+  :ensure t
   :commands (ace-window ace-swap-window)
   :custom
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))

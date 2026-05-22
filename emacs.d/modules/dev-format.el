@@ -8,7 +8,7 @@
 ;;; Code:
 
 (use-package reformatter
-  :straight t)
+  :ensure t)
 
 (defvar-local my/format-policy 'dwim
   "Formatting policy for the current buffer.

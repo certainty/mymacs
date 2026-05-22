@@ -15,14 +15,13 @@
   (minibuffer-depth-indicate-mode 1))
 
 (use-package savehist
-  :straight (:type built-in)
   :hook (after-init . savehist-mode)
   :custom
   (savehist-save-minibuffer-history t)
   (savehist-autosave-interval 100))
 
 (use-package vertico
-  :straight t
+  :ensure t
   :init
   (vertico-mode)
   :custom
@@ -32,7 +31,7 @@
   (add-to-list 'vertico-multiform-categories '(embark-keybinding grid)))
 
 (use-package orderless
-  :straight t
+  :ensure t
   :custom
   (completion-styles '(orderless basic))
   (orderless-matching-styles
@@ -41,11 +40,11 @@
   (completion-category-overrides '((file (styles partial-completion orderless)))))
 
 (use-package marginalia
-  :straight t
+  :ensure t
   :hook after-init)
 
 (use-package nerd-icons-completion
-  :straight t
+  :ensure nil
   :after (marginalia nerd-icons)
   :hook
   ((after-init . nerd-icons-completion-mode)
@@ -53,7 +52,7 @@
 
 ;;; In-Buffer
 (use-package corfu
-  :straight t
+  :ensure t
   :preface
   (defun my/disable-corfu-auto ()
     "Disable automatic corfu popup in the current buffer."
@@ -84,7 +83,7 @@
   :config)
 (with-eval-after-load 'savehist
   (use-package corfu-history
-    :straight (:type built-in)
+    :ensure nil
     :hook corfu-mode)
   (corfu-history-mode 1)
   (add-to-list 'savehist-additional-variables 'corfu-history))
@@ -92,29 +91,29 @@
 (diminish 'corfu-mode)
 
 (use-package nerd-icons-corfu
-  :straight t
+  :ensure nil
   :init
   (with-eval-after-load 'corfu
     (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter)))
 
 (use-package cape
-  :straight t
+  :ensure t
   :init
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
 (use-package prescient
-  :straight t
+  :ensure nil
   :custom
   (completion-preview-sort-function #'prescient-completion-sort))
 
 (use-package corfu-prescient
-  :straight t
+  :ensure nil
   :hook after-init
   :after corfu)
 
 (use-package vertico-prescient
-  :straight t
+  :ensure nil
   :hook after-init
   :after vertico)
 

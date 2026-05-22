@@ -10,7 +10,6 @@
 
 ;;; Org-mode
 (use-package org
-  :straight (:type built-in)
   :mode ("\\.org\\'" . org-mode)
   :custom
   (org-directory (file-truename (expand-file-name my/org-path)))
@@ -68,7 +67,7 @@
 
 ;;; Org-modern (visual improvements)
 (use-package org-modern
-  :straight t
+  :ensure t
   :hook
   ((org-mode . org-modern-mode)
    (org-agenda-finalize . org-modern-agenda)))

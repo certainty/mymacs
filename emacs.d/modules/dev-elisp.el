@@ -7,14 +7,12 @@
 ;;; Code:
 
 (use-package emacs-lisp-mode
-  :straight (:type built-in)
   :mode (("\\.el$" . emacs-lisp-mode))
   :interpreter (("emacs" . emacs-lisp-mode))
   :custom
   (lisp-indent-offset 2))
 
 (use-package eldoc
-  :straight (:type built-in)
   :commands eldoc-mode
   :hook (emacs-lisp-mode . turn-on-eldoc-mode)
   :custom
@@ -37,7 +35,7 @@
 
 ;; better jump to definition
 (use-package elisp-def
-  :straight t
+  :ensure nil
   :commands (elisp-def elisp-def-mode)
   :config
   (dolist (hook '(emacs-lisp-mode-hook ielm-mode-hook lisp-interaction-mode-hook))

@@ -10,7 +10,7 @@
 ;;; Sly
 
 (use-package sly
-  :straight t
+  :ensure t
   :hook (sly-mode . corfu-mode)
   :custom
   (inferior-lisp-program "sbcl")
@@ -44,25 +44,25 @@
 ;;; Sly extensions
 
 (use-package sly-asdf
-  :straight t
+  :ensure nil
   :after sly
   :config
   (add-to-list 'sly-contribs 'sly-asdf 'append))
 
 (use-package sly-quicklisp
-  :straight t
+  :ensure nil
   :after sly
   :config
   (add-to-list 'sly-contribs 'sly-quicklisp 'append))
 
 (use-package sly-macrostep
-  :straight t
+  :ensure nil
   :after sly
   :config
   (add-to-list 'sly-contribs 'sly-macrostep))
 
 (use-package sly-repl-ansi-color
-  :straight t
+  :ensure nil
   :after sly
   :config
   (add-to-list 'sly-contribs 'sly-repl-ansi-color))

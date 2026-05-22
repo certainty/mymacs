@@ -30,7 +30,7 @@
 ;;; Denote
 
 (use-package denote
-  :straight t
+  :ensure t
   :hook (dired-mode . denote-dired-mode)
   :bind
   (:map dired-mode-map
@@ -52,7 +52,7 @@
 ;;; Consult-Denote (completing-read integration)
 
 (use-package consult-denote
-  :straight t
+  :ensure t
   :after denote
   :config
   (consult-denote-mode 1))

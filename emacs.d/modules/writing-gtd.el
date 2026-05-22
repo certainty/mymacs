@@ -33,7 +33,6 @@
 ;;; Org GTD configuration
 
 (use-package org
-  :straight (:type built-in)
   :hook (org-after-todo-state-change . save-buffer)
   :init
   (my/register-side-popup 'org-agenda-mode)

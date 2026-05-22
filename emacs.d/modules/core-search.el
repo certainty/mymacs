@@ -16,7 +16,7 @@
     (project-root project)))
 
 (use-package consult
-  :straight t
+  :ensure t
   :defer 2
   :custom
   (consult-narrow-key "C-<")
@@ -32,14 +32,14 @@
    :preview-key '(:debounce 0.4 any)))
 
 (use-package embark-consult
-  :straight t
+  :ensure t
   :after embark
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
 ;;; Wgrep - Editable grep buffers
 (use-package wgrep
-  :straight t
+  :ensure t
   :commands wgrep-change-to-wgrep-mode
   :custom
   (wgrep-auto-save-buffer t)
@@ -49,7 +49,6 @@
 
 ;;; EWW - Web browser
 (use-package eww
-  :straight (:type built-in)
   :bind
   (:map eww-mode-map
         ("C-c C-o" . eww-browse-with-external-browser)))

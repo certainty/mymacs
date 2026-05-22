@@ -3,13 +3,17 @@
 set -euo pipefail
 
 ROOT="${EMACS_CONFIG_ROOT:-$(pwd)}"
-EMACS="${EMACS:-emacs}"
+EMACS_BIN="${EMACS:-emacs}"
 INIT_DIR="${EMACS_CONFIG_ROOT:-}"
 
 usage() {
   cat <<EOF
 Usage:
   emacs-tools <subcommand> [args...]
+
+Environment:
+  EMACS
+      Emacs binary to execute. Defaults to "emacs".
 
 Subcommands:
   vanilla
@@ -91,7 +95,10 @@ require_arg() {
 }
 
 find_elisp_files() {
-  find "${ROOT}" -path "${ROOT}/straight" -prune -o -type f -name "*.el" -print
+  find "${ROOT}" \
+    -path "${ROOT}/straight" -prune -o \
+    -path "${ROOT}/elpa" -prune -o \
+    -type f -name "*.el" -print
 }
 
 prune_local_elc_files() {
@@ -132,18 +139,18 @@ shift || true
 
 case "${cmd}" in
   vanilla)
-    exec "${EMACS}" -Q
+    exec "${EMACS_BIN}" -Q
     ;;
 
   debug)
     profile_args=$(emacs_args_with_profile)
-    exec "${EMACS}" ${profile_args} --debug-init "$@"
+    exec "${EMACS_BIN}" ${profile_args} --debug-init "$@"
     ;;
 
   batch-load)
     require_arg "$@"
     profile_args=$(emacs_args_with_profile)
-    exec "${EMACS}" ${profile_args} --batch -l "$1"
+    exec "${EMACS_BIN}" ${profile_args} --batch -l "$1"
     ;;
 
   eval)
@@ -151,7 +158,7 @@ case "${cmd}" in
     profile_args=$(emacs_args_with_profile)
     load_init=$(profile_load_args)
 
-    exec "${EMACS}" ${profile_args} ${load_init} --batch \
+    exec "${EMACS_BIN}" ${profile_args} ${load_init} --batch \
       --eval "$1"
     ;;
 
@@ -160,7 +167,7 @@ case "${cmd}" in
     file="$1"
     profile_args=$(emacs_args_with_profile)
 
-    exec "${EMACS}" ${profile_args} --batch \
+    exec "${EMACS_BIN}" ${profile_args} --batch \
       --eval "
       (condition-case err
           (progn
@@ -179,7 +186,7 @@ case "${cmd}" in
     profile_args=$(emacs_args_with_profile)
     load_init=$(profile_load_args)
 
-    exec "${EMACS}" ${profile_args} ${load_init} --batch \
+    exec "${EMACS_BIN}" ${profile_args} ${load_init} --batch \
       -f batch-byte-compile \
       "$@"
     ;;
@@ -190,7 +197,7 @@ case "${cmd}" in
     profile_args=$(emacs_args_with_profile)
     load_init=$(profile_load_args)
 
-    exec "${EMACS}" ${profile_args} ${load_init} --batch \
+    exec "${EMACS_BIN}" ${profile_args} ${load_init} --batch \
       -f batch-native-compile \
       "$@"
     ;;
@@ -199,7 +206,7 @@ case "${cmd}" in
     prune_local_elc_files
     profile_args=$(emacs_args_with_profile)
     load_init=$(profile_load_args)
-    exec "${EMACS}" ${profile_args} ${load_init} --batch
+    exec "${EMACS_BIN}" ${profile_args} ${load_init} --batch
     ;;
 
   doctor)
@@ -207,7 +214,7 @@ case "${cmd}" in
     profile_args=$(emacs_args_with_profile)
     load_init=$(profile_load_args)
     echo "==> loading init.el"
-    "${EMACS}" ${profile_args} ${load_init} --batch
+    "${EMACS_BIN}" ${profile_args} ${load_init} --batch
 
     echo
     echo "==> checking parens"
@@ -215,7 +222,7 @@ case "${cmd}" in
     while IFS= read -r file; do
       echo "checking ${file}"
 
-      "${EMACS}" ${profile_args} --batch \
+      "${EMACS_BIN}" ${profile_args} --batch \
         --eval "
         (condition-case err
             (progn
@@ -232,7 +239,7 @@ case "${cmd}" in
 
     mapfile -t files < <(find_elisp_files)
 
-    "${EMACS}" ${profile_args} ${load_init} --batch \
+    "${EMACS_BIN}" ${profile_args} ${load_init} --batch \
       -f batch-byte-compile \
       "${files[@]}"
 
@@ -244,11 +251,10 @@ case "${cmd}" in
     logfile="${1:-startup.log}"
     profile_args=$(emacs_args_with_profile)
 
-    exec bash -c "
-      \"${EMACS}\" ${profile_args} --debug-init --batch \
-        --eval '(message \"startup complete\")' \
-        > \"${logfile}\" 2>&1
-    "
+    {
+      "${EMACS_BIN}" ${profile_args} --debug-init --batch \
+        --eval '(message "startup complete")'
+    } >"${logfile}" 2>&1
     ;;
 
   describe-function)
@@ -257,7 +263,7 @@ case "${cmd}" in
     profile_args=$(emacs_args_with_profile)
     load_init=$(profile_load_args)
 
-    exec "${EMACS}" ${profile_args} ${load_init} --batch \
+    exec "${EMACS_BIN}" ${profile_args} ${load_init} --batch \
       --eval "
       (princ
         (documentation
@@ -271,7 +277,7 @@ case "${cmd}" in
     profile_args=$(emacs_args_with_profile)
     load_init=$(profile_load_args)
 
-    exec "${EMACS}" ${profile_args} ${load_init} --batch \
+    exec "${EMACS_BIN}" ${profile_args} ${load_init} --batch \
       --eval "
       (princ
         (documentation-property
@@ -285,7 +291,7 @@ case "${cmd}" in
     profile_args=$(emacs_args_with_profile)
     load_init=$(profile_load_args)
 
-    exec "${EMACS}" ${profile_args} ${load_init} --batch \
+    exec "${EMACS_BIN}" ${profile_args} ${load_init} --batch \
       --eval "
       (princ
         (locate-library \"$1\"))
@@ -295,7 +301,7 @@ case "${cmd}" in
   manual)
     topic="${1:-emacs}"
 
-    exec "${EMACS}" -Q \
+    exec "${EMACS_BIN}" -Q \
       --eval "(info \"${topic}\")"
     ;;
 
@@ -303,7 +309,7 @@ case "${cmd}" in
     require_arg "$@"
     test_file="$1"
 
-    exec "${EMACS}" -Q --batch \
+    exec "${EMACS_BIN}" -Q --batch \
       -l "${test_file}" \
       -f ert-run-tests-batch-and-exit
     ;;

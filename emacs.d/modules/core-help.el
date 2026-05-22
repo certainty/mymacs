@@ -8,7 +8,6 @@
 
 ;;; Info mode enhancements
 (use-package info
-  :straight (:type built-in)
   :custom
   (Info-use-header-line nil))
 

@@ -238,10 +238,10 @@
 ;;; Expansion / Selection
 
 (use-package expreg
-  :straight t)
+  :ensure t)
 
 (use-package embrace
-  :straight t
+  :ensure nil
   :after meow
   :config
   (keymap-set my/surround-map "a" #'embrace-add)
@@ -251,7 +251,7 @@
 ;;; Avy
 
 (use-package avy
-  :straight t)
+  :ensure t)
 
 ;;; Selection helpers
 
@@ -301,7 +301,7 @@ If no region is active, set the mark at point first."
 ;;; Meow Setup
 
 (defun my/meow-setup ()
-  (meow-motion-define-key
+  (meow-motion-overwrite-define-key
     '("j" . meow-next)
     '("k" . meow-prev)
     '("C-j" . meow-next)
@@ -406,7 +406,7 @@ If no region is active, set the mark at point first."
       title)))
 
 (use-package meow
-  :straight t
+  :ensure t
   :demand t
   :custom
   (meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
@@ -474,14 +474,14 @@ If no region is active, set the mark at point first."
 ;;; Meow Tree-sitter
 
 (use-package meow-tree-sitter
-  :straight t
+  :ensure nil
   :after meow
   :config
   (meow-tree-sitter-register-defaults))
 
 ;;; Better repeat
 (use-package repeat-fu
-  :straight t
+  :ensure nil
   :commands (repeat-fu-mode repeat-fu-execute)
 
   :config
@@ -502,7 +502,7 @@ If no region is active, set the mark at point first."
 
 ;;; Lisp editing (paredit)
 (use-package paredit
-  :straight t
+  :ensure t
   :hook ((emacs-lisp-mode lisp-mode clojure-mode racket-mode scheme-mode)
           . paredit-mode)
   :config

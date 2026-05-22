@@ -78,7 +78,7 @@
 
 ;;; Scala tree-sitter mode
 (use-package scala-ts-mode
-  :straight t
+  :ensure nil
   :mode ("\\.scala\\'" "\\.sc\\'" "\\.sbt\\'")
   :hook (scala-ts-mode . eglot-ensure)
   :custom
@@ -93,7 +93,7 @@
 
 ;;; SBT (build tool / REPL)
 (use-package sbt-mode
-  :straight t
+  :ensure nil
   :commands (sbt-start sbt-command sbt-do-compile sbt-do-test sbt-do-clean)
   :custom
   (sbt:program-name "sbt")

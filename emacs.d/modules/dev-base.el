@@ -14,7 +14,6 @@
 
 ;;; Eglot (LSP)
 (use-package eglot
-  :straight (:type built-in)
   :commands (eglot eglot-ensure)
   :init
   (setq eglot-stay-out-of '(flymake))
@@ -37,7 +36,6 @@
 
 ;;; Treesitter
 (use-package treesit
-  :straight (:type built-in)
   :custom
   (treesit-extra-load-path
    (list (expand-file-name "tree-sitter" user-emacs-directory)))
@@ -48,7 +46,7 @@
     (setopt treesit-enabled-modes t)))
 
 (use-package treesit-auto
-  :straight t
+  :ensure nil
   :config
   ;; `treesit-language-source-alist' is empty by default, so keep it populated
   ;; from `treesit-auto' recipes even on Emacs 31 where built-in installation
@@ -82,7 +80,6 @@ With FORCE prefix, re-install even if already present."
 
 ;;; Flymake (Linting)
 (use-package flymake
-  :straight (:type built-in)
   :hook (prog-mode . flymake-mode)
   :custom
   (flymake-no-changes-timeout 0.5)
@@ -96,26 +93,24 @@ With FORCE prefix, re-install even if already present."
 
 ;;; Flymake-collection (More diagnostic backends)
 (use-package flymake-collection
-  :straight t
+  :ensure nil
   :after flymake)
 
 ;;; Consult-Flymake - Consult integration for flymake
 (use-package consult-flymake
-  :straight (:type built-in)
   :after (consult flymake))
 
 ;;; Highlight nested parentheses
 (use-package highlight-parentheses
-  :straight t
+  :ensure t
   :hook prog-mode)
 
 (use-package elec-pair
-  :straight (:type built-in)
   :hook (prog-mode . electric-pair-mode))
 
 ;;; Dape (Debug Adapter Protocol)
 (use-package dape
-  :straight t
+  :ensure t
   :commands dape
   :custom
   (dape-buffer-window-arrangement 'right)

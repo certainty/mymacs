@@ -2,7 +2,6 @@
 
 ;;;; HTML
 (use-package html-ts-mode
-  :straight (:type built-in)
   :mode (("\\.html\\'" . html-ts-mode)
          ("\\.htm\\'" . html-ts-mode))
   :hook (html-ts-mode . eglot-ensure)
@@ -11,7 +10,6 @@
 
 ;;;; CSS
 (use-package css-ts-mode
-  :straight (:type built-in)
   :mode (("\\.css\\'" . css-ts-mode)
          ("\\.scss\\'" . css-ts-mode))
   :hook (css-ts-mode . eglot-ensure)
@@ -20,7 +18,7 @@
 
 ;;;; Emmet - HTML/CSS abbreviations
 (use-package emmet-mode
-  :straight t
+  :ensure nil
   :hook ((html-ts-mode . emmet-mode)
          (css-ts-mode . emmet-mode)
          (web-mode . emmet-mode)
@@ -31,14 +29,14 @@
 
 ;;;; Rainbow Mode - Show colors inline
 (use-package rainbow-mode
-  :straight t
+  :ensure t
   :hook ((css-ts-mode . rainbow-mode)
          (html-ts-mode . rainbow-mode)
          (web-mode . rainbow-mode)))
 
 ;;;; Web-mode - for mixed content files
 (use-package web-mode
-  :straight t
+  :ensure t
   :mode (("\\.html?\\'" . web-mode)
          ("\\.phtml\\'" . web-mode)
          ("\\.erb\\'" . web-mode)

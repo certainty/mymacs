@@ -5,6 +5,7 @@ custom.el
 /backups
 /eshell
 /eln-cache
+/elpa
 /history
 /agent
 /.emacs-tabspaces-session.el
@@ -15,6 +16,7 @@ custom.el
 /projects
 /recentf.*
 /recentf
+/package-quickstart.el
 /straight/*
 !/straight/versions/
 !/straight/versions/*.el

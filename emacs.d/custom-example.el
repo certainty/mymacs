@@ -9,7 +9,7 @@
 
 ;; (setopt
 ;;  ;;; Identity
-;;  my/default-theme 'catppuccin
+;;  my/default-theme 'modus-vivendi
 ;;  my/user-full-name "user"
 ;;  my/user-mail-address "user@example.com"
 

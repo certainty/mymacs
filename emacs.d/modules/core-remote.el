@@ -8,7 +8,6 @@
 ;;; Code:
 
 (use-package tramp
-  :straight (:type built-in)
   :custom
   ;; Use the fastest available connection method
   (tramp-default-method "ssh")

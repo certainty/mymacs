@@ -10,3 +10,8 @@ Important references:
 
 - https://github.com/emacs-mirror/emacs/blob/master/etc/NEWS.31
 - https://github.com/emacs-mirror/emacs/tree/emacs-31 (emacs 31 feature branch)
+
+## Keybindings
+
+As with everything else we will try to embrace standard keybindings.
+We might deviate if it becomes too cumbersome or problematic for the hand health.

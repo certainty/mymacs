@@ -3,7 +3,7 @@
 ;;; Commentary:
 ;;
 ;; Runs before package initialization. Sets up GC, frame defaults,
-;; native compilation, and disables package.el in favor of straight.el.
+;; native compilation, and local vendored package load paths.
 ;;
 ;;; Code:
 
@@ -27,8 +27,31 @@
 ;;; Prefer source over stale byte-compiled files
 (setq load-prefer-newer t)
 
-;;; Disable package.el -- straight.el manages packages
-(setq package-enable-at-startup nil)
+;;; Vendored packages
+;; Emacs 31 discovers `user-lisp' package directories automatically.
+;; Add them explicitly so the same layout works on current releases too.
+(defun my/add-vendored-load-paths (root)
+  "Add ROOT and its package subdirectories to `load-path'."
+  (when (file-directory-p root)
+    (add-to-list 'load-path root)
+    (dolist (entry (directory-files root t directory-files-no-dot-files-regexp))
+      (when (file-directory-p entry)
+        (add-to-list 'load-path entry)
+        (dolist (subdir '("lisp" "src"))
+          (let ((path (expand-file-name subdir entry)))
+            (when (file-directory-p path)
+              (add-to-list 'load-path path))))))))
+
+(let* ((emacs-dir (file-name-as-directory user-emacs-directory))
+       (real-emacs-dir (file-name-as-directory (file-truename user-emacs-directory)))
+       (roots (delete-dups
+               (delq nil
+                     (list emacs-dir
+                           real-emacs-dir
+                           (file-name-directory (directory-file-name emacs-dir))
+                           (file-name-directory (directory-file-name real-emacs-dir)))))))
+  (dolist (root roots)
+    (my/add-vendored-load-paths (expand-file-name "user-lisp" root))))
 
 ;;; Terminal clipboard integration
 ;; Enable OSC 52 clipboard export during terminal initialization.

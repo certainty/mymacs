@@ -10,7 +10,6 @@
 
 ;;; JSON
 (use-package json-ts-mode
-  :straight (:type built-in)
   :mode ("\\.json\\'" "\\.jsonl\\'")
   :custom
   (json-ts-mode-indent-offset 2)
@@ -24,17 +23,15 @@
 
 ;;; YAML
 (use-package yaml-ts-mode
-  :straight (:type built-in)
   :mode ("\\.ya?ml\\'"))
 
 ;;; TOML
 (use-package toml-ts-mode
-  :straight (:type built-in)
   :mode ("\\.toml\\'"))
 
 ;;; CSV
 (use-package csv-mode
-  :straight t
+  :ensure t
   :mode ("\\.csv\\'" "\\.tsv\\'")
   :custom
   (csv-separators '("," ";" "\t"))
@@ -42,7 +39,6 @@
 
 ;;; Go templates
 (use-package go-ts-mode
-  :straight (:type built-in)
   :mode ("\\.gotmpl\\'" . go-ts-mode))
 
 (provide 'dev-data)
