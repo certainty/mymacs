@@ -88,3 +88,6 @@
 [submodule "user-lisp/exec-path-from-shell"]
 	path = user-lisp/exec-path-from-shell
 	url = https://github.com/purcell/exec-path-from-shell
+[submodule "user-lisp/ws-butler"]
+	path = user-lisp/ws-butler
+	url = https://github.com/lewang/ws-butler
