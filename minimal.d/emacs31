@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+exec /opt/homebrew/bin/emacs-31.0.60 --init-directory="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
