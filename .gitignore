@@ -4,6 +4,7 @@
 /emacs.d/eln-cache/
 /minimal.d/elpa/
 /minimal.d/eln-cache/
+/minimal.d/eshell/
 
 recentf
 projects
@@ -11,3 +12,4 @@ package-quickstart.el
 history
 custom.el
 minimal.d/init.el
+

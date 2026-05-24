@@ -160,10 +160,7 @@
 (use-package minibuffer
 	:hook (after-init . minibuffer-depth-indicate-mode)
 	:custom
-	(enable-recursive-minibuffers t)
-	(completion-styles '(basic flex))
-	(completion-category-overrides
-	 '((buffer (styles basic flex)))))
+	(enable-recursive-minibuffers t))
 
 (use-package savehist
 	:hook after-init
@@ -173,12 +170,23 @@
 
 ;; core ui / completion minibuffer
 
-(use-package icomplete
+(use-package vertico
+	:ensure t
+	:hook after-init
 	:custom
-	(read-file-name-completion-ignore-case t)
+	(vertico-cycle t)
+	:config
+	(vertico-multiform-mode)
+	(add-to-list 'vertico-multiform-categories '(embark-keybinding grid)))
+
+(use-package orderless
+	:ensure t
+	:custom
+	(completion-styles '(orderless)))
 	
-	:init
-	(fido-vertical-mode))
+(use-package marginalia
+	:ensure t
+	:hook after-init)
 
 ;; core ui / completion in-buffer
 (use-package completion-preview
@@ -189,16 +197,6 @@
 				("M-p" . 'completion-preview-prev-candidate)
 				("C-y" . 'completion-preview-insert)
 				("M-y" . 'completion-preview-insert)))
-
-(use-package icomplete
-	:hook after-init
-	:custom
-	(icomplete-in-buffer t)
-	(icomplete-compute-delay 0)
-	(icomplete-delay-completions-threshold 0)
-	(icomplete-scroll t)
-	:config
-	(advice-add 'completion-at-point :after #'minibuffer-hide-completions))
 
 ;;; core editing / base
 (use-package emacs
@@ -235,6 +233,7 @@
 	:ensure t
 	:custom
 	(embark-prompter 'embark-completing-read-prompter)
+	(prefix-help-command 'embark-prefix-help-command)
 	
 	:bind
 	(:map mymacs-mode-map
@@ -250,8 +249,8 @@
 				("C-c C-e" . 'embark-export)
 				("C-c C-m" . 'embark-select)
 				("C-c C-a" . 'embark-act-all))
+	
 	:init
-	(setq prefix-help-command #'embark-prefix-help-command)
 	(add-to-list 'display-buffer-alist
 							 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
 								 nil
@@ -271,7 +270,6 @@
 	(find-file-visit-truename t))
 
 ;;; core files / recent
-
 (use-package recentf
   :hook after-init
 	:custom
@@ -284,7 +282,6 @@
 				("C-x R" . 'recentf-open)))
 
 ;; core files / dired
-
 (use-package dired
 	:custom
 	(dired-listing-switches "-agho --group-directories-first")
@@ -306,22 +303,58 @@
 (use-package consult
 	:ensure t
 	:bind
-	(:map mymacs-mode-map
-				("M-g b" . 'consult-project-buffer)
-				("M-g o" . 'consult-recent-file)
-				("M-g r" . 'consult-bookmarks)
-				("M-g i". 'consult-imenu)
-				("M-g m" . 'consult-mark)
-				("M-g d" . 'consult-flymake)
-				
+	(:map goto-map
+				("b" . 'consult-project-buffer)
+				("o" . 'consult-recent-file)
+				("r" . 'consult-bookmarks)
+				("i". 'consult-imenu)
+				("m" . 'consult-mark)
+				("d" . 'consult-flymake))
+	(:map search-map			
 				("M-s M-s" . 'consult-ripgrep)
 				("M-s v" . 'consult-git-grep)))
 
 (use-package wgrep
 	:ensure t)
 
+;;; extra projects
+
+(use-package project
+	:preface
+	(defun +project-find-symbol ()
+		"Search for symbol under point in whole project"
+		(interactive)
+		(consult-ripgrep (project-root (project-current t)) (thing-at-point 'symbol)))
+	:bind
+	(:map goto-map
+				("f" . 'project-find-file))
+	(:map search-map
+				("/" . '+project-find-symbol)))
+
+;;; extra programming
+(use-package eglot)
+
+(use-package flymake
+	:bind
+	(:map flymake-mode-map
+				("M-n" . 'flymake-goto-next-error)
+				("M-p" . 'flymake-goto-prev-error)))
+
+;;; extra programming / lisp
+
+
+;;; etra gtd
+(use-package org)
+
+;;; extra writing
+(use-package ispell
+	:hook ((text-mode . flyspell-mode)
+				 (prog-mode . flyspell-prog-mode))
+	:custom
+	(ispell-program-name "hunspell"))
+
+;;; extra writing denote
+
 ;;; custom file
 (setopt custom-file (locate-user-emacs-file "custom.el"))
-(load custom-file :no-error-if-file-is-missing)
-
-
+(load custom-file :no-error-if-file-is-missing) 
