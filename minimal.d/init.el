@@ -403,3 +403,30 @@
 	:config
 	(with-eval-after-load 'eglot
 		(add-to-list 'eglot-server-programs '(go-ts-mode . ("gopls")))))
+
+
+;;; extra programming scala
+(use-package scala-ts-mode
+  :mode ("\\.scala\\'" "\\.sc\\'" "\\.sbt\\'")
+  :hook (scala-ts-mode . eglot-ensure)
+  :custom
+  (scala-ts-mode-indent-offset 2)
+	:bind
+	(:map scala-ts-mode-map
+				("C-c C-t" . +scala-test-only))
+
+	:config
+	;;; Metals LSP configuration
+	(defun my/scala-metals-contact ()
+		"Build the Eglot contact spec for Metals."
+		(append
+     (list my/scala-metals-command)
+     (mapcar (lambda (arg) (format "-J%s" arg)) my/scala-metals-java-options)
+     my/scala-metals-server-arguments
+     (list :initializationOptions my/scala-metals-initialization-options)))
+
+	(with-eval-after-load 'eglot
+		(add-to-list 'eglot-server-programs
+								 `(scala-ts-mode . ,(my/scala-metals-contact)))))
+
+
