@@ -46,6 +46,21 @@
   :type 'symbol
   :group 'mymacs)
 
+(defcustom my/dev-ruby-enabled nil
+	"Enable ruby programming support"
+	:type 'boolean
+	:group 'mymacs)
+
+(defcustom my/dev-scala-enabled nil
+	"Enable scala programming support"
+	:type 'boolean
+	:group 'mymacs)
+
+(defcustom my/dev-go-enabled nil
+	"Enable go programming support"
+	:type 'boolean
+	:group 'mymacs)
+
 ;;; package setup
 (require 'package)
 (setopt package-archives
@@ -331,18 +346,6 @@
 	(:map search-map
 				("/" . '+project-find-symbol)))
 
-;;; extra programming
-(use-package eglot)
-
-(use-package flymake
-	:bind
-	(:map flymake-mode-map
-				("M-n" . 'flymake-goto-next-error)
-				("M-p" . 'flymake-goto-prev-error)))
-
-;;; extra programming / lisp
-
-
 ;;; etra gtd
 (use-package org)
 
@@ -354,6 +357,34 @@
 	(ispell-program-name "hunspell"))
 
 ;;; extra writing denote
+
+
+;;; extra programming
+(use-package eglot)
+
+(use-package flymake
+	:bind
+	(:map flymake-mode-map
+				("M-n" . 'flymake-goto-next-error)
+				("M-p" . 'flymake-goto-prev-error)))
+
+;;; extra programming ruby
+(use-package ruby-ts-mode
+  :mode ("\\.rb\\'" "Rakefile\\'" "Gemfile\\'" "\\.rake\\'" "\\.gemspec\\'" "\\.ru\\'")
+  :hook ((ruby-ts-mode . eglot-ensure))
+  :bind
+  (:map ruby-ts-mode-map
+        ("C-c t t" . +ruby-test-dwim)
+        ("C-c t o" . +ruby-test-file)
+        ("C-c t r" . +ruby-rspec-dwim)
+        ("C-c t m" . +ruby-minitest-dwim))
+  :custom
+  (ruby-indent-level 2)
+  (ruby-insert-encoding-magic-comment nil)
+  :config
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("ruby-lsp")))))
+
 
 ;;; custom file
 (setopt custom-file (locate-user-emacs-file "custom.el"))

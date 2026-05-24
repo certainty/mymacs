@@ -1,4 +1,6 @@
 .mymacs-tabspaces-session.el
+.user-lisp-autoloads.el
+*.elc
 
 /emacs.d/elpa/
 /emacs.d/eln-cache/
