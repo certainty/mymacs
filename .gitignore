@@ -1,2 +1,13 @@
 .mymacs-tabspaces-session.el
-emacs.d/modules/core-config.el
+
+/emacs.d/elpa/
+/emacs.d/eln-cache/
+/minimal.d/elpa/
+/minimal.d/eln-cache/
+
+recentf
+projects
+package-quickstart.el
+history
+custom.el
+minimal.d/init.el

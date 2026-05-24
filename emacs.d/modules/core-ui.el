@@ -63,9 +63,7 @@
 
 
 ;;; Modus Themes
-(use-package modus-themes
-  :ensure t
-  :demand t
+(use-package emacs
   :custom
   (modus-themes-custom-auto-reload t)
   (modus-themes-disable-other-themes nil)
@@ -79,25 +77,26 @@
   (modus-themes-completions
    '((matches . (extrabold underline))
      (selection . (semibold italic))))
-  :config
-  (defun my/modus-defaults-with-overrides (defaults overrides)
-    "Merge overrides into defaults. Overriding any defaults."
-    (append (cl-remove-if (lambda (x) (member (car x) (mapcar 'car overrides))) defaults) overrides))
 
-  (setq modus-vivendi-palette-overrides
-        (my/modus-defaults-with-overrides modus-themes-preset-overrides-faint
-                                          `((bg-paren-match bg-magenta-intense)
-                                            (underline-paren-match fg-main)
-                                            (fg-line-number-active red-cooler)
-                                            (bg-main "#000000")
-                                            (bg-dim "#000000")
-                                            (bg-mode-line-active "#0e0e16")
-                                            (border-mode-line-active "#0e0e16")
-                                            (bg-mode-line-inactive "#060609")
-                                            (border-mode-line-inactive "#060609")
-                                            (bg-line-number-inactive "#000000")
-                                            (bg-line-number-active "#000000")
-                                            (bg-hl-line "#111111"))))
+  :preface
+  ; (defun my/modus-defaults-with-overrides (defaults overrides)
+  ;   "Merge overrides into defaults. Overriding any defaults."
+  ;   (append (cl-remove-if (lambda (x) (member (car x) (mapcar 'car overrides))) defaults) overrides))
+
+  ; (setq modus-vivendi-palette-overrides
+  ;       (my/modus-defaults-with-overrides modus-themes-preset-overrides-faint
+  ;                                         `((bg-paren-match bg-magenta-intense)
+  ;                                           (underline-paren-match fg-main)
+  ;                                           (fg-line-number-active red-cooler)
+  ;                                           (bg-main "#000000")
+  ;                                           (bg-dim "#000000")
+  ;                                           (bg-mode-line-active "#0e0e16")
+  ;                                           (border-mode-line-active "#0e0e16")
+  ;                                           (bg-mode-line-inactive "#060609")
+  ;                                           (border-mode-line-inactive "#060609")
+  ;                                           (bg-line-number-inactive "#000000")
+  ;                                           (bg-line-number-active "#000000")
+  ;                                           (bg-hl-line "#111111"))))
 
   (setopt modus-themes-headings
           (if (my/ui-graphic-p)
@@ -106,20 +105,20 @@
             '((1 . (1.0))
               (t . (1.0)))))
 
-  (defun my/adjust-line-number-faces ()
-    "Tune line number faces for the current display type."
-    (if (my/ui-graphic-p)
-        (progn
-          (set-face-attribute 'line-number nil :background "#000000")
-          (set-face-attribute 'line-number-current-line nil :background "#000000"))
-      (set-face-attribute 'line-number nil :background 'unspecified)
-      (set-face-attribute 'line-number-current-line nil :background 'unspecified :weight 'bold)))
+  ; (defun my/adjust-line-number-faces ()
+  ;   "Tune line number faces for the current display type."
+  ;   (if (my/ui-graphic-p)
+  ;       (progn
+  ;         (set-face-attribute 'line-number nil :background "#000000")
+  ;         (set-face-attribute 'line-number-current-line nil :background "#000000"))
+  ;     (set-face-attribute 'line-number nil :background 'unspecified)
+  ;     (set-face-attribute 'line-number-current-line nil :background 'unspecified :weight 'bold)))
 
-  (add-hook 'modus-themes-after-load-theme-hook #'my/adjust-line-number-faces))
+  ; (add-hook 'modus-themes-after-load-theme-hook #'my/adjust-line-number-faces)
+  )
 
 ;;; Load initial theme
 (load-theme my/default-theme :no-confirm)
-(my/adjust-line-number-faces)
 
 ;;; Modeline: Mood-line
 (defconst my/mood-line-checker-glyphs
