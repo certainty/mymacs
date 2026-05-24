@@ -56,10 +56,9 @@
 	:type 'boolean
 	:group 'mymacs)
 
-(defcustom my/dev-go-enabled nil
-	"Enable go programming support"
-	:type 'boolean
-	:group 'mymacs)
+;;; load custom file
+(setopt custom-file (locate-user-emacs-file "custom.el"))
+(load custom-file :no-error-if-file-is-missing) 
 
 ;;; package setup
 (require 'package)
@@ -208,10 +207,19 @@
 	:hook (prog-mode org-mode markdown-mode)
 	:bind
 	(:map completion-preview-active-mode-map
-				("M-n" . 'completion-preview-next-candidate)
-				("M-p" . 'completion-preview-prev-candidate)
-				("C-y" . 'completion-preview-insert)
-				("M-y" . 'completion-preview-insert)))
+				("M-n" . completion-preview-next-candidate)
+				("M-p" . completion-preview-prev-candidate)
+				("C-y" . completion-preview-insert)
+				("M-y" . completion-preview-insert))
+	:custom
+	(completion-auto-select t)
+	(completions-formt 'one-column)
+	(completions-auto-help 'visible)
+	(completions-max-height 20)
+	(completion-ignore-case t)
+	:config
+	(push 'org-self-insert-command completion-preview-commands))
+
 
 ;;; core editing / base
 (use-package emacs
@@ -229,8 +237,8 @@
   :bind
   (:map mymacs-mode-map
 	;; original binding is susped frame which I never want
-	("C-z" . 'delete-pair)
-	("C-Z" . 'electric-pair-delete-pair))
+	("C-z" . delete-pair)
+	("C-Z" . electric-pair-delete-pair))
   :init
   (electric-pair-mode))
 
@@ -240,8 +248,8 @@
 	:ensure t
 	:bind
 	(:map mymacs-mode-map
-				("M-g l" . 'avy-goto-line)
-				("M-g j" . 'avy-goto-char-timer)))
+				("M-g l" . avy-goto-line)
+				("M-g j" . avy-goto-char-timer)))
 
 ;;; core editing / embark
 (use-package embark
@@ -252,18 +260,18 @@
 	
 	:bind
 	(:map mymacs-mode-map
-				("C-." . 'embark-act)
-				("C-," . 'embark-dwim))
+				("C-." . embark-act)
+				("C-," . embark-dwim))
 	(:map minibuffer-mode-map
-				("C-c C-c" . 'embark-collect)
-				("C-c C-e" . 'embark-export)
-				("C-c C-m" . 'embark-select)
-				("C-c C-a" . 'embark-act-all))
+				("C-c C-c" . embark-collect)
+				("C-c C-e" . embark-export)
+				("C-c C-m" . embark-select)
+				("C-c C-a" . embark-act-all))
 	(:map minibuffer-local-map
-				("C-c C-c" . 'embark-collect)
-				("C-c C-e" . 'embark-export)
-				("C-c C-m" . 'embark-select)
-				("C-c C-a" . 'embark-act-all))
+				("C-c C-c" . embark-collect)
+				("C-c C-e" . embark-export)
+				("C-c C-m" . embark-select)
+				("C-c C-a" . embark-act-all))
 	
 	:init
 	(add-to-list 'display-buffer-alist
@@ -294,7 +302,7 @@
 		 "COMMIT_EDITMSG"))
   :bind
   (:map mymacs-mode-map
-				("C-x R" . 'recentf-open)))
+				("C-x R" . recentf-open)))
 
 ;; core files / dired
 (use-package dired
@@ -319,15 +327,15 @@
 	:ensure t
 	:bind
 	(:map goto-map
-				("b" . 'consult-project-buffer)
-				("o" . 'consult-recent-file)
-				("r" . 'consult-bookmarks)
-				("i". 'consult-imenu)
-				("m" . 'consult-mark)
-				("d" . 'consult-flymake))
+				("b" . consult-project-buffer)
+				("o" . consult-recent-file)
+				("r" . consult-bookmarks)
+				("i".  consult-imenu)
+				("m" . consult-mark)
+				("d" . consult-flymake))
 	(:map search-map			
-				("M-s M-s" . 'consult-ripgrep)
-				("M-s v" . 'consult-git-grep)))
+				("M-s M-s" . consult-ripgrep)
+				("M-s v" . consult-git-grep)))
 
 (use-package wgrep
 	:ensure t)
@@ -342,9 +350,9 @@
 		(consult-ripgrep (project-root (project-current t)) (thing-at-point 'symbol)))
 	:bind
 	(:map goto-map
-				("f" . 'project-find-file))
+				("f" . project-find-file))
 	(:map search-map
-				("/" . '+project-find-symbol)))
+				("/" . +project-find-symbol)))
 
 ;;; etra gtd
 (use-package org)
@@ -365,11 +373,12 @@
 (use-package flymake
 	:bind
 	(:map flymake-mode-map
-				("M-n" . 'flymake-goto-next-error)
-				("M-p" . 'flymake-goto-prev-error)))
+				("M-n" . flymake-goto-next-error)
+				("M-p" . flymake-goto-prev-error)))
 
 ;;; extra programming ruby
 (use-package ruby-ts-mode
+	:if my/dev-ruby-enabled
   :mode ("\\.rb\\'" "Rakefile\\'" "Gemfile\\'" "\\.rake\\'" "\\.gemspec\\'" "\\.ru\\'")
   :hook ((ruby-ts-mode . eglot-ensure))
   :bind
@@ -385,7 +394,12 @@
   (with-eval-after-load 'eglot
     (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("ruby-lsp")))))
 
-
-;;; custom file
-(setopt custom-file (locate-user-emacs-file "custom.el"))
-(load custom-file :no-error-if-file-is-missing) 
+;;; extra programming go
+(use-package go-ts-mode
+	:if my/dev-go-enabled
+	:hook (go-ts-mode . eglot-ensure)
+	:init
+	(setq-default go-ts-mode-indent-offset 4)
+	:config
+	(with-eval-after-load 'eglot
+		(add-to-list 'eglot-server-programs '(go-ts-mode . ("gopls")))))
