@@ -70,8 +70,8 @@
           ("nongnu" . 10))
         package-install-upgrade-built-in t
         package-check-signature t ; don't trust anyone these days
-	package-native-compile t
-	package-quickstart t)
+				package-native-compile t
+				package-quickstart t)
 
 ;;; core ui
 (use-package emacs
@@ -120,21 +120,24 @@
 
 	:preface
 	(defun +escape-dwim ()
-    "Do-What-I-Mean behaviour for a general `keyboard-quit'.
-   - When the region is active, disable it.
-   - When a minibuffer is open, close it.
-   - When the Completions buffer is selected, close it.
-   - Otherwise regular `keyboard-quit'."
-     (interactive)
-     (cond
-       ((region-active-p)
-        (keyboard-quit))
-       ((derived-mode-p 'completion-list-mode)
-         (delete-completion-window))
-       ((> (minibuffer-depth) 0)
-         (abort-recursive-edit))
-       (t
-        (keyboard-quit)))))
+    (interactive)
+    (cond
+     ((region-active-p)
+      (keyboard-quit))
+     ((derived-mode-p 'completion-list-mode)
+      (delete-completion-window))
+     ((> (minibuffer-depth) 0)
+      (abort-recursive-edit))
+     (t
+      (keyboard-quit)))))
+
+;;; core ui / keybindings setup
+
+(use-package simple
+	:init
+	;; free the keymap for next and previous in goto-map
+	(keymap-set goto-map "n" nil)
+	(keymap-set goto-map "p" nil))
 
 ;;; core ui / line numbers
 (use-package display-line-numbers
@@ -143,22 +146,44 @@
 ;;; core ui / windows and buffers
 (use-package window
 	:hook (after-init . window-divider-mode)
+	:init
+	:bind
+	(:map goto-map
+				("n b" . next-buffer)
+				("p b" . previous-buffer))
+	(:repeat-map my/window-resize-repeat-map
+							 ("{" . shrink-window-horizontally)
+							 ("}" . enlarge-window-horizontally))
+	(:repeat-map my/buffer-repeat-map
+							 ("n" . next-buffer)
+							 ("p" . previous-buffer))
 	:custom
-	(split-height-threshold 60)
-	(split-width-threshold 60)
+	;; prefer splitting to the side
+	(split-height-threshold nil)
+	(split-width-threshold 80)
+	(even-window-sizes nil)
+	(window-combination-resize t)
 		;;; buffer arrangement
 	(display-buffer-alist
-      '(("\\*\\(Help\\|compilation\\|Async-execute-command\\|Occur\\|grep\\|Flymake.*\\)\\*"
-         (display-buffer-in-side-window)
+      '(("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\|xref\\)\\*"
+
+         (display-buffer-reuse-mode-window
+          display-buffer-in-side-window)
+
          (side . right)
          (slot . 0)
-         (window-width . 0.35)
-         (select . t))
-        ("\\*dired\\*"
-         (display-buffer-same-window))
+         (window-width . 0.33)
+
+         (mode . special-mode)
+				 
+         (window-parameters
+          . ((no-other-window . t)
+             (no-delete-other-windows . t))))
+
         (".*"
-         (display-buffer-reuse-window display-buffer-same-window display-buffer-pop-up-window)
-         (window-width . 0.5)))))
+         (display-buffer-reuse-window
+          display-buffer-use-some-window
+          display-buffer-pop-up-window)))))
 
 (use-package ace-window
 	:ensure t
@@ -197,7 +222,7 @@
 	:ensure t
 	:custom
 	(completion-styles '(orderless)))
-	
+
 (use-package marginalia
 	:ensure t
 	:hook after-init)
@@ -225,9 +250,20 @@
 (use-package emacs
   :custom
   (kill-whole-line t)
+	(set-mark-command-repeat-pop t)
+	:bind
+	(:map mymacs-mode-map
+				("C-c >" . indent-rigidly-right-to-tab-stop)
+				("C-c <" . indent-rigigly-left-to-tab-stop))
+	(:repeat-map my/mark-repeat-map
+							 ("p" . pop-to-mark-command)
+							 ("g" . pop-global-mark))
   :init
+	(setq-default tab-width 2)
   (repeat-mode)
-	(setq-default tab-width 2))
+	(delete-selection-mode)
+	(global-subword-mode)
+	(save-place-mode))
 
 ;;; core editing / handling pairs
 (use-package elec-pair
@@ -236,20 +272,36 @@
   (delete-pair-push-mark t)
   :bind
   (:map mymacs-mode-map
-	;; original binding is susped frame which I never want
-	("C-z" . delete-pair)
-	("C-Z" . electric-pair-delete-pair))
+				;; original binding is susped frame which I never want
+				("C-z" . delete-pair)
+				("C-Z" . electric-pair-delete-pair))
   :init
   (electric-pair-mode))
 
-
-;;; core editing / avy
-(use-package avy
-	:ensure t
+;;; core editing / structural
+(use-package emacs
 	:bind
 	(:map mymacs-mode-map
-				("M-g l" . avy-goto-line)
-				("M-g j" . avy-goto-char-timer)))
+				("C-c s" . my/sexp-prefix-map)
+				("C-c [" . treesit-beginning-of-defun)
+				("C-c ]" . treesit-end-of-defun))
+	(:prefix-map my/sexp-prefix-map
+	:prefix "C-c s"
+	("m" . mark-sexp)
+	("f" . treesit-forward-sexp)
+	("F" . kill-sexp)
+	("b" . treesit-backward-sexp)
+	("B" . backward-kill-sexp)
+	("u" . treesit-up-list)
+	("d" . treesit-down-list)
+	("t" . transpose-sexps)
+	("=" . indent-sexp)
+	(:repeat-map my/sexp-repeat-map
+							 ("f" . treesit-forward-sexp)
+							 ("b" . treesit-backward-sexp)
+							 ("u" . treesit-up-list)
+							 ("d" . treesit-down-list)
+							 ("t" . transpose-sexps))))
 
 ;;; core editing / embark
 (use-package embark
@@ -337,11 +389,9 @@
 				("M-s M-s" . consult-ripgrep)
 				("M-s v" . consult-git-grep)))
 
-(use-package wgrep
-	:ensure t)
+;; wgrep no longer needed, since emacs 31 has grep-edit-mode
 
 ;;; extra projects
-
 (use-package project
 	:preface
 	(defun +project-find-symbol ()
@@ -372,6 +422,9 @@
 
 (use-package flymake
 	:bind
+	(:map goto-map
+				("n e" . flymake-goto-next-error)
+				("p e" . flymake-goto-prev-error))
 	(:map flymake-mode-map
 				("M-n" . flymake-goto-next-error)
 				("M-p" . flymake-goto-prev-error)))
@@ -429,4 +482,6 @@
 		(add-to-list 'eglot-server-programs
 								 `(scala-ts-mode . ,(my/scala-metals-contact)))))
 
-
+;;; extra programming elisp
+(use-package emacs
+	:hook (emacs-lisp-mode . outline-minor-mode))
