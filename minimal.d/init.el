@@ -6,6 +6,7 @@
 ;; - user defined interactive functions use + prefix
 
 ;;; customization
+
 (defvar-keymap mymacs-mode-map :doc "mymacs global keys")
 (define-minor-mode mymacs-mode
   "My personal minor mode"
@@ -14,7 +15,7 @@
   :lighter " MyM"
   :keymap mymacs-mode-map)
 
-(mymacs-mode 1) ;; enable immediatly
+(mymacs-mode 1) ;; enable immediately
 
 (defgroup mymacs nil
   "User configuration for my emacs"
@@ -78,7 +79,7 @@
 	package-native-compile t
 	package-quickstart t)
 
-;;; core ui
+;;; UI
 (use-package emacs
   :custom
   (use-short-answers t)
@@ -136,7 +137,7 @@
      (t
       (keyboard-quit)))))
 
-;;; core ui / keybindings setup
+;;;; keybindings setup
 
 (use-package simple
   :init
@@ -144,13 +145,21 @@
   (keymap-set goto-map "n" nil)
   (keymap-set goto-map "p" nil))
 
-;;; core ui / line numbers
+;;;; line numbers
 (use-package display-line-numbers
   :hook prog-mode)
 
-;;; core ui / windows and buffers
+;;;; outline
+(use-package outline
+	:hook ((prog-mode org-mode markdown-mode) . outline-minor-mode)
+	:bind
+	(:map mymacs-mode-map
+				("C-<tab>" . outline-cycle)))
+
+;;;; windows and buffers
 (use-package window
-  :hook (after-init . window-divider-mode)
+  :hook
+	(after-init . window-divider-mode)
   :init
   :bind
   (:map goto-map
@@ -168,10 +177,11 @@
   (split-width-threshold 80)
   (even-window-sizes nil)
   (window-combination-resize t)
-		;;; buffer arrangement
+	
+;;;;; buffer arrangement
   (display-buffer-alist
    '(("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\|xref\\)\\*"
-
+ 
       (display-buffer-reuse-mode-window
        display-buffer-in-side-window)
 
@@ -197,9 +207,10 @@
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   :bind
   (:map mymacs-mode-map
-	("M-o" . 'ace-window)))
+				("M-O" . other-window)
+				("M-o" . ace-window)))
 
-;;; core ui / minibuffer
+;;; minibuffer
 
 (use-package minibuffer
   :hook (after-init . minibuffer-depth-indicate-mode)
@@ -212,8 +223,9 @@
   (savehist-ave-minibuffer-history t)
   (savehist-autosave-interval 100))
 
-;; core ui / completion minibuffer
+;;; completion 
 
+;;;; minibuffer  
 (use-package vertico
   :ensure t
   :hook after-init
@@ -232,7 +244,7 @@
   :ensure t
   :hook after-init)
 
-;; core ui / completion in-buffer
+;;;; in-buffer
 (use-package completion-preview
   :hook (prog-mode org-mode markdown-mode)
   :bind
@@ -253,10 +265,10 @@
 (use-package cape
   :ensure t
   :init
-  (add-to-list 'completion-at-point-functions 'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions	'cape-dabbrev)
   (add-to-list 'completion-at-point-functions 'cape-file))
 
-;;; core editing / base
+;;; editing
 (use-package emacs
   :custom
   (kill-whole-line t)
@@ -278,7 +290,8 @@
   (global-subword-mode)
   (save-place-mode))
 
-;;; core editing / handling pairs
+;;;; handling pairs (quotes, parens, etc.)
+
 (use-package elec-pair
   :custom
   (delete-pair-blink-delay 0.0)
@@ -291,32 +304,43 @@
   :init
   (electric-pair-mode))
 
-;;; core editing / structural
+;;;; core editing / structural
 (use-package emacs
   :bind
-  (:map mymacs-mode-map
-	("C-c s" . my/sexp-prefix-map)
-	("C-c [" . treesit-beginning-of-defun)
-	("C-c ]" . treesit-end-of-defun))
-  (:prefix-map my/sexp-prefix-map
-	       :prefix "C-c s"
-	       ("m" . mark-sexp)
-	       ("f" . treesit-forward-sexp)
-	       ("F" . kill-sexp)
-	       ("b" . treesit-backward-sexp)
-	       ("B" . backward-kill-sexp)
-	       ("u" . treesit-up-list)
-	       ("d" . treesit-down-list)
-	       ("t" . transpose-sexps)
-	       ("=" . indent-sexp)
-	       (:repeat-map my/sexp-repeat-map
-			    ("f" . treesit-forward-sexp)
-			    ("b" . treesit-backward-sexp)
-			    ("u" . treesit-up-list)
-			    ("d" . treesit-down-list)
-			    ("t" . transpose-sexps))))
+  (:map
+	 mymacs-mode-map
+	 ("C-c s" . my/sexp-prefix-map)
+	 ("C-c )" . treesit-forward-sexp)
+	 ("C-c (" . treesit-backward-sexp)
+	 ("C-c [" . treesit-beginning-of-defun)
+	 ("C-c ]" . treesit-end-of-defun))
+  (:prefix-map
+	 my/sexp-prefix-map
+	 :prefix "C-c s"
+	 ("m" . mark-sexp)
+	 (")" . treesit-forward-sexp)
+	 ("f" . treesit-forward-sexp)
+	 ("F" . kill-sexp)
+	 ("(" . treesit-backward-sexp)
+	 ("b" . treesit-backward-sexp)
+	 ("B" . backward-kill-sexp)
+	 ("u" . treesit-up-list)
+	 ("d" . treesit-down-list)
+	 ("t" . transpose-sexps)
+	 ("=" . indent-sexp)
+	 (:repeat-map
+		my/movement-repeat-map
+		("p" . previous-line)
+		("n" . next-line))
+	 (:repeat -map
+		my/sexp-repeat-map
+		("f" . treesit-forward-sexp)
+		("b" . treesit-backward-sexp)
+		("u" . treesit-up-list)
+		("d" . treesit-down-list)
+		("t" . transpose-sexps))))
 
-;;; core editing / embark
+;;;; embark
 (use-package embark
   :ensure t
   :custom
@@ -325,31 +349,31 @@
   
   :bind
   (:map mymacs-mode-map
-	("C-." . embark-act)
-	("C-," . embark-dwim))
+				("C-." . embark-act)
+				("C-," . embark-dwim))
   (:map minibuffer-mode-map
-	("C-c C-c" . embark-collect)
-	("C-c C-e" . embark-export)
-	("C-c C-m" . embark-select)
-	("C-c C-a" . embark-act-all))
+				("C-c C-c" . embark-collect)
+				("C-c C-e" . embark-export)
+				("C-c C-m" . embark-select)
+				("C-c C-a" . embark-act-all))
   (:map minibuffer-local-map
-	("C-c C-c" . embark-collect)
-	("C-c C-e" . embark-export)
-	("C-c C-m" . embark-select)
-	("C-c C-a" . embark-act-all))
+				("C-c C-c" . embark-collect)
+				("C-c C-e" . embark-export)
+				("C-c C-m" . embark-select)
+				("C-c C-a" . embark-act-all))
   
   :init
   (add-to-list 'display-buffer-alist
-	       '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-		 nil
-		 (window-parameter (mode-line-format . none)))))
+							 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+								 nil
+								 (window-parameter (mode-line-format . none)))))
 
 (use-package embark-consult
   :after consult
   :ensure t
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
-;;; core files
+;;; files
 
 (use-package files
   :custom
@@ -358,7 +382,7 @@
   (create-lockfiles nil)
   (find-file-visit-truename t))
 
-;;; core files / recent
+;;;; recent
 
 (use-package recentf
   :hook after-init
@@ -369,9 +393,9 @@
      "COMMIT_EDITMSG"))
   :bind
   (:map mymacs-mode-map
-	("C-x R" . recentf-open)))
+				("C-x R" . recentf-open)))
 
-;; core files / dired
+;;;; dired
 
 (use-package dired
   :custom
@@ -381,7 +405,7 @@
   (global-auto-revert-non-file-buffers t)
   :bind
   (:map mymacs-mode-map
-	("C-c e" . dired-jump)))
+				("C-c e" . dired-jump)))
 
 (use-package wdired
   :commands wdired-change-to-wdired-mode
@@ -389,25 +413,25 @@
   (wdired-allow-to-change-permissions t)
   (wdired-create-parent-directories t))
 
-;; core search
+;;; search
 
 (use-package consult
   :ensure t
   :bind
   (:map goto-map
-	("b" . consult-project-buffer)
-	("o" . consult-recent-file)
-	("r" . consult-bookmarks)
-	("i".  consult-imenu)
-	("M" . consult-mark)
-	("d" . consult-flymake))
+				("b" . consult-project-buffer)
+				("o" . consult-recent-file)
+				("r" . consult-bookmarks)
+				("i".  consult-imenu)
+				("M" . consult-mark)
+				("d" . consult-flymake))
   (:map search-map			
-	("M-s M-s" . consult-ripgrep)
-	("M-s v" . consult-git-grep)))
+				("M-s M-s" . consult-ripgrep)
+				("M-s v" . consult-git-grep)))
 
 ;; wgrep no longer needed, since emacs 31 has grep-edit-mode
 
-;;; extra projects
+;;; projects
 (use-package project
   :preface
   (defun +project-find-symbol ()
@@ -416,26 +440,84 @@
     (consult-ripgrep (project-root (project-current t)) (thing-at-point 'symbol)))
   :bind
   (:map goto-map
-	("f" . project-find-file))
+				("f" . project-find-file))
   (:map search-map
-	("/" . +project-find-symbol)))
+				("/" . +project-find-symbol)))
 
-;;; etra gtd
+(use-package ansi-color
+	:hook (completion-filter . ansi-color-compilation-filter))
+
+;;; GTD
 (use-package org
   :custom
   (org-directory (file-truename (expand-file-name my/org-directory)))
 	(org-pretty-entities t)
 	(org-startup-folded t)
 	(org-hide-leading-stars t)
-	(org-hide-emphasis-marker t)
+	(org-hide-emphasis-marker nil)
+	(org-M-RET-may-split-lines nil)
+	(org-insert-heading-respect-content t)
+	(org-fontify-quote-and-verse-blocks t)
+  
+	;; Indentation
+	(org-auto-align-tags t)
+  (org-adapt-indentation nil)
+  (org-startup-indented t)
+  (org-src-preserve-indentation t)
 
+	;; Logging
+  (org-log-done 'time)
+  (org-log-into-drawer t)
+	
 	;; Refile
   (org-refile-targets '((nil :maxlevel . 5)
                         (org-agenda-files :maxlevel . 5)))
   (org-outline-path-complete-in-steps nil)
-  (org-refile-use-outline-path t))
+  (org-refile-use-outline-path t)
 
-;;; extra writing
+	;; Sequences
+	(org-todo-keywords
+	 '((sequence "TODO(t)" "WAIT(w!)" "|" "CANCELLED(c!)" "DONE(d!)")
+		 (sequence "EVT(e)" "|" "CANCELLED(c!)" "DONE(d!)")
+		 (sequence "|" "DECISION(c)")))
+	(org-use-fast-todo-selection 'expert)
+	(org-capture-templates
+   '(("t" "Task" entry (file "tasks.org")
+      "* TODO %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
+      :prepend t)
+     ("n" "Note" entry (file+olp+datetree "log.org")
+      "* %<%H:%M> %?\n:PROPERTIES:\n:CAPTURED: %T\n:END:"
+      :tree-type week)
+
+     ("d" "Decision" entry (file+olp+datetree "log.org")
+      "* DECISION %?\n:PROPERTIES:\n:CAPTURED: %T\n:END:"
+      :tree-type week)
+		 
+     ("e" "Event" entry (file+olp+datetree "log.org")
+      "* EVT %? :event:\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
+      :tree-type week
+      :prepend t)))
+
+	:bind
+	(:map mymacs-mode-map
+				("C-c o" . my/org-prefix-map))
+	(:prefix-map
+	 my/org-prefix-map
+	 :prefix "C-c o"
+	 ("a" . org-agenda)
+	 ("o" . org-capture))
+							 
+				
+
+	:config
+  ;; Fixed-pitch for code/tables in variable-pitch org docs
+  (set-face-attribute 'org-block nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+;;; Writing
 (use-package ispell
   :hook ((text-mode . flyspell-mode)
 	 (prog-mode . flyspell-prog-mode))
@@ -445,9 +527,24 @@
 ;;; extra writing denote
 
 
-;;; extra programming
-(use-package eglot)
+;;; Programming
+(use-package eglot
+	:bind
+	(:map eglot-mode-map
+				("C-c l" . my/eglot-prefix-map))
+	(:prefix-map
+	 my/eglot-prefix-map
+	 :prefix "C-c l"
+	 ("a" . eglot-code-actions)
+	 ("d" . xref-find-definitions)
+	 ("r" . eglot-rename)
+	 ("h" . eldoc)
+	 ("f" . eglot-format-buffer)
+	 ("F" . eglot-format)
+	 ("C" . flymake-show-project-diagnostics)
+	 ("c" . consult-flymake)))
 
+;;;; diagnostics
 (use-package flymake
   :bind
   (:map goto-map
@@ -457,7 +554,7 @@
 	("M-n" . flymake-goto-next-error)
 	("M-p" . flymake-goto-prev-error)))
 
-;;; extra programming ruby
+;;;; ruby
 (use-package ruby-ts-mode
   :if my/dev-ruby-enabled
   :mode ("\\.rb\\'" "Rakefile\\'" "Gemfile\\'" "\\.rake\\'" "\\.gemspec\\'" "\\.ru\\'")
@@ -475,7 +572,7 @@
   (with-eval-after-load 'eglot
     (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("ruby-lsp")))))
 
-;;; extra programming go
+;;;; go lang
 (use-package go-ts-mode
   :if my/dev-go-enabled
   :hook (go-ts-mode . eglot-ensure)
@@ -486,7 +583,7 @@
     (add-to-list 'eglot-server-programs '(go-ts-mode . ("gopls")))))
 
 
-;;; extra programming scala
+;;;; scala 
 (use-package scala-ts-mode
   :mode ("\\.scala\\'" "\\.sc\\'" "\\.sbt\\'")
   :hook (scala-ts-mode . eglot-ensure)
@@ -510,6 +607,5 @@
     (add-to-list 'eglot-server-programs
 		 `(scala-ts-mode . ,(my/scala-metals-contact)))))
 
-;;; extra programming elisp
-(use-package emacs
-  :hook (emacs-lisp-mode . outline-minor-mode))
+;;;; lisp
+
