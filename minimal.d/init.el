@@ -37,7 +37,7 @@
   :type 'string
   :group 'mymacs)
 
-(defcustom my/font-height 116
+(defcustom my/font-height 110
   "The font height"
   :type 'number
   :group 'mymacs)
