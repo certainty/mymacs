@@ -62,11 +62,11 @@
   :type 'boolean
   :group 'mymacs)
 
-;;; load custom file
+;;;; load custom file
 (setopt custom-file (locate-user-emacs-file "custom.el"))
 (load custom-file :no-error-if-file-is-missing) 
 
-;;; package setup
+;;; Packages
 (require 'package)
 (setopt package-archives
         '(("gnu" . "https://elpa.gnu.org/packages/")
@@ -210,7 +210,7 @@
 				("M-O" . other-window)
 				("M-o" . ace-window)))
 
-;;; minibuffer
+;;;; minibuffer
 
 (use-package minibuffer
   :hook (after-init . minibuffer-depth-indicate-mode)
@@ -223,7 +223,7 @@
   (savehist-ave-minibuffer-history t)
   (savehist-autosave-interval 100))
 
-;;; completion 
+;;; Completion 
 
 ;;;; minibuffer  
 (use-package vertico
@@ -268,7 +268,7 @@
   (add-to-list 'completion-at-point-functions	'cape-dabbrev)
   (add-to-list 'completion-at-point-functions 'cape-file))
 
-;;; editing
+;;; Editing
 (use-package emacs
   :custom
   (kill-whole-line t)
@@ -373,7 +373,7 @@
   :ensure t
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
-;;; files
+;;; Files
 
 (use-package files
   :custom
@@ -413,7 +413,7 @@
   (wdired-allow-to-change-permissions t)
   (wdired-create-parent-directories t))
 
-;;; search
+;;; Search
 
 (use-package consult
   :ensure t
@@ -431,7 +431,7 @@
 
 ;; wgrep no longer needed, since emacs 31 has grep-edit-mode
 
-;;; projects
+;;; Projects
 (use-package project
   :preface
   (defun +project-find-symbol ()
@@ -524,7 +524,7 @@
   :custom
   (ispell-program-name "hunspell"))
 
-;;; extra writing denote
+;;;; Denote
 
 
 ;;; Programming
