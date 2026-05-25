@@ -76,8 +76,8 @@
           ("nongnu" . 10))
         package-install-upgrade-built-in t
         package-check-signature t ; don't trust anyone these days
-	package-native-compile t
-	package-quickstart t)
+				package-native-compile t
+				package-quickstart t)
 
 ;;; UI
 (use-package emacs
@@ -168,11 +168,11 @@
 				("n b" . next-buffer)
 				("p b" . previous-buffer))
   (:repeat-map my/window-resize-repeat-map
-	       ("{" . shrink-window-horizontally)
-	       ("}" . enlarge-window-horizontally))
+							 ("{" . shrink-window-horizontally)
+							 ("}" . enlarge-window-horizontally))
   (:repeat-map my/buffer-repeat-map
-	       ("n" . next-buffer)
-	       ("p" . previous-buffer))
+							 ("n" . next-buffer)
+							 ("p" . previous-buffer))
   :custom
   ;; prefer splitting to the side
   (split-height-threshold nil)
@@ -183,7 +183,7 @@
 ;;;;; buffer arrangement
   (display-buffer-alist
    '(("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\|xref\\)\\*"
- 
+			
       (display-buffer-reuse-mode-window
        display-buffer-in-side-window)
 
@@ -277,14 +277,14 @@
   (set-mark-command-repeat-pop t)
   :bind
   (:map mymacs-mode-map
-	("C-c >" . indent-rigidly-right-to-tab-stop)
-	("C-c <" . indent-rigigly-left-to-tab-stop))
+				("C-c >" . indent-rigidly-right-to-tab-stop)
+				("C-c <" . indent-rigigly-left-to-tab-stop))
   (:map goto-map
-	("@" . pop-to-mark-command)
-	("m" . pop-global-mark))
+				("@" . pop-to-mark-command)
+				("m" . pop-global-mark))
   (:repeat-map my/mark-repeat-map
-	       ("p" . pop-to-mark-command)
-	       ("g" . pop-global-mark))
+							 ("p" . pop-to-mark-command)
+							 ("g" . pop-global-mark))
   :init
   (setq-default tab-width 2)
   (repeat-mode)
@@ -329,18 +329,18 @@
 	 ("u" . treesit-up-list)
 	 ("d" . treesit-down-list)
 	 ("t" . transpose-sexps)
-	 ("=" . indent-sexp)
-	 (:repeat-map
-		my/movement-repeat-map
-		("p" . previous-line)
-		("n" . next-line))
-	 (:repeat-map
-		my/sexp-repeat-map
-		("f" . treesit-forward-sexp)
-		("b" . treesit-backward-sexp)
-		("u" . treesit-up-list)
-		("d" . treesit-down-list)
-		("t" . transpose-sexps))))
+	 ("=" . indent-sexp))
+	(:repeat-map
+	 my/movement-repeat-map
+	 ("p" . previous-line)
+	 ("n" . next-line))
+	(:repeat-map
+	 my/sexp-repeat-map
+	 ("f" . treesit-forward-sexp)
+	 ("b" . treesit-backward-sexp)
+	 ("u" . treesit-up-list)
+	 ("d" . treesit-down-list)
+	 ("t" . transpose-sexps)))
 
 ;;;; embark
 (use-package embark
@@ -515,8 +515,8 @@
 	 :prefix "C-c o"
 	 ("a" . org-agenda)
 	 ("o" . org-capture))
-							 
-				
+	
+	
 
 	:config
   ;; Fixed-pitch for code/tables in variable-pitch org docs
@@ -529,7 +529,7 @@
 ;;; Writing
 (use-package ispell
   :hook ((text-mode . flyspell-mode)
-	 (prog-mode . flyspell-prog-mode))
+				 (prog-mode . flyspell-prog-mode))
   :custom
   (ispell-program-name "hunspell"))
 
@@ -557,11 +557,11 @@
 (use-package flymake
   :bind
   (:map goto-map
-	("n e" . flymake-goto-next-error)
-	("p e" . flymake-goto-prev-error))
+				("n e" . flymake-goto-next-error)
+				("p e" . flymake-goto-prev-error))
   (:map flymake-mode-map
-	("M-n" . flymake-goto-next-error)
-	("M-p" . flymake-goto-prev-error)))
+				("M-n" . flymake-goto-next-error)
+				("M-p" . flymake-goto-prev-error)))
 
 ;;;; ruby
 (use-package ruby-ts-mode
@@ -600,7 +600,7 @@
   (scala-ts-mode-indent-offset 2)
   :bind
   (:map scala-ts-mode-map
-	("C-c C-t" . +scala-test-only))
+				("C-c C-t" . +scala-test-only))
 
   :config
 	;;; Metals LSP configuration
@@ -614,7 +614,7 @@
 
   (with-eval-after-load 'eglot
     (add-to-list 'eglot-server-programs
-		 `(scala-ts-mode . ,(my/scala-metals-contact)))))
+								 `(scala-ts-mode . ,(my/scala-metals-contact)))))
 
 ;;;; lisp
 
