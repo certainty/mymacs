@@ -108,7 +108,7 @@
   
   :bind
   (:map mymacs-mode-map
-	("C-g" . +escape-dwim))
+				("C-g" . +escape-dwim))
   
   :init
   (menu-bar-mode -1)
@@ -163,8 +163,8 @@
   :init
   :bind
   (:map goto-map
-	("n b" . next-buffer)
-	("p b" . previous-buffer))
+				("n b" . next-buffer)
+				("p b" . previous-buffer))
   (:repeat-map my/window-resize-repeat-map
 	       ("{" . shrink-window-horizontally)
 	       ("}" . enlarge-window-horizontally))
@@ -249,10 +249,10 @@
   :hook (prog-mode org-mode markdown-mode)
   :bind
   (:map completion-preview-active-mode-map
-	("M-n" . completion-preview-next-candidate)
-	("M-p" . completion-preview-prev-candidate)
-	("C-y" . completion-preview-insert)
-	("M-y" . completion-preview-insert))
+				("M-n" . completion-preview-next-candidate)
+				("M-p" . completion-preview-prev-candidate)
+				("C-y" . completion-preview-insert)
+				("M-y" . completion-preview-insert))
   :custom
   (completion-auto-select t)
   (completions-formt 'one-column)
@@ -298,9 +298,9 @@
   (delete-pair-push-mark t)
   :bind
   (:map mymacs-mode-map
-	;; original binding is susped frame which I never want
-	("C-z" . delete-pair)
-	("C-Z" . electric-pair-delete-pair))
+				;; original binding is susped frame which I never want
+				("C-z" . delete-pair)
+				("C-Z" . electric-pair-delete-pair))
   :init
   (electric-pair-mode))
 
@@ -332,7 +332,7 @@
 		my/movement-repeat-map
 		("p" . previous-line)
 		("n" . next-line))
-	 (:repeat -map
+	 (:repeat-map
 		my/sexp-repeat-map
 		("f" . treesit-forward-sexp)
 		("b" . treesit-backward-sexp)
