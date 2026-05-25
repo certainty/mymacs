@@ -162,6 +162,8 @@
 	(after-init . window-divider-mode)
   :init
   :bind
+	(:map mymacs-mode-map
+				("C-c |" . split-window-right))
   (:map goto-map
 				("n b" . next-buffer)
 				("p b" . previous-buffer))
@@ -444,12 +446,15 @@
 				("C-c v" . project-vc-dir))
   (:map goto-map
 				("f" . project-find-file)
-				("p" . project-switch-project))
+				("P" . project-switch-project))
   (:map search-map
 				("*" . +project-find-symbol)))
 
 (use-package ansi-color
 	:hook (completion-filter . ansi-color-compilation-filter))
+
+(use-package eat
+	:ensure t)
 
 ;;; GTD
 (use-package org
