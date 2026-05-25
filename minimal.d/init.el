@@ -426,8 +426,8 @@
 				("M" . consult-mark)
 				("d" . consult-flymake))
   (:map search-map			
-				("M-s M-s" . consult-ripgrep)
-				("M-s v" . consult-git-grep)))
+				("/" . consult-ripgrep)
+				("v" . consult-git-grep)))
 
 ;; wgrep no longer needed, since emacs 31 has grep-edit-mode
 
@@ -439,10 +439,14 @@
     (interactive)
     (consult-ripgrep (project-root (project-current t)) (thing-at-point 'symbol)))
   :bind
+	(:map mymacs-mode-map
+				("C-c p" . project-switch-project)
+				("C-c v" . project-vc-dir))
   (:map goto-map
-				("f" . project-find-file))
+				("f" . project-find-file)
+				("p" . project-switch-project))
   (:map search-map
-				("/" . +project-find-symbol)))
+				("*" . +project-find-symbol)))
 
 (use-package ansi-color
 	:hook (completion-filter . ansi-color-compilation-filter))
