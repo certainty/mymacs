@@ -22,45 +22,14 @@
   :prefix "my/"
   :group 'emacs)
 
-(defcustom my/user-name "john doe"
-  "Full name"
-  :type 'string
-  :group 'mymacs)
-
-(defcustom my/theme 'modus-vivendi-tinted
-  "The theme to use"
-  :type 'symbol
-  :group 'mymacs)
-
-(defcustom my/font "Maple Mono NF"
-  "The font to use"
-  :type 'string
-  :group 'mymacs)
-
-(defcustom my/font-height 110
-  "The font height"
-  :type 'number
-  :group 'mymacs)
-
-(defcustom my/font-weight 'light
-  "The font weight"
-  :type 'symbol
-  :group 'mymacs)
-
-(defcustom my/org-directory "~/org"
-  "The main org directory"
-  :type 'string
-  :group 'mymacs)
-
-(defcustom my/dev-ruby-enabled nil
-  "Enable ruby programming support"
-  :type 'boolean
-  :group 'mymacs)
-
-(defcustom my/dev-scala-enabled nil
-  "Enable scala programming support"
-  :type 'boolean
-  :group 'mymacs)
+(defcustom my/user-name "john doe" "Full name" :type 'string :group 'mymacs)
+(defcustom my/theme 'modus-vivendi-tinted "The theme to use" :type 'symbol :group 'mymacs)
+(defcustom my/font "Maple Mono NF" "The font to use" :type 'string :group 'mymacs)
+(defcustom my/font-height 110 "The font height" :type 'number :group 'mymacs)
+(defcustom my/font-weight 'light "The font weigh" :type 'symbol :group 'mymacs)
+(defcustom my/org-directory "~/org" "The main org directory" :type 'string :group 'mymacs)
+(defcustom my/org-tag-alist nil "The tag quick keys" :type '(alist :key-type string :value-type character))
+(defcustom my/scala-metals-server-arguments nil "Arguments for metals" :type '(repeat string) :group 'mymacs)
 
 ;;;; load custom file
 (setopt custom-file (locate-user-emacs-file "custom.el"))
@@ -77,7 +46,10 @@
         package-install-upgrade-built-in t
         package-check-signature t ; don't trust anyone these days
 				package-native-compile t
-				package-quickstart t)
+				package-quickstart t
+				network-security-level 'high
+				gnutls-verify-error t)
+(package-initialize)
 
 ;;; UI
 (use-package emacs
@@ -93,7 +65,7 @@
   (modus-themes-italic-constructs t)
   (modus-themes-bold-constructs t)
   (modus-themes-prompts '(extrabold italic))
-  (modue-themes-paren-match '(bold intense))
+  (modus-themes-paren-match '(bold intense))
   (modus-themes-org-blocks 'tinted-background)
   (modus-themes-completions
    '((matches . (extrabold underline))
@@ -151,16 +123,24 @@
 
 ;;;; outline
 (use-package outline
-	:hook ((prog-mode org-mode markdown-mode) . outline-minor-mode)
+	:hook ((prog-mode . outline-minor-mode)
+				 (org-mode . outline-minor-mode)
+				 (markdown-mode . outline-minor-mode))
 	:bind
 	(:map mymacs-mode-map
 				("C-<tab>" . outline-cycle)))
 
 ;;;; windows and buffers
+
+(defvar my/side-window-config
+	'((display-buffer-reuse-mode-window display-buffer-in-side-window)
+    (side . right)
+    (slot . 0)
+    (window-width . 0.33)
+    (mode . special-mode)
+    (window-parameters . ((no-other-window . t) (no-delete-other-windows . t)))))
+
 (use-package window
-  :hook
-	(after-init . window-divider-mode)
-  :init
   :bind
 	(:map mymacs-mode-map
 				("C-c |" . split-window-right))
@@ -179,51 +159,37 @@
   (split-width-threshold 80)
   (even-window-sizes nil)
   (window-combination-resize t)
+	(window-divider-default-right-width 7)
+	(window-divider-default-bottom-width 7)
 	
-;;;;; buffer arrangement
+  ;;;;; buffer arrangement
   (display-buffer-alist
-   '(("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\|xref\\)\\*"
-			
-      (display-buffer-reuse-mode-window
-       display-buffer-in-side-window)
-
-      (side . right)
-      (slot . 0)
-      (window-width . 0.33)
-
-      (mode . special-mode)
-      
-      (window-parameters
-       . ((no-other-window . t)
-          (no-delete-other-windows . t))))
-
+   `(("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\|xref\\)\\*" ,@my/side-window-config)
      (".*"
       (display-buffer-reuse-window
        display-buffer-use-some-window
-       display-buffer-pop-up-window)))))
+       display-buffer-pop-up-window))))
 
-(use-package ace-window
-  :ensure t
-  :hook (after-init . ace-window-display-mode)
-  :custom
-  (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
-  :bind
-  (:map mymacs-mode-map
-				("M-O" . other-window)
-				("M-o" . ace-window)))
+	:config
+	(dolist (f '(window-divider window-divider-first-pixel window-divider-last-pixel))
+		(set-face-foreground f (face-background 'default)))
+	:init
+	(window-divider-mode))
+
 
 ;;;; minibuffer
-
 (use-package minibuffer
-  :hook (after-init . minibuffer-depth-indicate-mode)
   :custom
-  (enable-recursive-minibuffers t))
+  (enable-recursive-minibuffers t)
+	:init
+	(minibuffer-depth-indicate-mode))
 
 (use-package savehist
-  :hook after-init
   :custom
-  (savehist-ave-minibuffer-history t)
-  (savehist-autosave-interval 100))
+  (savehist-save-minibuffer-history t)
+  (savehist-autosave-interval 100)
+	:init
+	(savehist-mode))
 
 ;;; Completion 
 
@@ -257,7 +223,7 @@
 				("M-y" . completion-preview-insert))
   :custom
   (completion-auto-select t)
-  (completions-formt 'one-column)
+  (completions-format 'one-column)
   (completions-auto-help 'visible)
   (completions-max-height 20)
   (completion-ignore-case t)
@@ -278,13 +244,13 @@
   :bind
   (:map mymacs-mode-map
 				("C-c >" . indent-rigidly-right-to-tab-stop)
-				("C-c <" . indent-rigigly-left-to-tab-stop))
+				("C-c <" . indent-rigidly-left-to-tab-stop))
   (:map goto-map
-				("@" . pop-to-mark-command)
+				("<" . pop-to-mark-command)
 				("m" . pop-global-mark))
   (:repeat-map my/mark-repeat-map
-							 ("p" . pop-to-mark-command)
-							 ("g" . pop-global-mark))
+							 ("<" . pop-to-mark-command)
+							 ("m" . pop-global-mark))
   :init
   (setq-default tab-width 2)
   (repeat-mode)
@@ -381,21 +347,23 @@
   :custom
   (make-backup-files nil)
   (auto-save-default nil)
+	(auto-save-default nil)
   (create-lockfiles nil)
   (find-file-visit-truename t))
 
 ;;;; recent
 
 (use-package recentf
-  :hook after-init
   :custom
   (recentf-max-saved-items 1000)
-  (redentf-exclude
+  (recentf-exclude
    '(".gz" ".xz" ".zip"
      "COMMIT_EDITMSG"))
   :bind
   (:map mymacs-mode-map
-				("C-x R" . recentf-open)))
+				("C-x R" . recentf-open))
+	:init
+	(recentf-mode))
 
 ;;;; dired
 
@@ -454,12 +422,21 @@
 	:hook (completion-filter . ansi-color-compilation-filter))
 
 (use-package eat
-	:ensure t)
+	:ensure t
+	:commands (eat eat-project)
+	:bind
+	(:map mymacs-mode-map
+				("C-c t" . eat-project)
+				("C-c T" . eat))
+	:init
+	(add-to-list 'display-buffer-alist `(("\\(?:\\*eat\\*(?:<[0-9]+>)?\\|.*-eat\\)" ,@my/side-window-config))))
 
 ;;; GTD
 (use-package org
   :custom
   (org-directory (file-truename (expand-file-name my/org-directory)))
+	(org-agenda-files (list (concat org-directory "/tasks.org")
+													(concat org-directory "/log.org")))
 	(org-pretty-entities t)
 	(org-startup-folded t)
 	(org-hide-leading-stars t)
@@ -506,6 +483,9 @@
       "* EVT %? :event:\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
       :tree-type week
       :prepend t)))
+	(org-enforce-todo-dependencies t)
+	(org-agenda-custom-commmands '((n "Next actions" todo "TODO") ("w" "Waiting" todo "WAIT")))
+	(org-tag-alist my/org-tag-alist)
 
 	:bind
 	(:map mymacs-mode-map
@@ -516,8 +496,6 @@
 	 ("a" . org-agenda)
 	 ("o" . org-capture))
 	
-	
-
 	:config
   ;; Fixed-pitch for code/tables in variable-pitch org docs
   (set-face-attribute 'org-block nil :inherit 'fixed-pitch)
@@ -551,7 +529,26 @@
 	 ("f" . eglot-format-buffer)
 	 ("F" . eglot-format)
 	 ("C" . flymake-show-project-diagnostics)
-	 ("c" . consult-flymake)))
+	 ("c" . consult-flymake))
+	:custom
+	(read-process-output-max (* 1024 1024))
+	(eglot-server-programs
+	 `((ruby-ts-mode . ("ruby-lsp"))
+		 (go-ts-mode . ("gopls"))
+		 (scala-ts-mode . ,(my/scala-metals-contact))))
+
+  :preface
+	(defun my/scala-metals-contact ()
+    "Build the Eglot contact spec for Metals."
+    (append
+     (list "metals")
+     (mapcar (lambda (arg) (format "-J%s" arg)) my/scala-metals-java-options)
+     my/scala-metals-server-arguments
+     (list :initializationOptions my/scala-metals-initialization-options))))
+
+(use-package treesit
+	:custom
+	(treesit-font-lock-level 5))
 
 ;;;; diagnostics
 (use-package flymake
@@ -565,9 +562,8 @@
 
 ;;;; ruby
 (use-package ruby-ts-mode
-  :if my/dev-ruby-enabled
   :mode ("\\.rb\\'" "Rakefile\\'" "Gemfile\\'" "\\.rake\\'" "\\.gemspec\\'" "\\.ru\\'")
-  :hook ((ruby-ts-mode . eglot-ensure))
+  :hook eglot-ensure
   :bind
   (:map ruby-ts-mode-map
         ("C-c t t" . +ruby-test-dwim)
@@ -576,45 +572,25 @@
         ("C-c t m" . +ruby-minitest-dwim))
   :custom
   (ruby-indent-level 2)
-  (ruby-insert-encoding-magic-comment nil)
-  :config
-  (with-eval-after-load 'eglot
-    (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("ruby-lsp")))))
+  (ruby-insert-encoding-magic-comment nil))
 
 ;;;; go lang
 (use-package go-ts-mode
-  :if my/dev-go-enabled
-  :hook (go-ts-mode . eglot-ensure)
+	:mode "\\.go'"
+  :hook eglot-ensure
   :init
-  (setq-default go-ts-mode-indent-offset 4)
-  :config
-  (with-eval-after-load 'eglot
-    (add-to-list 'eglot-server-programs '(go-ts-mode . ("gopls")))))
+  (setq-default go-ts-mode-indent-offset 4))
 
 
 ;;;; scala 
 (use-package scala-ts-mode
   :mode ("\\.scala\\'" "\\.sc\\'" "\\.sbt\\'")
-  :hook (scala-ts-mode . eglot-ensure)
+  :hook eglot-ensure
   :custom
   (scala-ts-mode-indent-offset 2)
   :bind
   (:map scala-ts-mode-map
-				("C-c C-t" . +scala-test-only))
-
-  :config
-	;;; Metals LSP configuration
-  (defun my/scala-metals-contact ()
-    "Build the Eglot contact spec for Metals."
-    (append
-     (list my/scala-metals-command)
-     (mapcar (lambda (arg) (format "-J%s" arg)) my/scala-metals-java-options)
-     my/scala-metals-server-arguments
-     (list :initializationOptions my/scala-metals-initialization-options)))
-
-  (with-eval-after-load 'eglot
-    (add-to-list 'eglot-server-programs
-								 `(scala-ts-mode . ,(my/scala-metals-contact)))))
+				("C-c C-t" . +scala-test-only)))
 
 ;;;; lisp
 
