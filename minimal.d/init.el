@@ -29,7 +29,13 @@
 (defcustom my/font-weight 'light "The font weigh" :type 'symbol :group 'mymacs)
 (defcustom my/org-directory "~/org" "The main org directory" :type 'string :group 'mymacs)
 (defcustom my/org-tag-alist nil "The tag quick keys" :type '(alist :key-type string :value-type character))
+(defcustom my/scala-metals-java-options nil "Java options for Metals." :type '(repeat string) :group 'mymacs)
 (defcustom my/scala-metals-server-arguments nil "Arguments for metals" :type '(repeat string) :group 'mymacs)
+(defcustom my/scala-metals-initialization-options
+  '(:isHttpEnabled "on")
+  "Initialization options sent to Metals."
+  :type 'plist
+  :group 'mymacs)
 
 ;;;; load custom file
 (setopt custom-file (locate-user-emacs-file "custom.el"))
@@ -37,19 +43,33 @@
 
 ;;; Packages
 (require 'package)
+(require 'use-package)
 (setopt package-archives
         '(("gnu" . "https://elpa.gnu.org/packages/")
-          ("nongnu" . "https://elpa.nongnu.org/nongnu/"))
+          ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+          ("melpa" . "https://melpa.org/packages/"))
         package-archive-priorities
         '(("gnu" . 20)
-          ("nongnu" . 10))
+          ("nongnu" . 10)
+          ("melpa" . 0))
+
+				package-pinned-packages
+        '((ace-window . "gnu")
+          (cape . "gnu")
+          (consult . "gnu")
+          (embark . "gnu")
+          (embark-consult . "gnu")
+          (eat . "nongnu")
+          (scala-ts-mode . "melpa"))
+				
         package-install-upgrade-built-in t
-        package-check-signature t ; don't trust anyone these days
-				package-native-compile t
-				package-quickstart t
-				network-security-level 'high
-				gnutls-verify-error t)
-(package-initialize)
+        ;; MELPA packages are generally unsigned, so keep GNU/Nongnu signature
+        ;; verification where available but allow explicitly reviewed MELPA use.
+        package-check-signature 'allow-unsigned
+        package-native-compile t
+        package-quickstart t
+        network-security-level 'high
+        gnutls-verify-error t)
 
 ;;; UI
 (use-package emacs
@@ -415,6 +435,8 @@
     "Search for symbol under point in whole project"
     (interactive)
     (consult-ripgrep (project-root (project-current t)) (thing-at-point 'symbol)))
+  :custom
+  (project-vc-extra-root-markers '(".project.el"))
   :bind
 	(:map mymacs-mode-map
 				("C-c p" . project-switch-project)
@@ -429,14 +451,15 @@
 	:hook (completion-filter . ansi-color-compilation-filter))
 
 (use-package eat
-	:ensure t
-	:commands (eat eat-project)
-	:bind
-	(:map mymacs-mode-map
-				("C-c t" . eat-project)
-				("C-c T" . eat))
-	:init
-	(add-to-list 'display-buffer-alist `(("\\(?:\\*eat\\*(?:<[0-9]+>)?\\|.*-eat\\)" ,@my/side-window-config))))
+  :ensure t
+  :pin "nongnu"
+  :commands (eat eat-project)
+  :bind
+  (:map mymacs-mode-map
+        ("C-c t" . eat-project)
+        ("C-c T" . eat))
+  :init
+  (add-to-list 'display-buffer-alist `(("\\(?:\\*eat\\*(?:<[0-9]+>)?\\|.*-eat\\)" ,@my/side-window-config))))
 
 ;;; GTD
 (use-package org
@@ -570,7 +593,7 @@
 ;;;; ruby
 (use-package ruby-ts-mode
   :mode ("\\.rb\\'" "Rakefile\\'" "Gemfile\\'" "\\.rake\\'" "\\.gemspec\\'" "\\.ru\\'")
-  :hook eglot-ensure
+  :hook (ruby-ts-mode . eglot-ensure)
   :bind
   (:map ruby-ts-mode-map
         ("C-c t t" . +ruby-test-dwim)
@@ -584,19 +607,19 @@
 ;;;; go lang
 (use-package go-ts-mode
 	:mode "\\.go'"
-  :hook eglot-ensure
+  :hook (go-ts-mode . eglot-ensure)
   :init
   (setq-default go-ts-mode-indent-offset 4))
 
 
 ;;;; scala
-(use-package scala-mode
+(use-package scala-ts-mode
   :ensure t
+  :pin "melpa"
   :mode ("\\.scala\\'" "\\.sc\\'" "\\.sbt\\'")
-  :hook eglot-ensure
+  :hook (scala-ts-mode . eglot-ensure)
   :bind
-  (:map scala-mode-map
+  (:map scala-ts-mode-map
 				("C-c C-t" . +scala-test-only)))
 
 ;;;; lisp
-
