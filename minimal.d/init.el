@@ -35,7 +35,6 @@
 (setopt custom-file (locate-user-emacs-file "custom.el"))
 (load custom-file :no-error-if-file-is-missing)
 
-
 ;;; Packages
 (require 'package)
 (setopt package-archives
@@ -591,13 +590,12 @@
 
 
 ;;;; scala
-(use-package scala-ts-mode
+(use-package scala-mode
+  :ensure t
   :mode ("\\.scala\\'" "\\.sc\\'" "\\.sbt\\'")
   :hook eglot-ensure
-  :custom
-  (scala-ts-mode-indent-offset 2)
   :bind
-  (:map scala-ts-mode-map
+  (:map scala-mode-map
 				("C-c C-t" . +scala-test-only)))
 
 ;;;; lisp
