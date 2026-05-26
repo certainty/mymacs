@@ -1,5 +1,4 @@
 .mymacs-tabspaces-session.el
-emacs.d/modules/core-config.el
 .*\~
 auto-save-list
 \#.*\#
@@ -12,7 +11,7 @@ auto-save-list
 /minimal.d/elpa/
 /minimal.d/eln-cache/
 /minimal.d/eshell/
-
+tree-sitter/
 recentf
 projects
 package-quickstart.el
@@ -21,3 +20,5 @@ custom.el
 minimal.d/init.el
 places.eld
 *.eld
+./
+minimal.d/tree-sitter/libtree-sitter-scala.dylib

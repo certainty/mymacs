@@ -448,7 +448,7 @@
 				("*" . +project-find-symbol)))
 
 (use-package ansi-color
-	:hook (completion-filter . ansi-color-compilation-filter))
+  :hook (compilation-filter . ansi-color-compilation-filter))
 
 (use-package eat
   :ensure t
@@ -459,7 +459,12 @@
         ("C-c t" . eat-project)
         ("C-c T" . eat))
   :init
-  (add-to-list 'display-buffer-alist `(("\\(?:\\*eat\\*(?:<[0-9]+>)?\\|.*-eat\\)" ,@my/side-window-config))))
+  (push `("\\(?:\\*eat\\*(?:<[0-9]+>)?\\|.*-eat\\)" . ,my/side-window-config) display-buffer-alist)
+  :config
+	;; allow M-o to switch from eat
+  (setopt
+   eat-semi-char-non-bound-keys
+   (append eat-semi-char-non-bound-keys '([?\e ?o]))))
 
 ;;; GTD
 (use-package org
@@ -539,7 +544,8 @@
   :hook ((text-mode . flyspell-mode)
 				 (prog-mode . flyspell-prog-mode))
   :custom
-  (ispell-program-name "hunspell"))
+  (ispell-program-name "aspell")
+  (ispell-dictionary "en_US"))
 
 ;;;; Denote
 
@@ -563,9 +569,8 @@
 	:custom
 	(read-process-output-max (* 1024 1024))
 	(eglot-server-programs
-	 `((ruby-ts-mode . ("ruby-lsp"))
-		 (go-ts-mode . ("gopls"))
-		 (scala-ts-mode . ,(my/scala-metals-contact))))
+	 '((ruby-ts-mode . ("ruby-lsp"))
+		 (go-ts-mode . ("gopls"))))
 
   :preface
 	(defun my/scala-metals-contact ()
@@ -574,11 +579,17 @@
      (list "metals")
      (mapcar (lambda (arg) (format "-J%s" arg)) my/scala-metals-java-options)
      my/scala-metals-server-arguments
-     (list :initializationOptions my/scala-metals-initialization-options))))
+     (list :initializationOptions my/scala-metals-initialization-options)))
+  :config
+  (add-to-list 'eglot-server-programs
+               `(scala-ts-mode . ,(my/scala-metals-contact))))
 
 (use-package treesit
-	:custom
-	(treesit-font-lock-level 5))
+  :custom
+  (treesit-font-lock-level 5)
+  :config
+  (add-to-list 'treesit-language-source-alist
+               '(scala "https://github.com/tree-sitter/tree-sitter-scala")))
 
 ;;;; diagnostics
 (use-package flymake
