@@ -8,6 +8,7 @@
 ;;; Customization
 
 (add-to-list 'load-path (locate-user-emacs-file "user-lisp"))
+(require 'my-modeline)
 
 (defvar-keymap mymacs-mode-map :doc "mymacs global keys")
 (define-minor-mode mymacs-mode
@@ -133,7 +134,7 @@
    :height my/font-height
    :weight my/font-weight)
 
-  (my/modeline-mode)
+  ;(my/modeline-mode)
 
   :preface
   (defun my/set-modeline-faces ()
@@ -233,7 +234,8 @@
   ;;;;; buffer arrangement
   (display-buffer-alist
    `(("\\*Capture\\*" . ,my/bottom-window-config)
-     ("^\\*vc-.*\\*$" . ,my/side-window-config)
+     ("^\\*vc-git.*\\*$" . ,my/bottom-window-config)
+     ("^\\*vc-dir\\*" . ,my/side-window-config)
      ("\\*xref\\*" . ,my/bottom-window-config)
      ("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\)\\*" . ,my/side-window-config)
      (".*"
@@ -256,7 +258,10 @@
 	:bind
 	(:map mymacs-mode-map
 				("M-o" . ace-window)
-				("M-O" . other-window)))
+				("M-O" . other-window))
+  :config
+  (add-to-list 'aw-dispatch-alist
+               '(?q ace-delete-window "Delete Window")))
 
 ;;;; auto-revert
 (use-package autorevert
@@ -291,12 +296,15 @@
 	(completions-auto-help 'visible)
   (completions-max-height 20)
   (completion-ignore-case t)
+  (read-buffer-completion-ignore-case t)
+  (read-file-name-completion-ignore-case t)
 	(completions-format 'vertical)
 	(completion-styles '(substring partial-completion flex basic)))
 
 (use-package icomplete
 	:custom
 	(icomplete-delay-completions-threshold 0)
+	(icomplete-in-buffer t)
 	(icomplete-max-delay-chars 0)
 	(icomplete-scroll t)
 	(icomplete-prospects-height 10)
@@ -310,11 +318,29 @@
 	:init
 	(icomplete-vertical-mode 1))
 
+;;;; In-buffer
+(use-package completion-preview
+  :custom
+  (completion-preview-minimum-symbol-length 1)
+  (completion-preview-idle-delay nil)
+  (completion-preview-message-format nil)
+  
+  :hook ((prog-mode . completion-preview-mode)
+         (org-mode . completion-preview-mode)
+         (markdown-mode . completion-preview-mode))
+  :bind
+  (:map completion-preview-active-mode-map
+        ("C-n" . completion-preview-next-candidate)
+        ("C-p" . completion-preview-prev-candidate)
+        ("C-y" . completion-preview-insert)))
+
 (use-package cape
   :ensure t
   :init
   (add-to-list 'completion-at-point-functions	'cape-dabbrev)
   (add-to-list 'completion-at-point-functions 'cape-file))
+
+
 
 ;;; Editing
 (use-package emacs
@@ -509,7 +535,15 @@
   (:map search-map
 				("*" . +project-find-symbol)))
 
+(use-package xref
+  :custom
+  (xref-show-definitions-function #'xref-show-definitions-buffer))
+
 ;;;; compilation mode colors
+(use-package compile
+  :custom
+  (compilation-scroll-output t))
+
 (use-package ansi-color
   :hook (compilation-filter . ansi-color-compilation-filter))
 
@@ -649,6 +683,11 @@
      (mapcar (lambda (arg) (format "-J%s" arg)) my/scala-metals-java-options)
      my/scala-metals-server-arguments
      (list :initializationOptions my/scala-metals-initialization-options)))
+  (defun my/scala-eglot-setup ()
+    "Disable Metals on-type formatting in Scala buffers."
+    (setq-local eglot-ignored-server-capabilities
+                (cons :documentOnTypeFormattingProvider
+                      eglot-ignored-server-capabilities)))
   :config
   (add-to-list 'eglot-server-programs
                `(scala-ts-mode . ,(my/scala-metals-contact))))
@@ -662,6 +701,13 @@
 
 ;;;; diagnostics
 (use-package flymake
+  :custom
+  (flymake-indicator-type 'margins)
+  (flymake-margin-indicator-position 'left-margin)
+  (flymake-margin-indicators-string
+   '((error "Ⓔ" compilation-error)
+     (warning "Ⓦ" compilation-warning)
+     (note "Ⓘ" compilation-info)))
   :bind
   (:map goto-map
 				("n e" . flymake-goto-next-error)
@@ -695,7 +741,8 @@
 (use-package scala-ts-mode
   :ensure nil
   :mode ("\\.scala\\'" "\\.sc\\'" "\\.sbt\\'")
-  :hook (scala-ts-mode . eglot-ensure)
+  :hook ((scala-ts-mode . my/scala-eglot-setup)
+         (scala-ts-mode . eglot-ensure))
   :bind
   (:map scala-ts-mode-map
 				("C-c C-t" . +scala-test-only)))

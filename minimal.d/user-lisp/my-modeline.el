@@ -7,6 +7,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'subr-x)
 (require 'flymake)
 
@@ -17,6 +18,11 @@
 (defface my/modeline-indicator-gray
   '((t :inherit shadow))
   "Subtle face for modeline indicators."
+  :group 'my/modeline)
+
+(defface my/modeline-accent
+  '((t :inherit mode-line-emphasis))
+  "Accent face for prominent modeline indicators."
   :group 'my/modeline)
 
 (defun my/modeline--buffer-name ()
@@ -40,6 +46,17 @@
   "Return the current major mode name."
   (format-mode-line mode-name))
 
+(defun my/modeline--flymake-show-zero-counter-p (type)
+  "Return non-nil when TYPE should display a zero-valued counter."
+  (cond
+   ((eq flymake-suppress-zero-counters t)
+    nil)
+   (flymake-suppress-zero-counters
+    (>= (flymake--severity type)
+        (warning-numeric-level flymake-suppress-zero-counters)))
+   (t
+    t)))
+
 (defun my/modeline--selected-window (construct)
   "Return formatted CONSTRUCT only in the selected window."
   (when (mode-line-window-selected-p)
@@ -51,42 +68,45 @@
     (when (not (string-empty-p vc))
       (string-trim-left vc "[^-]+[:-]"))))
 
-(defun my/modeline--flymake-counts ()
-  "Return Flymake diagnostics as a list of counts."
-  (let ((errors 0)
-        (warnings 0)
-        (infos 0))
-    (dolist (diag (flymake-diagnostics))
-      (pcase (flymake-diagnostic-type diag)
-        (:error (setq errors (1+ errors)))
-        (:warning (setq warnings (1+ warnings)))
-        (:note (setq infos (1+ infos)))))
-    (list errors warnings infos)))
+(defun my/modeline--flymake-count (type)
+  "Return the number of diagnostics matching TYPE severity."
+  (let ((count 0)
+        (severity (flymake--severity type)))
+    (dolist (diag (flymake-diagnostics) count)
+      (when (= severity (flymake--severity (flymake-diagnostic-type diag)))
+        (setq count (1+ count))))))
 
-(defun my/modeline--flymake-token (label count face)
-  "Return a Flymake token using LABEL, COUNT, and FACE."
-  (propertize (format "%s%d" label count) 'face face))
+(defun my/modeline--flymake-token (type label)
+  "Return a Flymake token for TYPE prefixed with LABEL."
+  (let ((count (my/modeline--flymake-count type)))
+    (when (or (> count 0)
+              (my/modeline--flymake-show-zero-counter-p type))
+      (propertize
+       (format "%s%d" label count)
+       'face (flymake--lookup-type-property type 'mode-line-face 'mode-line)))))
 
 (defun my/modeline--flymake ()
   "Return a compact Flymake segment."
   (when (bound-and-true-p flymake-mode)
-    (pcase-let ((`(,errors ,warnings ,infos) (my/modeline--flymake-counts)))
+    (let ((exception (string-trim (format-mode-line flymake-mode-line-exception))))
       (cond
-       ((flymake-is-running)
-        (propertize "Checking" 'face 'shadow))
-       ((and (zerop errors) (zerop warnings) (zerop infos))
-        (propertize "OK" 'face 'success))
+       ((not (string-empty-p exception))
+        exception)
+       ((not (flymake-running-backends))
+        nil)
        (t
-        (string-join
-         (delq nil
-               (list
-                (when (> errors 0)
-                  (my/modeline--flymake-token "Ⓔ" errors 'flymake-error))
-                (when (> warnings 0)
-                  (my/modeline--flymake-token "Ⓦ" warnings 'flymake-warning))
-                (when (> infos 0)
-                  (my/modeline--flymake-token "Ⓘ" infos 'flymake-note))))
-         " "))))))
+        (let ((errors (my/modeline--flymake-count :error))
+              (warnings (my/modeline--flymake-count :warning))
+              (infos (my/modeline--flymake-count :note)))
+          (if (and (zerop errors) (zerop warnings) (zerop infos))
+              (propertize "OK" 'face 'success)
+            (string-join
+             (delq nil
+                   (list
+                    (my/modeline--flymake-token :error "Ⓔ")
+                    (my/modeline--flymake-token :warning "Ⓦ")
+                    (my/modeline--flymake-token :note "Ⓘ")))
+             " "))))))))
 
 (defvar-local my/modeline-buffer-identification
   '(:eval
@@ -111,7 +131,7 @@
   '(:eval
     (when (mode-line-window-selected-p)
       (when-let* ((vc (my/modeline--vc)))
-        (propertize vc 'face 'shadow))))
+        (propertize vc 'face 'my/modeline-accent))))
   "Mode line construct for VC branch information.")
 
 (defvar-local my/modeline-flymake
