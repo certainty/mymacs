@@ -1,6 +1,26 @@
 .mymacs-tabspaces-session.el
+<<<<<<< HEAD
 emacs.d/modules/core-config.el
 .*\~
 auto-save-list
 \#.*\#
 \.projects.*
+=======
+.user-lisp-autoloads.el
+*.elc
+
+/emacs.d/elpa/
+/emacs.d/eln-cache/
+/minimal.d/elpa/
+/minimal.d/eln-cache/
+/minimal.d/eshell/
+
+recentf
+projects
+package-quickstart.el
+history
+custom.el
+minimal.d/init.el
+places.eld
+
+>>>>>>> 40f9b58a6ccc3d0c135a16e9d0928d3f619ac615
