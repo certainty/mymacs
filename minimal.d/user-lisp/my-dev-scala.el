@@ -62,4 +62,4 @@
     (my/scala--run-test-target test-class)))
 
 
-(provide 'dev-scala)
+(provide 'my-dev-scala)

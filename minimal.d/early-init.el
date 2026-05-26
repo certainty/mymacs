@@ -1,4 +1,3 @@
-
 ;; -*- lexical-binding: t; -*-
 
 (setq load-prefer-newer t)

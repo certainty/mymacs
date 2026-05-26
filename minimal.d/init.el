@@ -7,11 +7,14 @@
 
 ;;; customization
 
+(add-to-list 'load-path (locate-user-emacs-file "user-lisp"))
+
 (defvar-keymap mymacs-mode-map :doc "mymacs global keys")
 (define-minor-mode mymacs-mode
   "My personal minor mode"
   :init-value t
   :global t
+  :group 'mymacs
   :lighter " MyM"
   :keymap mymacs-mode-map)
 
@@ -41,17 +44,21 @@
 (setopt custom-file (locate-user-emacs-file "custom.el"))
 (load custom-file :no-error-if-file-is-missing)
 
+;;; local helpers
+(require 'my-modeline)
+(require 'my-dev-ruby)
+(require 'my-dev-scala)
+(require 'my-terminal)
+
 ;;; Packages
 (require 'package)
 (require 'use-package)
 (setopt package-archives
         '(("gnu" . "https://elpa.gnu.org/packages/")
-          ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-          ("melpa" . "https://melpa.org/packages/"))
+          ("nongnu" . "https://elpa.nongnu.org/nongnu/"))
         package-archive-priorities
         '(("gnu" . 20)
-          ("nongnu" . 10)
-          ("melpa" . 0))
+          ("nongnu" . 10))
 
 				package-pinned-packages
         '((ace-window . "gnu")
@@ -59,20 +66,15 @@
           (consult . "gnu")
           (embark . "gnu")
           (embark-consult . "gnu")
-          (exec-path-from-shell . "nongnu")
-          (mise . "melpa")
-          (scala-ts-mode . "melpa")
-          (vterm . "melpa")
-          (vterm-toggle . "melpa"))
+          (exec-path-from-shell . "nongnu"))
 
         package-install-upgrade-built-in t
-        ;; MELPA packages are generally unsigned, so keep GNU/Nongnu signature
-        ;; verification where available but allow explicitly reviewed MELPA use.
-        package-check-signature 'allow-unsigned
+        package-check-signature t
         package-native-compile t
         package-quickstart t
         network-security-level 'high
         gnutls-verify-error t)
+(package-initialize)
 
 ;;; Environment setup (to start emacs from launcher)
 (defconst my/required-environment-variables
@@ -539,39 +541,18 @@
 
 ;;;; terminal
 (use-package vterm
-  :ensure t
-  :pin "melpa"
-  :commands vterm
+  :ensure nil
+  :commands (vterm my/vterm-project my/toggle-vterm-project)
   :custom
-  (vterm-max-scrollback 10000)
   (vterm-kill-buffer-on-exit t)
-  (vterm-tramp-shells '(("ssh" "/bin/bash")
-                         ("docker" "/bin/sh")
-                         (t "/bin/sh"))))
-
-(use-package vterm-toggle
-  :ensure t
-  :pin "melpa"
-  :after vterm
-  :commands vterm-toggle
+  (vterm-max-scrollback 10000)
   :bind
   (:map mymacs-mode-map
-        ("C-c t" . vterm-toggle)
-        ("C-c T" . vterm))
-  :custom
-  (vterm-toggle-fullscreen-p nil)
-  (vterm-toggle-scope 'project)
+        ("C-c t" . my/toggle-vterm-project)
+        ("C-c T" . my/vterm-project))
   :init
   (push `("\\*vterm.*\\*" . ,my/side-window-config)
         display-buffer-alist))
-
-;;;; mise activation
-(use-package mise
-  :ensure t
-  :pin "melpa"
-  :hook (after-init . global-mise-mode)
-  :custom
-  (mise-auto-activate t))
 
 ;;; GTD
 (use-package org
@@ -626,8 +607,8 @@
       :tree-type week
       :prepend t)))
 	(org-enforce-todo-dependencies t)
-	(org-agenda-custom-commmands '((n "Next actions" todo "TODO") ("w" "Waiting" todo "WAIT")))
-	(org-tag-alist my/org-tag-alist)
+		(org-agenda-custom-commands '((n "Next actions" todo "TODO") ("w" "Waiting" todo "WAIT")))
+		(org-tag-alist my/org-tag-alist)
 
 	:bind
 	(:map mymacs-mode-map
@@ -724,15 +705,14 @@
 
 ;;;; go lang
 (use-package go-ts-mode
-	:mode "\\.go'"
+	:mode "\\.go\\'"
   :hook (go-ts-mode . eglot-ensure)
   :init
   (setq-default go-ts-mode-indent-offset 4))
 
 ;;;; scala
 (use-package scala-ts-mode
-  :ensure t
-  :pin "melpa"
+  :ensure nil
   :mode ("\\.scala\\'" "\\.sc\\'" "\\.sbt\\'")
   :hook (scala-ts-mode . eglot-ensure)
   :bind
@@ -759,7 +739,7 @@
          "\\.html\\.erb\\'"
          "\\.html\\.gotmpl\\'"))
 
-(use-package css-ts-mode
+(use-package css-mode
   :mode ("\\.css\\'"
          "\\.css\\.erb\\'"
          "\\.css\\.gotmpl\\'"))

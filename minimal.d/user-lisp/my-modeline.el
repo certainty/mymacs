@@ -135,6 +135,9 @@
 (put 'my/modeline-process 'risky-local-variable t)
 (put 'my/modeline-misc-info 'risky-local-variable t)
 
+(defvar my/modeline--saved-format nil
+  "Saved default mode line format before `my/modeline-mode' is enabled.")
+
 (defvar my/modeline-format
   '("%e"
     mode-line-front-space
@@ -160,9 +163,13 @@
   "Use a minimal custom mode line."
   :global t
   (if my/modeline-mode
-      (setq-default mode-line-format my/modeline-format)
+      (progn
+        (unless my/modeline--saved-format
+          (setq my/modeline--saved-format (default-value 'mode-line-format)))
+        (setq-default mode-line-format my/modeline-format))
     (kill-local-variable 'mode-line-format)
-    (setq-default mode-line-format (default-value 'mode-line-format)))
+    (when my/modeline--saved-format
+      (setq-default mode-line-format my/modeline--saved-format)))
   (force-mode-line-update t))
 
 (provide 'my-modeline)
