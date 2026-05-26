@@ -5,7 +5,7 @@
 ;; - private user defined functinos use my-- prefix
 ;; - user defined interactive functions use + prefix
 
-;;; customization
+;;; Customization
 
 (add-to-list 'load-path (locate-user-emacs-file "user-lisp"))
 
@@ -35,7 +35,7 @@
 (defcustom my/scala-metals-java-options nil "Java options for Metals." :type '(repeat string) :group 'mymacs)
 (defcustom my/scala-metals-server-arguments nil "Arguments for metals" :type '(repeat string) :group 'mymacs)
 (defcustom my/scala-metals-initialization-options
-  '(:isHttpEnabled "on")
+  '(:isHttpEnabled t)
   "Initialization options sent to Metals."
   :type 'plist
   :group 'mymacs)
@@ -43,12 +43,6 @@
 ;;;; load custom file
 (setopt custom-file (locate-user-emacs-file "custom.el"))
 (load custom-file :no-error-if-file-is-missing)
-
-;;; local helpers
-(require 'my-modeline)
-(require 'my-dev-ruby)
-(require 'my-dev-scala)
-(require 'my-terminal)
 
 ;;; Packages
 (require 'package)
@@ -174,28 +168,7 @@
   (my/set-modeline-faces)
   (add-hook 'modus-themes-after-load-theme-hook #'my/set-modeline-faces))
 
-(use-package time
-  :custom
-  (display-time-format " %a %e %b, %H:%M ")
-  (display-time-interval 60)
-  (display-time-default-load-average nil)
-  (display-time-mail-directory nil)
-  (display-time-mail-function nil)
-  (display-time-use-mail-icon nil)
-  (display-time-mail-string nil)
-  (display-time-mail-face nil)
-  (display-time-string-forms
-   '((propertize
-      (format-time-string display-time-format now)
-      'face 'display-time-date-and-time
-      'help-echo (format-time-string "%a %b %e, %Y" now))
-     " "))
-  :init
-  (display-time-mode 1))
-
-
-;;;; keybindings setup
-
+;;;; unbind some keys
 (use-package simple
   :init
   ;; free the keymap for next and previous in goto-map
@@ -206,8 +179,6 @@
 (use-package display-line-numbers
   :hook prog-mode)
 
-
-
 ;;;; outline
 (use-package outline
 	:hook ((prog-mode . outline-minor-mode)
@@ -216,7 +187,7 @@
 	:bind
 	(:map mymacs-mode-map
 				("C-<tab>" . outline-cycle)))
- 
+
 ;;;; windows and buffers
 
 (defvar my/side-window-config
@@ -263,7 +234,8 @@
   (display-buffer-alist
    `(("\\*Capture\\*" . ,my/bottom-window-config)
      ("^\\*vc-.*\\*$" . ,my/side-window-config)
-     ("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\|xref\\)\\*" . ,my/side-window-config)
+     ("\\*xref\\*" . ,my/bottom-window-config)
+     ("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\)\\*" . ,my/side-window-config)
      (".*"
       (display-buffer-reuse-window
        display-buffer-use-some-window
@@ -317,8 +289,8 @@
 	(completion-eager-update t)
 	(completion-auto-select t)
 	(completions-auto-help 'visible)
-    (completions-max-height 20)
-    (completion-ignore-case t)
+  (completions-max-height 20)
+  (completion-ignore-case t)
 	(completions-format 'vertical)
 	(completion-styles '(substring partial-completion flex basic)))
 
@@ -360,6 +332,8 @@
 							 ("<" . pop-to-mark-command)
 							 ("m" . pop-global-mark))
   :init
+  (setq-default indent-tabs-mode nil)
+  (setq-default standard-indent 2)
   (setq-default tab-width 2)
   (repeat-mode)
   (delete-selection-mode)
@@ -607,8 +581,8 @@
       :tree-type week
       :prepend t)))
 	(org-enforce-todo-dependencies t)
-		(org-agenda-custom-commands '((n "Next actions" todo "TODO") ("w" "Waiting" todo "WAIT")))
-		(org-tag-alist my/org-tag-alist)
+	(org-agenda-custom-commands '((n "Next actions" todo "TODO") ("w" "Waiting" todo "WAIT")))
+	(org-tag-alist my/org-tag-alist)
 
 	:bind
 	(:map mymacs-mode-map
@@ -628,12 +602,19 @@
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
 
 ;;; Writing
+(defvar flyspell-mode-map)
+
 (use-package ispell
   :hook ((text-mode . flyspell-mode)
 				 (prog-mode . flyspell-prog-mode))
   :custom
   (ispell-program-name "aspell")
   (ispell-dictionary "en_US"))
+
+(use-package flyspell
+  :bind
+  (:map flyspell-mode-map
+        ("C-," . nil)))
 
 ;;;; Denote
 
@@ -721,27 +702,17 @@
 
 ;;;; yaml
 (use-package yaml-ts-mode
-  :mode ("\\.ya?ml\\'"
-         "\\.yaml\\.gotmpl\\'"
-         "\\.yaml\\.erb\\'"
-         "\\.yml\\.gotmpl\\'"
-         "\\.yml\\.erb\\'"))
+  :mode ("\\.ya?ml\\'" "\\.yaml\\.gotmpl\\'" "\\.yaml\\.erb\\'" "\\.yml\\.gotmpl\\'" "\\.yml\\.erb\\'"))
 
 ;;;; json
 (use-package json-ts-mode
-  :mode ("\\.json\\'"
-         "\\.json\\.gotmpl\\'"
-         "\\.json\\.erb\\'"))
+  :mode ("\\.json\\'" "\\.json\\.gotmpl\\'" "\\.json\\.erb\\'"))
 
 ;;;; web
 (use-package html-ts-mode
-  :mode ("\\.html\\'"
-         "\\.html\\.erb\\'"
-         "\\.html\\.gotmpl\\'"))
+  :mode ("\\.html\\'" "\\.html\\.erb\\'" "\\.html\\.gotmpl\\'"))
 
 (use-package css-mode
-  :mode ("\\.css\\'"
-         "\\.css\\.erb\\'"
-         "\\.css\\.gotmpl\\'"))
+  :mode ("\\.css\\'" "\\.css\\.erb\\'" "\\.css\\.gotmpl\\'"))
 
 ;;;; lisp
