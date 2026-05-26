@@ -59,8 +59,9 @@
           (consult . "gnu")
           (embark . "gnu")
           (embark-consult . "gnu")
-          (eat . "nongnu")
-          (scala-ts-mode . "melpa"))
+          (scala-ts-mode . "melpa")
+          (vterm . "melpa")
+          (vterm-toggle . "melpa"))
 				
         package-install-upgrade-built-in t
         ;; MELPA packages are generally unsigned, so keep GNU/Nongnu signature
@@ -160,6 +161,14 @@
     (mode . special-mode)
     (window-parameters . ((no-other-window . t) (no-delete-other-windows . t)))))
 
+(defvar my/bottom-window-config
+  '((display-buffer-reuse-mode-window display-buffer-in-side-window)
+    (side . bottom)
+    (slot . 0)
+    (window-height . 0.25)
+    (mode . special-mode)
+    (window-parameters . ((no-other-window . t) (no-delete-other-windows . t)))))
+
 (use-package window
   :bind
 	(:map mymacs-mode-map
@@ -184,15 +193,17 @@
 
   ;;;;; buffer arrangement
   (display-buffer-alist
-   `(("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\|xref\\)\\*" ,@my/side-window-config)
+   `(("\\*Capture\\*" . ,my/bottom-window-config)
+     ("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\|xref\\)\\*" . ,my/side-window-config)
      (".*"
       (display-buffer-reuse-window
        display-buffer-use-some-window
        display-buffer-pop-up-window))))
 
 	:config
-	(dolist (f '(window-divider window-divider-first-pixel window-divider-last-pixel))
-		(set-face-foreground f (face-background 'default)))
+	(set-face-foreground 'window-divider (face-background 'default))
+	(dolist (f '(window-divider-first-pixel window-divider-last-pixel))
+		(set-face-foreground f "#4f5f73"))
 	:init
 	(window-divider-mode))
 
@@ -450,21 +461,32 @@
 (use-package ansi-color
   :hook (compilation-filter . ansi-color-compilation-filter))
 
-(use-package eat
+(use-package vterm
   :ensure t
-  :pin "nongnu"
-  :commands (eat eat-project)
+  :pin "melpa"
+  :commands vterm
+  :custom
+  (vterm-max-scrollback 10000)
+  (vterm-kill-buffer-on-exit t)
+  (vterm-tramp-shells '(("ssh" "/bin/bash")
+                         ("docker" "/bin/sh")
+                         (t "/bin/sh"))))
+
+(use-package vterm-toggle
+  :ensure t
+  :pin "melpa"
+  :after vterm
+  :commands vterm-toggle
   :bind
   (:map mymacs-mode-map
-        ("C-c t" . eat-project)
-        ("C-c T" . eat))
+        ("C-c t" . vterm-toggle)
+        ("C-c T" . vterm))
+  :custom
+  (vterm-toggle-fullscreen-p nil)
+  (vterm-toggle-scope 'project)
   :init
-  (push `("\\(?:\\*eat\\*(?:<[0-9]+>)?\\|.*-eat\\)" . ,my/side-window-config) display-buffer-alist)
-  :config
-	;; allow M-o to switch from eat
-  (setopt
-   eat-semi-char-non-bound-keys
-   (append eat-semi-char-non-bound-keys '([?\e ?o]))))
+  (push `("\\*vterm.*\\*" . ,my/side-window-config)
+        display-buffer-alist))
 
 ;;; GTD
 (use-package org
