@@ -6,10 +6,6 @@
 ;; - user defined interactive functions use + prefix
 
 ;;; Customization
-
-(add-to-list 'load-path (locate-user-emacs-file "user-lisp"))
-(require 'my-modeline)
-
 (defvar-keymap mymacs-mode-map :doc "mymacs global keys")
 (define-minor-mode mymacs-mode
   "My personal minor mode"
@@ -72,9 +68,7 @@
 (package-initialize)
 
 ;;; Environment setup (to start emacs from launcher)
-(defconst my/required-environment-variables
-  '("PATH" "MANPATH" "GOPATH" "CARGO_HOME" "RUSTUP_HOME" "JAVA_HOME" "SBT_HOME")
-  "Environment variables imported from the shell on macOS.")
+
 
 (use-package exec-path-from-shell
   :ensure t
@@ -85,7 +79,11 @@
   (exec-path-from-shell-arguments '("-l" "-i"))
   (exec-path-from-shell-check-startup-files nil)
   :config
-  (exec-path-from-shell-initialize))
+  (exec-path-from-shell-initialize)
+  :preface
+  (defconst my/required-environment-variables
+    '("PATH" "MANPATH" "GOPATH" "CARGO_HOME" "RUSTUP_HOME" "JAVA_HOME" "SBT_HOME")
+    "Environment variables imported from the shell on macOS."))
 
 ;;; UI
 (use-package emacs
@@ -119,41 +117,53 @@
   :bind
   (:map mymacs-mode-map
 				("C-g" . +escape-dwim))
+  
 
   :init
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   (global-hl-line-mode -1)
-
-  (load-theme my/theme)
-
+  
   (set-face-attribute
    'default nil
    :font my/font
    :height my/font-height
    :weight my/font-weight)
+  
+  (load-theme my/theme)
 
-  ;(my/modeline-mode)
+  ;;;; modeline
+  (set-face-attribute 'mode-line nil :background 'unspecified :box nil :overline "gray50" :underline nil)
+  (set-face-attribute 'mode-line-active nil :background 'unspecified :box nil :overline "gray50" :underline nil)
+  (set-face-attribute 'mode-line-inactive nil :background 'unspecified :box nil :overline "gray50" :underline nil)
+  (setopt project-mode-line t)
+
+  (setq-default mode-line-format
+                '("%e"
+                  mode-line-front-space
+                  mode-line-modified
+                  mode-line-remote
+                  " "
+                  mode-line-buffer-identification
+                  (:eval
+                   (when (mode-line-window-selected-p)
+                     (format-mode-line
+                      '("  " (project-mode-line project-mode-line-format)
+                        "  " (vc-mode vc-mode)
+                        "  " mode-name mode-line-process))))
+                  mode-line-format-right-align
+                  (:eval
+                   (when (mode-line-window-selected-p)
+                     (format-mode-line
+                      '("  " flymake-mode-line-format
+                        "  " mode-line-misc-info))))
+                  mode-line-end-spaces))
+
+  (keymap-set goto-map "n" nil)
+  (keymap-set goto-map "p" nil)
 
   :preface
-  (defun my/set-modeline-faces ()
-    "Make the mode line present but less pronounced."
-    (let ((bg-active (face-background 'mode-line nil t))
-          (bg-inactive (face-background 'mode-line-inactive nil t))
-          (fg (face-foreground 'default nil t))
-          (dim (face-foreground 'shadow nil t)))
-      (dolist (spec `((mode-line . ,fg)
-                      (mode-line-active . ,fg)
-                      (mode-line-inactive . ,dim)))
-        (set-face-attribute (car spec) nil
-                            :background (if (eq (car spec) 'mode-line-inactive)
-                                            bg-inactive
-                                          bg-active)
-                            :foreground (cdr spec)
-                            :box nil
-                            :overline dim
-                            :underline nil))))
   (defun +escape-dwim ()
     (interactive)
     (cond
@@ -164,17 +174,7 @@
      ((> (minibuffer-depth) 0)
       (abort-recursive-edit))
      (t
-      (keyboard-quit))))
-  :config
-  (my/set-modeline-faces)
-  (add-hook 'modus-themes-after-load-theme-hook #'my/set-modeline-faces))
-
-;;;; unbind some keys
-(use-package simple
-  :init
-  ;; free the keymap for next and previous in goto-map
-  (keymap-set goto-map "n" nil)
-  (keymap-set goto-map "p" nil))
+      (keyboard-quit)))))
 
 ;;;; line numbers
 (use-package display-line-numbers
@@ -330,8 +330,9 @@
          (markdown-mode . completion-preview-mode))
   :bind
   (:map completion-preview-active-mode-map
-        ("C-n" . completion-preview-next-candidate)
-        ("C-p" . completion-preview-prev-candidate)
+        ("M-n" . completion-preview-next-candidate)
+        ("M-p" . completion-preview-prev-candidate)
+        ("M-y" . completion-preview-insert)
         ("C-y" . completion-preview-insert)))
 
 (use-package cape
@@ -339,8 +340,6 @@
   :init
   (add-to-list 'completion-at-point-functions	'cape-dabbrev)
   (add-to-list 'completion-at-point-functions 'cape-file))
-
-
 
 ;;; Editing
 (use-package emacs
@@ -650,6 +649,17 @@
   (:map flyspell-mode-map
         ("C-," . nil)))
 
+(use-package eldoc
+  :custom
+  (eldoc-idle-delay 1000000)
+  (eldoc-echo-area-use-multiline-p nil)
+  :config
+  (defun my/eldoc-display-manually-only (docs interactive)
+    (when interactive
+      (or (eldoc-display-in-echo-area docs interactive)
+          (eldoc-display-in-buffer docs interactive))))
+  (setq eldoc-display-functions '(my/eldoc-display-manually-only)))
+
 ;;;; Denote
 
 
@@ -704,10 +714,7 @@
   :custom
   (flymake-indicator-type 'margins)
   (flymake-margin-indicator-position 'left-margin)
-  (flymake-margin-indicators-string
-   '((error "Ⓔ" compilation-error)
-     (warning "Ⓦ" compilation-warning)
-     (note "Ⓘ" compilation-info)))
+  (flymake-mode-line-lighter "")
   :bind
   (:map goto-map
 				("n e" . flymake-goto-next-error)
