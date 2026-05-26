@@ -203,13 +203,8 @@
 ;;; Completion 
 
 ;;;; minibuffer
-
-(use-package icomplete
+(use-package minibuffer
 	:custom
-	(icomplete-delay-completions-threshold 0)
-	(icomplete-max-delay-chars 0)
-	(icomplete-scroll t)
-	(icomplete-prospects-height 10)
 	(completion-sort 'historical)
 	(completion-eager-update t)
 	(completion-auto-select t)
@@ -217,8 +212,15 @@
   (completions-max-height 20)
   (completion-ignore-case t)
 	(completions-format 'vertical)
-	(completion-styles '(substring partial-completion flex basic))
+	(completion-styles '(substring partial-completion flex basic)))
 
+(use-package icomplete
+	:custom
+	(icomplete-delay-completions-threshold 0)
+	(icomplete-max-delay-chars 0)
+	(icomplete-scroll t)
+	(icomplete-prospects-height 10)
+	(icomplete-show-matches-on-no-input t)
 	:bind
 	(:map icomplete-minibuffer-map
 				("C-n" . icomplete-forward-completions)
@@ -226,7 +228,6 @@
 				("C-y" . icomplete-force-complete-and-exit)
 				("C-j" . icomplete-force-complete))
 	:init
-	(icomplete-mode 1)
 	(icomplete-vertical-mode 1))
 
 (use-package cape
