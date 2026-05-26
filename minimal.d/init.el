@@ -176,6 +176,15 @@
 	:init
 	(window-divider-mode))
 
+(use-package ace-window
+	:ensure t
+	:commands (ace-window)
+	:custom
+	(aw-keys '(?a ?b ?c ?d ?e ?f ?g ?h ?i ?j ?k ?l))
+	:bind
+	(:map mymacs-mode-map
+				("M-o" . ace-window)
+				("M-O" . other-window)))
 
 ;;;; minibuffer
 (use-package minibuffer
@@ -193,42 +202,32 @@
 
 ;;; Completion 
 
-;;;; minibuffer  
-(use-package vertico
-  :ensure t
-  :hook after-init
-  :custom
-  (vertico-cycle t)
-  :config
-  (vertico-multiform-mode)
-  (add-to-list 'vertico-multiform-categories '(embark-keybinding grid)))
+;;;; minibuffer
 
-(use-package orderless
-  :ensure t
-  :custom
-  (completion-styles '(orderless)))
-
-(use-package marginalia
-  :ensure t
-  :hook after-init)
-
-;;;; in-buffer
-(use-package completion-preview
-  :hook (prog-mode org-mode markdown-mode)
-  :bind
-  (:map completion-preview-active-mode-map
-				("M-n" . completion-preview-next-candidate)
-				("M-p" . completion-preview-prev-candidate)
-				("C-y" . completion-preview-insert)
-				("M-y" . completion-preview-insert))
-  :custom
-  (completion-auto-select t)
-  (completions-format 'one-column)
+(use-package icomplete
+	:custom
+	(icomplete-delay-completions-threshold 0)
+	(icomplete-max-delay-chars 0)
+	(icomplete-scroll t)
+	(icomplete-prospects-height 10)
+	(completion-sort 'historical)
+	(completion-eager-update t)
+	(completion-auto-select t)
   (completions-auto-help 'visible)
   (completions-max-height 20)
   (completion-ignore-case t)
-  :config
-  (push 'org-self-insert-command completion-preview-commands))
+	(completions-format 'vertical)
+	(completion-styles '(substring partial-completion flex basic))
+
+	:bind
+	(:map icomplete-minibuffer-map
+				("C-n" . icomplete-forward-completions)
+				("C-p" . icomplete-backward-completions)
+				("C-y" . icomplete-force-complete-and-exit)
+				("C-j" . icomplete-force-complete))
+	:init
+	(icomplete-mode 1)
+	(icomplete-vertical-mode 1))
 
 (use-package cape
   :ensure t
@@ -319,16 +318,23 @@
   (:map mymacs-mode-map
 				("C-." . embark-act)
 				("C-," . embark-dwim))
+	(:map icomplete-minibuffer-map
+				("C-." . embark-act)
+				("C-," . embark-dwim)
+				("C-c c" . embark-collect)
+				("C-c e" . embark-export)
+				("C-c m" . embark-select)
+				("C-c a" . embark-act-all))
   (:map minibuffer-mode-map
-				("C-c C-c" . embark-collect)
-				("C-c C-e" . embark-export)
-				("C-c C-m" . embark-select)
-				("C-c C-a" . embark-act-all))
+				("C-c c" . embark-collect)
+				("C-c e" . embark-export)
+				("C-c m" . embark-select)
+				("C-c a" . embark-act-all))
   (:map minibuffer-local-map
-				("C-c C-c" . embark-collect)
-				("C-c C-e" . embark-export)
-				("C-c C-m" . embark-select)
-				("C-c C-a" . embark-act-all))
+				("C-c c" . embark-collect)
+				("C-c e" . embark-export)
+				("C-c m" . embark-select)
+				("C-c a" . embark-act-all))
   
   :init
   (add-to-list 'display-buffer-alist
