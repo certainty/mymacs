@@ -59,6 +59,8 @@
           (consult . "gnu")
           (embark . "gnu")
           (embark-consult . "gnu")
+          (exec-path-from-shell . "nongnu")
+          (mise . "melpa")
           (scala-ts-mode . "melpa")
           (vterm . "melpa")
           (vterm-toggle . "melpa"))
@@ -71,6 +73,22 @@
         package-quickstart t
         network-security-level 'high
         gnutls-verify-error t)
+
+;;; Environment setup (to start emacs from launcher)
+(defconst my/required-environment-variables
+  '("PATH" "MANPATH" "GOPATH" "CARGO_HOME" "RUSTUP_HOME" "JAVA_HOME" "SBT_HOME")
+  "Environment variables imported from the shell on macOS.")
+
+(use-package exec-path-from-shell
+  :ensure t
+  :pin "nongnu"
+  :if (memq window-system '(mac ns))
+  :custom
+  (exec-path-from-shell-variables my/required-environment-variables)
+  (exec-path-from-shell-arguments '("-l" "-i"))
+  (exec-path-from-shell-check-startup-files nil)
+  :config
+  (exec-path-from-shell-initialize))
 
 ;;; UI
 (use-package emacs
@@ -194,6 +212,7 @@
   ;;;;; buffer arrangement
   (display-buffer-alist
    `(("\\*Capture\\*" . ,my/bottom-window-config)
+     ("^\\*vc-.*\\*$" . ,my/side-window-config)
      ("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\|xref\\)\\*" . ,my/side-window-config)
      (".*"
       (display-buffer-reuse-window
@@ -458,9 +477,11 @@
   (:map search-map
 				("*" . +project-find-symbol)))
 
+;;;; compilation mode colors
 (use-package ansi-color
   :hook (compilation-filter . ansi-color-compilation-filter))
 
+;;;; terminal
 (use-package vterm
   :ensure t
   :pin "melpa"
@@ -487,6 +508,14 @@
   :init
   (push `("\\*vterm.*\\*" . ,my/side-window-config)
         display-buffer-alist))
+
+;;;; mise activation
+(use-package mise
+  :ensure t
+  :pin "melpa"
+  :hook (after-init . global-mise-mode)
+  :custom
+  (mise-auto-activate t))
 
 ;;; GTD
 (use-package org
@@ -643,7 +672,6 @@
   :hook (go-ts-mode . eglot-ensure)
   :init
   (setq-default go-ts-mode-indent-offset 4))
-
 
 ;;;; scala
 (use-package scala-ts-mode
