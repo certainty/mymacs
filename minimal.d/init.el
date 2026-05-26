@@ -64,7 +64,7 @@
           (scala-ts-mode . "melpa")
           (vterm . "melpa")
           (vterm-toggle . "melpa"))
-				
+
         package-install-upgrade-built-in t
         ;; MELPA packages are generally unsigned, so keep GNU/Nongnu signature
         ;; verification where available but allow explicitly reviewed MELPA use.
@@ -98,6 +98,8 @@
   (inhibit-startup-screen t)
   (inhibit-startup-message t)
   (initial-scratch-message nil)
+  (mode-line-compact nil)
+  (mode-line-right-align-edge 'right-margin)
 
   (modus-themes-custom-auto-reload t)
   (modus-themes-disable-other-themes t)
@@ -135,7 +137,26 @@
    :height my/font-height
    :weight my/font-weight)
 
+  (my/modeline-mode)
+
   :preface
+  (defun my/set-modeline-faces ()
+    "Make the mode line present but less pronounced."
+    (let ((bg-active (face-background 'mode-line nil t))
+          (bg-inactive (face-background 'mode-line-inactive nil t))
+          (fg (face-foreground 'default nil t))
+          (dim (face-foreground 'shadow nil t)))
+      (dolist (spec `((mode-line . ,fg)
+                      (mode-line-active . ,fg)
+                      (mode-line-inactive . ,dim)))
+        (set-face-attribute (car spec) nil
+                            :background (if (eq (car spec) 'mode-line-inactive)
+                                            bg-inactive
+                                          bg-active)
+                            :foreground (cdr spec)
+                            :box nil
+                            :overline dim
+                            :underline nil))))
   (defun +escape-dwim ()
     (interactive)
     (cond
@@ -146,7 +167,30 @@
      ((> (minibuffer-depth) 0)
       (abort-recursive-edit))
      (t
-      (keyboard-quit)))))
+      (keyboard-quit))))
+  :config
+  (my/set-modeline-faces)
+  (add-hook 'modus-themes-after-load-theme-hook #'my/set-modeline-faces))
+
+(use-package time
+  :custom
+  (display-time-format " %a %e %b, %H:%M ")
+  (display-time-interval 60)
+  (display-time-default-load-average nil)
+  (display-time-mail-directory nil)
+  (display-time-mail-function nil)
+  (display-time-use-mail-icon nil)
+  (display-time-mail-string nil)
+  (display-time-mail-face nil)
+  (display-time-string-forms
+   '((propertize
+      (format-time-string display-time-format now)
+      'face 'display-time-date-and-time
+      'help-echo (format-time-string "%a %b %e, %Y" now))
+     " "))
+  :init
+  (display-time-mode 1))
+
 
 ;;;; keybindings setup
 
@@ -160,6 +204,8 @@
 (use-package display-line-numbers
   :hook prog-mode)
 
+
+
 ;;;; outline
 (use-package outline
 	:hook ((prog-mode . outline-minor-mode)
@@ -168,7 +214,7 @@
 	:bind
 	(:map mymacs-mode-map
 				("C-<tab>" . outline-cycle)))
-
+ 
 ;;;; windows and buffers
 
 (defvar my/side-window-config
@@ -190,7 +236,9 @@
 (use-package window
   :bind
 	(:map mymacs-mode-map
-				("C-c |" . split-window-right))
+				("C-c |" . split-window-right)
+        ("C-q" . bury-buffer)
+        ("C-Q" . kill-current-buffer))
   (:map goto-map
 				("n b" . next-buffer)
 				("p b" . previous-buffer))
@@ -235,6 +283,14 @@
 	(:map mymacs-mode-map
 				("M-o" . ace-window)
 				("M-O" . other-window)))
+
+;;;; auto-revert
+(use-package autorevert
+  :custom
+  (auto-revert-verbose nil)
+  :init
+  (global-auto-revert-mode 1))
+
 
 ;;;; minibuffer
 (use-package minibuffer
@@ -682,5 +738,30 @@
   :bind
   (:map scala-ts-mode-map
 				("C-c C-t" . +scala-test-only)))
+
+;;;; yaml
+(use-package yaml-ts-mode
+  :mode ("\\.ya?ml\\'"
+         "\\.yaml\\.gotmpl\\'"
+         "\\.yaml\\.erb\\'"
+         "\\.yml\\.gotmpl\\'"
+         "\\.yml\\.erb\\'"))
+
+;;;; json
+(use-package json-ts-mode
+  :mode ("\\.json\\'"
+         "\\.json\\.gotmpl\\'"
+         "\\.json\\.erb\\'"))
+
+;;;; web
+(use-package html-ts-mode
+  :mode ("\\.html\\'"
+         "\\.html\\.erb\\'"
+         "\\.html\\.gotmpl\\'"))
+
+(use-package css-ts-mode
+  :mode ("\\.css\\'"
+         "\\.css\\.erb\\'"
+         "\\.css\\.gotmpl\\'"))
 
 ;;;; lisp

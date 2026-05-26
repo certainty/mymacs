@@ -1,3 +1,4 @@
+
 ;; -*- lexical-binding: t; -*-
 
 (setq load-prefer-newer t)
@@ -13,4 +14,3 @@
           native-comp-async-jobs-number (max 2 (1- (num-processors)))
           native-comp-speed 2
           native-comp-prune-cache t))
-
