@@ -520,7 +520,7 @@
   :ensure t
   :bind
   (:map outline-minor-mode-map
-        ("C-c o" . consult-outline))
+        ("C-c O" . consult-outline))
   (:map goto-map
         ("b" . consult-project-buffer)
         ("o" . consult-recent-file)
