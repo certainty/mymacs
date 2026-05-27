@@ -61,6 +61,7 @@
 ;; - require review for melpa packages
 (require 'package)
 (require 'use-package)
+(setq use-package-always-pin "gnu")
 (setopt package-archives
         '(("gnu" . "https://elpa.gnu.org/packages/")
           ("nongnu" . "https://elpa.nongnu.org/nongnu/")
@@ -73,7 +74,6 @@
         ;; from getting precedence
         network-security-level 'high
         gnutls-verify-error t
-        use-package-always-pin "gnu"
         package-install-upgrade-built-in nil
         package-check-signature t
         package-review-policy '((archive . "melpa"))

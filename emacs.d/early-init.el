@@ -1,5 +1,8 @@
 ;; -*- lexical-binding: t; -*-
 
+(when (version< emacs-version "31")
+  (error "This configuration requires Emacs 31 or newer"))
+
 (setq load-prefer-newer t)
 
 (push '(undecorated . t) default-frame-alist)

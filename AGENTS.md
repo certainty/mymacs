@@ -19,39 +19,44 @@ You achieve that by:
 
 ---
 
+## Config files
+
+You must keep all configuration in `init.el` and `early-init.el`.
+We do this intentionaly to create friction when the file gets too large.
+Custom code, that is not configuration goes into `user-lisp` directory.
+This is autoloaded with emacs-31.
+
+Use outline headers to separate functionality.
+
 ## Packages
 
-IMPORTANT: use only GNU Elpa and NONGNU Elpa for additional packages by default.
+IMPORTANT: use only GNU Elpa and NONGNU Elpa and MELPA for additional packages by default.
 Prefer GNU ELPA when a package exists in both archives. NonGNU ELPA is the secondary choice.
-All other packages must be added to `user-lisp` as git modules.
-This configuration adds `user-lisp` to `load-path` manually so the same layout works before and after Emacs 31.
 
-Package workflow:
+Only add ensure, when you need to pull the source from a package archive.
 
-- built-in packages: configure them with `use-package` and no `:ensure`
-- GNU ELPA packages: declare them with `:ensure t`
-- NonGNU ELPA packages: use them only when GNU ELPA does not provide the package, and still declare them with `:ensure t`
-- packages outside ELPA: vendor them into `user-lisp/<package-name>` as git modules and load them with `:ensure nil`
+All packages are pinned to GNU by default.
+If you need a package from a different archive add an exlicit pin.
 
 ### use-package use of keywords
- Use of use-package
 
- All uses of use-package put the options into the same order which is defined melow.
- If an option doesn't apply the order resumes with the next one.
+Use of use-package
 
- - :if / :unless
- - :ensure
- - :demand
- - :pin
- - :mode
- - :hook
- - :commands
- - :bind
- - :custom
- - :preface
- - :init
- - :config
+All uses of use-package put the options into the same order which is defined melow.
+If an option doesn't apply the order resumes with the next one.
 
+- :if / :unless
+- :ensure
+- :demand
+- :pin
+- :mode
+- :hook
+- :commands
+- :bind
+- :custom
+- :preface
+- :init
+- :config
 
 ---
 
@@ -111,105 +116,12 @@ EMACS_CONFIG_ROOT=emacs.d ./scripts/emacs-tools byte-compile path/to/file.el
 
 ---
 
-## Modules
-
-### File Naming
-
-Modules follow:
-
-```text id="iwh0qt"
-<namespace>-<module>.el
-```
-
-Examples:
-
-```text id="2ffjxs"
-core-editing.el
-core-keys.el
-dev-scala.el
-dev-ruby.el
-```
-
-Avoid:
-
-- giant monolithic files
-- deeply nested module hierarchies
-- framework-style conventions
-
-### Module conventions
-
-- use lexical scope for all modules
-- use consistent headers and footers
-- modules are loaded explicitly via init.el
-
----
-
-## Configuration Topology
-
-`core-config.el` is authoritative.
-
-It defines:
-
-- user-facing configuration values
-- feature toggles
-- environment assumptions
-- platform assumptions
-
-Conditional logic depends on values defined there.
-
-Avoid:
-
-- scattered global defcustoms
-- implicit feature detection everywhere
-- duplicated condition checks
-
----
-
-## Package Management
-
-All packages are configured via:
-
-[use-package](https://github.com/jwiegley/use-package?utm_source=chatgpt.com)
-
-Requirements:
-
-- lazy load whenever possible
-- defer loading aggressively
-- avoid eager startup work
-- avoid global mode activation unless necessary
-
-Use:
-
-- `:hook`
-- `:commands`
-- `:bind`
-- `:mode`
-- `:init`
-- `:config`
-
-appropriately.
-
-Avoid:
-
-- unconditional `require`
-- startup-time package initialization
-- global side effects
-
----
-
 ## Keybinding Philosophy
 
 Keybindings are the primary interface for the user and any change to keybindings **MUST** be approved by the user.
-Keymaps are defined centrally, while bindings in the maps might be done in modules.
-The config uses meow and a leader bases system that uses mnemonic semantic grouping.
-
-Pattern:
-
-```text id="djlwmm"
-core-keymaps.el
-```
-
-Named maps are then referenced from `use-package`.
+We only bind what we actually need.
+We make use of semantic maps like search-map and goto-map.
+For custom bindings we use the C-c prefix in the appropriate mode-map or mymacs-mode-map if it should be global.
 
 Avoid:
 
@@ -246,43 +158,6 @@ Avoid:
 - random vertical splits
 - layout instability
 
-The UI should support:
-
-- persistent coding sessions
-- debugger workflows
-- terminal workflows
-- remote development via TRAMP
-
----
-
-## Remote / TRAMP Requirements
-
-Packages must be evaluated for TRAMP compatibility.
-
-Prefer packages that:
-
-- use standard Emacs file APIs
-- support remote subprocess execution
-- avoid excessive filesystem polling
-- avoid local-only assumptions
-
-Avoid packages that:
-
-- recursively scan large trees unnecessarily
-- depend heavily on file watchers
-- assume local POSIX semantics
-
-Remote workflows are first-class.
-
-Expected workflows:
-
-- remote LSP
-- remote debugging
-- remote terminals
-- remote AI agents
-- remote git
-- remote project navigation
-
 ---
 
 ## Language Support Priorities
@@ -296,39 +171,11 @@ Primary languages:
 Required:
 
 - Eglot integration
-- Dape integration
 - formatting
 - project-aware workflows
-- debugger support
+- debugger support where appropriate
 
 Preferred tools:
 
 - [Eglot](https://elpa.gnu.org/packages/eglot.html?utm_source=chatgpt.com)
 - [Dape](https://github.com/svaante/dape?utm_source=chatgpt.com)
-
----
-
-## Duplication Elimination
-
-Actively identify duplicated workflows.
-
-If functionality already exists through:
-
-- built-in Emacs
-- project.el
-- xref
-- consult
-- embark
-- dired
-- eglot
-
-prefer extending the existing workflow instead of introducing a new package.
-
-Examples:
-
-- avoid separate search frameworks
-- avoid separate project frameworks
-- avoid separate action systems
-- avoid duplicate popup systems
-
-The configuration should converge toward fewer concepts over time.
