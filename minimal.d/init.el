@@ -352,9 +352,9 @@
   (icomplete-max-delay-chars 0)
   (icomplete-scroll t)
   (icomplete-prospects-height 10)
-  (icomplete-show-matches-on-no-input 
+  (icomplete-show-matches-on-no-input t)
   :init
-  (icomplete-vertical-mode 1)))
+  (icomplete-vertical-mode))
 
 ;;;; In-buffer
 (use-package completion-preview
