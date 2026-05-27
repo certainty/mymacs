@@ -374,7 +374,9 @@
   (completion-preview-message-format nil)
   (completion-preview-minimum-symbol-length 1)
   (completion-preview-idle-delay nil)
-  (completion-preview-message-format nil))
+  (completion-preview-message-format nil)
+  :init
+  (abbrev-mode))
 
 (use-package cape
   :ensure t
@@ -730,6 +732,12 @@
   :config
   (add-to-list 'eglot-server-programs
                `(scala-ts-mode . ("metals" :initializationOptions (:isHttpEnabled t)))))
+
+;;; snippets
+;; these also act as a provider for eglot
+(use-package yasnippet
+  :ensure t
+  :hook (prog-mode . yas-minor-mode))
 
 (use-package treesit
   :custom
