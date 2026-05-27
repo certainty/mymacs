@@ -512,7 +512,9 @@
   (isearch-highlight-no-delay-length 4)
   (isearch-lazy-count t)
   (lazy-count-prefix-format "(%s/%s) ")
-  (lazy-count-suffix-format nil))
+  (lazy-count-suffix-format nil)
+  (isearch-wrap-pause t)
+  (isearch-repeat-on-direction-change t))
 
 (use-package consult
   :ensure t
@@ -661,6 +663,7 @@
       (or (eldoc-display-in-echo-area docs interactive)
           (eldoc-display-in-buffer docs interactive))))
   (setq eldoc-display-functions '(my/eldoc-display-manually-only)))
+
 
 ;;;; Denote
 

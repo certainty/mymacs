@@ -33,6 +33,26 @@ Package workflow:
 - NonGNU ELPA packages: use them only when GNU ELPA does not provide the package, and still declare them with `:ensure t`
 - packages outside ELPA: vendor them into `user-lisp/<package-name>` as git modules and load them with `:ensure nil`
 
+### use-package use of keywords
+ Use of use-package
+
+ All uses of use-package put the options into the same order which is defined melow.
+ If an option doesn't apply the order resumes with the next one.
+
+ - :if / :unless
+ - :ensure
+ - :demand
+ - :pin
+ - :mode
+ - :hook
+ - :commands
+ - :bind
+ - :custom
+ - :preface
+ - :init
+ - :config
+
+
 ---
 
 ## Documentation-First Requirement
