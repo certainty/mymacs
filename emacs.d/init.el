@@ -489,6 +489,7 @@
 ;;;; dired
 
 (use-package dired
+  :commands (dired dired-jump dired-find-alternate-file)
   :custom
   (dired-listing-switches
    (if (and (eq system-type 'darwin)
@@ -499,11 +500,15 @@
   (dired-recursive-deletes 'always)
   (global-auto-revert-non-file-buffers t)
   :init
+  (put 'dired-find-alternate-file 'disabled nil)
   (when-let* ((gls (and (eq system-type 'darwin)
                         (executable-find "gls"))))
     (setq insert-directory-program gls))
   :bind
-  (:map mymacs-mode-map ("C-c e" . dired-jump)))
+  (:map dired-mode-map
+        ("RET" . dired-find-alternate-file)
+        :map mymacs-mode-map
+        ("C-c e" . dired-jump)))
 
 (use-package wdired
   :commands wdired-change-to-wdired-mode
