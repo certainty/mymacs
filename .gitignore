@@ -8,9 +8,9 @@ auto-save-list
 
 /emacs.d/elpa/
 /emacs.d/eln-cache/
-/minimal.d/elpa/
-/minimal.d/eln-cache/
-/minimal.d/eshell/
+/emacs.d/elpa/
+/emacs.d/eln-cache/
+/emacs.d/eshell/
 tree-sitter/
 
 recentf
@@ -18,9 +18,8 @@ projects
 package-quickstart.el
 history
 custom.el
-minimal.d/init.el
 places.eld
 *.eld
 ./
-minimal.d/tree-sitter/libtree-sitter-scala.dylib
-minimal.d/tramp
+emacs.d/tree-sitter/libtree-sitter-scala.dylib
+emacs.d/tramp
