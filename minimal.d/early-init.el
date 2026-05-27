@@ -13,3 +13,9 @@
           native-comp-async-jobs-number (max 2 (1- (num-processors)))
           native-comp-speed 2
           native-comp-prune-cache t))
+ 
+(setq initial-major-mode 'lisp-interaction-mode)
+(setq initial-buffer-choice t)
+(setq initial-scratch-message ";;; Hack the planet!\n\n")
+
+(setq package-enable-at-startup t)

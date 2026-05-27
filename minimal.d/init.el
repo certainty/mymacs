@@ -4,6 +4,24 @@
 ;; - user defined functions use my/ prefix
 ;; - private user defined functinos use my-- prefix
 ;; - user defined interactive functions use + prefix
+;;
+;; Use of use-package
+;;
+;; All uses of use-package put the options into the same order which is defined melow.
+;; If an option doesn't apply the order resumes with the next one.
+;;
+;; - :if / :unless
+;; - :ensure
+;; - :demand
+;; - :pin
+;; - :mode
+;; - :hook
+;; - :commands
+;; - :bind
+;; - :custom
+;; - :preface
+;; - :init
+;; - :config
 
 ;;; Customization
 (defvar-keymap mymacs-mode-map :doc "mymacs global keys")
@@ -29,47 +47,41 @@
 (defcustom my/font-weight 'light "The font weigh" :type 'symbol :group 'mymacs)
 (defcustom my/org-directory "~/org" "The main org directory" :type 'string :group 'mymacs)
 (defcustom my/org-tag-alist nil "The tag quick keys" :type '(alist :key-type string :value-type character))
-(defcustom my/scala-metals-java-options nil "Java options for Metals." :type '(repeat string) :group 'mymacs)
-(defcustom my/scala-metals-server-arguments nil "Arguments for metals" :type '(repeat string) :group 'mymacs)
-(defcustom my/scala-metals-initialization-options
-  '(:isHttpEnabled t)
-  "Initialization options sent to Metals."
-  :type 'plist
-  :group 'mymacs)
 
 ;;;; load custom file
 (setopt custom-file (locate-user-emacs-file "custom.el"))
 (load custom-file :no-error-if-file-is-missing)
 
 ;;; Packages
+
+;; The main objective for packages is to strike a good balance between security
+;; and functionality. This is achieved by:
+;; - using as few packages as possible
+;; - pin to the conservative archives
+;; - require review for melpa packages
 (require 'package)
 (require 'use-package)
 (setopt package-archives
         '(("gnu" . "https://elpa.gnu.org/packages/")
-          ("nongnu" . "https://elpa.nongnu.org/nongnu/"))
+          ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+          ("melpa" . "https://melpa.org/packages/"))
         package-archive-priorities
         '(("gnu" . 20)
-          ("nongnu" . 10))
-
-				package-pinned-packages
-        '((ace-window . "gnu")
-          (cape . "gnu")
-          (consult . "gnu")
-          (embark . "gnu")
-          (embark-consult . "gnu")
-          (exec-path-from-shell . "nongnu"))
-
-        package-install-upgrade-built-in t
-        package-check-signature t
-        package-native-compile t
-        package-quickstart t
+          ("nongnu" . 10)
+          ("melpa" . 3))
+        ;; we have to pin all packages by default to prevent melpa packages
+        ;; from getting precedence
         network-security-level 'high
-        gnutls-verify-error t)
-(package-initialize)
+        gnutls-verify-error t
+        use-package-always-pin "gnu"
+        package-install-upgrade-built-in nil
+        package-check-signature t
+        package-review-policy '((archive . "melpa"))
+        package-native-compile t
+        ;; don't required to refresh packages all the time
+        package-quickstart nil)
 
 ;;; Environment setup (to start emacs from launcher)
-
-
 (use-package exec-path-from-shell
   :ensure t
   :pin "nongnu"
@@ -85,17 +97,39 @@
     '("PATH" "MANPATH" "GOPATH" "CARGO_HOME" "RUSTUP_HOME" "JAVA_HOME" "SBT_HOME")
     "Environment variables imported from the shell on macOS."))
 
-;;; UI
+;;; Essentials
 (use-package emacs
+  :bind
+  (:map mymacs-mode-map
+        ("C-c <" . indent-rigidly-left-to-tab-stop)
+        ("C-c >" . indent-rigidly-right-to-tab-stop)
+        ("C-g" . +escape-dwim)
+        ("<f1>" . start-kbd-macro)
+        ("<f2>" . end-kbd-macro)
+        ("<f5>" . display-line-numbers-mode)
+        ("<f6>" . toggle-frame-maximized))
+  (:map goto-map
+        ("<" . pop-to-mark-command)
+        ("m" . pop-global-mark)
+        ("n" . nil)
+        ("p" . nil))
+  (:repeat-map my/mark-repeat-map
+               ("<" . pop-to-mark-command)
+               ("m" . pop-global-mark))
+  
   :custom
+  ;;; ui
   (use-short-answers t)
   (ring-bell-function 'ignore)
   (inhibit-startup-screen t)
   (inhibit-startup-message t)
   (initial-scratch-message nil)
-  (mode-line-compact nil)
-  (mode-line-right-align-edge 'right-margin)
 
+  ;;; editing
+  (kill-whole-line t)
+  (set-mark-command-repeat-pop t)
+
+  ;;; theme configuration
   (modus-themes-custom-auto-reload t)
   (modus-themes-disable-other-themes t)
   (modus-themes-italic-constructs t)
@@ -113,31 +147,53 @@
      (bg-fringe bg-main)
      (fringe bg-main)
      (bg-space bg-main)))
-
-  :bind
-  (:map mymacs-mode-map
-				("C-g" . +escape-dwim))
   
+  :preface
+  (defun +escape-dwim ()
+    (interactive)
+    (cond
+     ((region-active-p)
+      (keyboard-quit))
+     ((derived-mode-p 'completion-list-mode)
+      (delete-completion-window))
+     ((> (minibuffer-depth) 0)
+      (abort-recursive-edit))
+     (t
+      (keyboard-quit))))
 
   :init
+  ;;; modes
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   (global-hl-line-mode -1)
-  
+  (repeat-mode)
+  (delete-selection-mode)
+  (global-subword-mode)
+  (save-place-mode)
+
+  ;;; tab settings
+  (setq-default indent-tabs-mode nil)
+  (setq-default standard-indent 2)
+  (setq-default tab-width 2)
+
+  ;;; default font
   (set-face-attribute
    'default nil
    :font my/font
    :height my/font-height
    :weight my/font-weight)
-  
+
+  ;;;; load theme
   (load-theme my/theme)
 
   ;;;; modeline
-  (set-face-attribute 'mode-line nil :background 'unspecified :box nil :overline "gray50" :underline nil)
-  (set-face-attribute 'mode-line-active nil :background 'unspecified :box nil :overline "gray50" :underline nil)
-  (set-face-attribute 'mode-line-inactive nil :background 'unspecified :box nil :overline "gray50" :underline nil)
-  (setopt project-mode-line t)
+  (dolist (m '(mode-line mode-line-active mode-line-inactive))
+    (set-face-attribute m nil :background 'unspecified :box nil :overline "gray50" :underline nil))
+
+  (setopt project-mode-line t
+          mode-line-compact nil
+          mode-line-right-align-edge 'right-margin)
 
   (setq-default mode-line-format
                 '("%e"
@@ -158,41 +214,21 @@
                      (format-mode-line
                       '("  " flymake-mode-line-format
                         "  " mode-line-misc-info))))
-                  mode-line-end-spaces))
-
-  (keymap-set goto-map "n" nil)
-  (keymap-set goto-map "p" nil)
-
-  :preface
-  (defun +escape-dwim ()
-    (interactive)
-    (cond
-     ((region-active-p)
-      (keyboard-quit))
-     ((derived-mode-p 'completion-list-mode)
-      (delete-completion-window))
-     ((> (minibuffer-depth) 0)
-      (abort-recursive-edit))
-     (t
-      (keyboard-quit)))))
-
-;;;; line numbers
-(use-package display-line-numbers
-  :hook prog-mode)
+                  mode-line-end-spaces)))
 
 ;;;; outline
 (use-package outline
-	:hook ((prog-mode . outline-minor-mode)
-				 (org-mode . outline-minor-mode)
-				 (markdown-mode . outline-minor-mode))
-	:bind
-	(:map mymacs-mode-map
-				("C-<tab>" . outline-cycle)))
+  :hook ((prog-mode . outline-minor-mode)
+         (org-mode . outline-minor-mode)
+         (markdown-mode . outline-minor-mode))
+  :bind
+  (:map outline-minor-mode-map
+        ("C-<tab>" . outline-cycle)))
 
 ;;;; windows and buffers
 
 (defvar my/side-window-config
-	'((display-buffer-reuse-mode-window display-buffer-in-side-window)
+  '((display-buffer-reuse-mode-window display-buffer-in-side-window)
     (side . right)
     (slot . 0)
     (window-width . 0.33)
@@ -209,27 +245,27 @@
 
 (use-package window
   :bind
-	(:map mymacs-mode-map
-				("C-c |" . split-window-right)
+  (:map mymacs-mode-map
+        ("C-c |" . split-window-right)
         ("C-q" . bury-buffer)
         ("C-Q" . kill-current-buffer))
   (:map goto-map
-				("n b" . next-buffer)
-				("p b" . previous-buffer))
+        ("n b" . next-buffer)
+        ("p b" . previous-buffer))
   (:repeat-map my/window-resize-repeat-map
-							 ("{" . shrink-window-horizontally)
-							 ("}" . enlarge-window-horizontally))
+               ("{" . shrink-window-horizontally)
+               ("}" . enlarge-window-horizontally))
   (:repeat-map my/buffer-repeat-map
-							 ("n" . next-buffer)
-							 ("p" . previous-buffer))
+               ("n" . next-buffer)
+               ("p" . previous-buffer))
   :custom
   ;; prefer splitting to the side
   (split-height-threshold nil)
   (split-width-threshold 80)
   (even-window-sizes nil)
   (window-combination-resize t)
-	(window-divider-default-right-width 7)
-	(window-divider-default-bottom-width 7)
+  (window-divider-default-right-width 7)
+  (window-divider-default-bottom-width 7)
 
   ;;;;; buffer arrangement
   (display-buffer-alist
@@ -243,22 +279,22 @@
        display-buffer-use-some-window
        display-buffer-pop-up-window))))
 
-	:config
-	(set-face-foreground 'window-divider (face-background 'default))
-	(dolist (f '(window-divider-first-pixel window-divider-last-pixel))
-		(set-face-foreground f "#4f5f73"))
-	:init
-	(window-divider-mode))
+  :config
+  (set-face-foreground 'window-divider (face-background 'default))
+  (dolist (f '(window-divider-first-pixel window-divider-last-pixel))
+    (set-face-foreground f "#4f5f73"))
+  :init
+  (window-divider-mode))
 
 (use-package ace-window
-	:ensure t
-	:commands (ace-window)
-	:custom
-	(aw-keys '(?a ?b ?c ?d ?e ?f ?g ?h ?i ?j ?k ?l))
-	:bind
-	(:map mymacs-mode-map
-				("M-o" . ace-window)
-				("M-O" . other-window))
+  :ensure t
+  :commands (ace-window)
+  :bind
+  (:map mymacs-mode-map
+        ("M-o" . ace-window)
+        ("M-O" . other-window))
+  :custom
+  (aw-keys '(?a ?b ?c ?d ?e ?f ?g ?h ?i ?j ?k ?l))
   :config
   (add-to-list 'aw-dispatch-alist
                '(?q ace-delete-window "Delete Window")))
@@ -270,61 +306,58 @@
   :init
   (global-auto-revert-mode 1))
 
-
 ;;;; minibuffer
 (use-package minibuffer
   :custom
   (enable-recursive-minibuffers t)
-	:init
-	(minibuffer-depth-indicate-mode))
+  :init
+  (minibuffer-depth-indicate-mode))
 
 (use-package savehist
   :custom
   (savehist-save-minibuffer-history t)
   (savehist-autosave-interval 100)
-	:init
-	(savehist-mode))
+  :init
+  (savehist-mode))
 
 ;;; Completion
+;; I have previously used vertico, marginalia, orderless and corfu as the completion stack
+;; but I found that the builtin icomplete can be configured to come very close.
+;; For in-buffer completion I actually prefer icomplete-preview over corfu.
 
 ;;;; minibuffer
 (use-package minibuffer
-	:custom
-	(completion-sort 'historical)
-	(completion-eager-update t)
-	(completion-auto-select t)
-	(completions-auto-help 'visible)
+  :custom
+  (completion-sort 'historical)
+  (completion-eager-update t)
+  (completion-auto-select t)
+  (completions-auto-help 'visible)
   (completions-max-height 20)
   (completion-ignore-case t)
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
-	(completions-format 'vertical)
-	(completion-styles '(substring partial-completion flex basic)))
+  (completions-format 'vertical)
+  (completion-styles '(substring partial-completion flex basic)))
 
 (use-package icomplete
-	:custom
-	(icomplete-delay-completions-threshold 0)
-	(icomplete-in-buffer t)
-	(icomplete-max-delay-chars 0)
-	(icomplete-scroll t)
-	(icomplete-prospects-height 10)
-	(icomplete-show-matches-on-no-input t)
-	:bind
-	(:map icomplete-minibuffer-map
-				("C-n" . icomplete-forward-completions)
-				("C-p" . icomplete-backward-completions)
-				("C-y" . icomplete-force-complete-and-exit)
-				("C-j" . icomplete-force-complete))
-	:init
-	(icomplete-vertical-mode 1))
+  :bind
+  (:map icomplete-minibuffer-map
+        ("C-n" . icomplete-forward-completions)
+        ("C-p" . icomplete-backward-completions)
+        ("C-y" . icomplete-force-complete-and-exit)
+        ("C-j" . icomplete-force-complete))
+  :custom
+  (icomplete-delay-completions-threshold 0)
+  (icomplete-in-buffer t)
+  (icomplete-max-delay-chars 0)
+  (icomplete-scroll t)
+  (icomplete-prospects-height 10)
+  (icomplete-show-matches-on-no-input 
+  :init
+  (icomplete-vertical-mode 1)))
 
 ;;;; In-buffer
 (use-package completion-preview
-  :custom
-  (completion-preview-minimum-symbol-length 1)
-  (completion-preview-idle-delay nil)
-  (completion-preview-message-format nil)
-  
   :hook ((prog-mode . completion-preview-mode)
          (org-mode . completion-preview-mode)
          (markdown-mode . completion-preview-mode))
@@ -333,7 +366,12 @@
         ("M-n" . completion-preview-next-candidate)
         ("M-p" . completion-preview-prev-candidate)
         ("M-y" . completion-preview-insert)
-        ("C-y" . completion-preview-insert)))
+        ("C-y" . completion-preview-insert))
+  :custom
+  (completion-preview-message-format nil)
+  (completion-preview-minimum-symbol-length 1)
+  (completion-preview-idle-delay nil)
+  (completion-preview-message-format nil))
 
 (use-package cape
   :ensure t
@@ -342,113 +380,85 @@
   (add-to-list 'completion-at-point-functions 'cape-file))
 
 ;;; Editing
-(use-package emacs
-  :custom
-  (kill-whole-line t)
-  (set-mark-command-repeat-pop t)
-  :bind
-  (:map mymacs-mode-map
-				("C-c >" . indent-rigidly-right-to-tab-stop)
-				("C-c <" . indent-rigidly-left-to-tab-stop))
-  (:map goto-map
-				("<" . pop-to-mark-command)
-				("m" . pop-global-mark))
-  (:repeat-map my/mark-repeat-map
-							 ("<" . pop-to-mark-command)
-							 ("m" . pop-global-mark))
-  :init
-  (setq-default indent-tabs-mode nil)
-  (setq-default standard-indent 2)
-  (setq-default tab-width 2)
-  (repeat-mode)
-  (delete-selection-mode)
-  (global-subword-mode)
-  (save-place-mode))
 
 ;;;; handling pairs (quotes, parens, etc.)
 
 (use-package elec-pair
+  :bind
+  (:map mymacs-mode-map
+        ;; original binding is susped frame which I never want
+        ("C-z" . delete-pair)
+        ("C-Z" . electric-pair-delete-pair))
   :custom
   (delete-pair-blink-delay 0.0)
   (delete-pair-push-mark t)
-  :bind
-  (:map mymacs-mode-map
-				;; original binding is susped frame which I never want
-				("C-z" . delete-pair)
-				("C-Z" . electric-pair-delete-pair))
   :init
   (electric-pair-mode))
 
 ;;;; core editing / structural
+;;; TODO: replace with paredit?
 (use-package emacs
   :bind
-  (:map
-	 mymacs-mode-map
-	 ("C-c s" . my/sexp-prefix-map)
-	 ("C-c )" . treesit-forward-sexp)
-	 ("C-c (" . treesit-backward-sexp)
-	 ("C-c [" . treesit-beginning-of-defun)
-	 ("C-c ]" . treesit-end-of-defun))
-  (:prefix-map
-	 my/sexp-prefix-map
-	 :prefix "C-c s"
-	 ("m" . mark-sexp)
-	 (")" . treesit-forward-sexp)
-	 ("f" . treesit-forward-sexp)
-	 ("F" . kill-sexp)
-	 ("(" . treesit-backward-sexp)
-	 ("b" . treesit-backward-sexp)
-	 ("B" . backward-kill-sexp)
-	 ("u" . treesit-up-list)
-	 ("d" . treesit-down-list)
-	 ("t" . transpose-sexps)
-	 ("=" . indent-sexp))
-	(:repeat-map
-	 my/movement-repeat-map
-	 ("p" . previous-line)
-	 ("n" . next-line))
-	(:repeat-map
-	 my/sexp-repeat-map
-	 ("f" . treesit-forward-sexp)
-	 ("b" . treesit-backward-sexp)
-	 ("u" . treesit-up-list)
-	 ("d" . treesit-down-list)
-	 ("t" . transpose-sexps)))
+  (:map mymacs-mode-map
+        ("C-c s" . my/sexp-prefix-map)
+        ("C-c )" . treesit-forward-sexp)
+        ("C-c (" . treesit-backward-sexp)
+        ("C-c [" . treesit-beginning-of-defun)
+        ("C-c ]" . treesit-end-of-defun))
+  (:prefix-map my/sexp-prefix-map :prefix "C-c s"
+               ("m" . mark-sexp)
+               (")" . treesit-forward-sexp)
+               ("f" . treesit-forward-sexp)
+               ("F" . kill-sexp)
+               ("(" . treesit-backward-sexp)
+               ("b" . treesit-backward-sexp)
+               ("B" . backward-kill-sexp)
+               ("u" . treesit-up-list)
+               ("d" . treesit-down-list)
+               ("t" . transpose-sexps)
+               ("=" . indent-sexp))
+  (:repeat-map my/movement-repeat-map
+               ("p" . previous-line)
+               ("n" . next-line))
+  (:repeat-map my/sexp-repeat-map
+               ("f" . treesit-forward-sexp)
+               ("b" . treesit-backward-sexp)
+               ("u" . treesit-up-list)
+               ("d" . treesit-down-list)
+               ("t" . transpose-sexps)))
 
 ;;;; embark
 (use-package embark
   :ensure t
+  :bind
+  (:map mymacs-mode-map
+        ("C-." . embark-act)
+        ("C-," . embark-dwim))
+  (:map icomplete-minibuffer-map
+        ("C-." . embark-act)
+        ("C-," . embark-dwim)
+        ("C-c c" . embark-collect)
+        ("C-c e" . embark-export)
+        ("C-c m" . embark-select)
+        ("C-c a" . embark-act-all))
+  (:map minibuffer-mode-map
+        ("C-c c" . embark-collect)
+        ("C-c e" . embark-export)
+        ("C-c m" . embark-select)
+        ("C-c a" . embark-act-all))
+  (:map minibuffer-local-map
+        ("C-c c" . embark-collect)
+        ("C-c e" . embark-export)
+        ("C-c m" . embark-select)
+        ("C-c a" . embark-act-all))
   :custom
   (embark-prompter 'embark-completing-read-prompter)
   (prefix-help-command 'embark-prefix-help-command)
-
-  :bind
-  (:map mymacs-mode-map
-				("C-." . embark-act)
-				("C-," . embark-dwim))
-	(:map icomplete-minibuffer-map
-				("C-." . embark-act)
-				("C-," . embark-dwim)
-				("C-c c" . embark-collect)
-				("C-c e" . embark-export)
-				("C-c m" . embark-select)
-				("C-c a" . embark-act-all))
-  (:map minibuffer-mode-map
-				("C-c c" . embark-collect)
-				("C-c e" . embark-export)
-				("C-c m" . embark-select)
-				("C-c a" . embark-act-all))
-  (:map minibuffer-local-map
-				("C-c c" . embark-collect)
-				("C-c e" . embark-export)
-				("C-c m" . embark-select)
-				("C-c a" . embark-act-all))
-
   :init
   (add-to-list 'display-buffer-alist
-							 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-								 nil
-								 (window-parameter (mode-line-format . none)))))
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameter (mode-line-format . none)))))
 
 (use-package embark-consult
   :after consult
@@ -456,28 +466,22 @@
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 ;;; Files
-
 (use-package files
   :custom
   (make-backup-files nil)
   (auto-save-default nil)
-	(auto-save-default nil)
   (create-lockfiles nil)
   (find-file-visit-truename t))
 
 ;;;; recent
-
 (use-package recentf
+  :bind
+  (:map mymacs-mode-map ("C-x R" . recentf-open))
   :custom
   (recentf-max-saved-items 1000)
-  (recentf-exclude
-   '(".gz" ".xz" ".zip"
-     "COMMIT_EDITMSG"))
-  :bind
-  (:map mymacs-mode-map
-				("C-x R" . recentf-open))
-	:init
-	(recentf-mode))
+  (recentf-exclude '(".gz" ".xz" ".zip" "COMMIT_EDITMSG"))
+  :init
+  (recentf-mode))
 
 ;;;; dired
 
@@ -488,8 +492,7 @@
   (dired-recursive-deletes 'always)
   (global-auto-revert-non-file-buffers t)
   :bind
-  (:map mymacs-mode-map
-				("C-c e" . dired-jump)))
+  (:map mymacs-mode-map ("C-c e" . dired-jump)))
 
 (use-package wdired
   :commands wdired-change-to-wdired-mode
@@ -498,106 +501,114 @@
   (wdired-create-parent-directories t))
 
 ;;; Search
+(use-package isearch
+  :custom
+  (search-whitespace-regexp "*.?")
+  (isearch-lax-whitespace t)
+  (isearch-regexp-lax-whitespace nil)
+  (search-highlight t)
+  (isearch-lazy-highlight t)
+  (isearch-lazy-highlight-initial-delay 0.5)
+  (isearch-highlight-no-delay-length 4)
+  (isearch-lazy-count t)
+  (lazy-count-prefix-format "(%s/%s) ")
+  (lazy-count-suffix-format nil))
 
 (use-package consult
   :ensure t
   :bind
+  (:map outline-minor-mode-map
+        ("C-c o" . consult-outline))
   (:map goto-map
-				("b" . consult-project-buffer)
-				("o" . consult-recent-file)
-				("r" . consult-bookmarks)
-				("i".  consult-imenu)
-				("M" . consult-mark)
-				("d" . consult-flymake))
+        ("b" . consult-project-buffer)
+        ("o" . consult-recent-file)
+        ("r" . consult-bookmarks)
+        ("i".  consult-imenu)
+        ("M" . consult-mark)
+        ("d" . consult-flymake))
   (:map search-map
-				("/" . consult-ripgrep)
-				("v" . consult-git-grep)))
+        ("/" . consult-ripgrep)
+        ("v" . consult-git-grep)))
 
 ;; wgrep no longer needed, since emacs 31 has grep-edit-mode
 
 ;;; Projects
 (use-package project
+  :custom
+  (project-vc-extra-root-markers '(".project.el"))
+  
+  :bind
+  (:map mymacs-mode-map
+        ("C-c p" . project-switch-project)
+        ("C-c v" . project-vc-dir))
+  (:map goto-map
+        ("f" . project-find-file)
+        ("P" . project-switch-project))
+  (:map search-map
+        ("*" . +project-find-symbol))
   :preface
   (defun +project-find-symbol ()
     "Search for symbol under point in whole project"
     (interactive)
-    (consult-ripgrep (project-root (project-current t)) (thing-at-point 'symbol)))
-  :custom
-  (project-vc-extra-root-markers '(".project.el"))
-  :bind
-	(:map mymacs-mode-map
-				("C-c p" . project-switch-project)
-				("C-c v" . project-vc-dir))
-  (:map goto-map
-				("f" . project-find-file)
-				("P" . project-switch-project))
-  (:map search-map
-				("*" . +project-find-symbol)))
-
-(use-package xref
-  :custom
-  (xref-show-definitions-function #'xref-show-definitions-buffer))
-
-;;;; compilation mode colors
-(use-package compile
-  :custom
-  (compilation-scroll-output t))
-
-(use-package ansi-color
-  :hook (compilation-filter . ansi-color-compilation-filter))
+    (consult-ripgrep (project-root (project-current t)) (thing-at-point 'symbol))))
 
 ;;;; terminal
 (use-package vterm
-  :ensure nil
+  :ensure t
+  :pin "melpa"
   :commands (vterm my/vterm-project my/toggle-vterm-project)
-  :custom
-  (vterm-kill-buffer-on-exit t)
-  (vterm-max-scrollback 10000)
   :bind
   (:map mymacs-mode-map
         ("C-c t" . my/toggle-vterm-project)
         ("C-c T" . my/vterm-project))
+  :custom
+  (vterm-kill-buffer-on-exit t)
+  (vterm-max-scrollback 10000)
   :init
-  (push `("\\*vterm.*\\*" . ,my/side-window-config)
-        display-buffer-alist))
+  (push `("\\*vterm.*\\*" . ,my/side-window-config) display-buffer-alist))
 
 ;;; GTD
 (use-package org
+  :bind
+  (:map mymacs-mode-map
+        ("C-c o" . my/org-prefix-map))
+  (:prefix-map my/org-prefix-map :prefix "C-c o"
+               ("a" . org-agenda)
+               ("o" . org-capture))
   :custom
   (org-directory (file-truename (expand-file-name my/org-directory)))
-	(org-agenda-files (list (concat org-directory "/tasks.org")
-													(concat org-directory "/log.org")))
-	(org-pretty-entities t)
-	(org-startup-folded t)
-	(org-hide-leading-stars t)
-	(org-hide-emphasis-marker nil)
-	(org-M-RET-may-split-lines nil)
-	(org-insert-heading-respect-content t)
-	(org-fontify-quote-and-verse-blocks t)
+  (org-agenda-files (list (concat org-directory "/tasks.org")
+                          (concat org-directory "/log.org")))
+  (org-pretty-entities t)
+  (org-startup-folded t)
+  (org-hide-leading-stars t)
+  (org-hide-emphasis-marker nil)
+  (org-M-RET-may-split-lines nil)
+  (org-insert-heading-respect-content t)
+  (org-fontify-quote-and-verse-blocks t)
 
-	;; Indentation
-	(org-auto-align-tags t)
+  ;; Indentation
+  (org-auto-align-tags t)
   (org-adapt-indentation nil)
   (org-startup-indented t)
   (org-src-preserve-indentation t)
 
-	;; Logging
+  ;; Logging
   (org-log-done 'time)
   (org-log-into-drawer t)
 
-	;; Refile
-  (org-refile-targets '((nil :maxlevel . 5)
-                        (org-agenda-files :maxlevel . 5)))
+  ;; Refile
+  (org-refile-targets '((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5)))
   (org-outline-path-complete-in-steps nil)
   (org-refile-use-outline-path t)
 
-	;; Sequences
-	(org-todo-keywords
-	 '((sequence "TODO(t)" "WAIT(w!)" "|" "CANCELLED(c!)" "DONE(d!)")
-		 (sequence "EVT(e)" "|" "CANCELLED(c!)" "DONE(d!)")
-		 (sequence "|" "DECISION(c)")))
-	(org-use-fast-todo-selection 'expert)
-	(org-capture-templates
+  ;; Sequences
+  (org-todo-keywords
+   '((sequence "TODO(t)" "WAIT(w!)" "|" "CANCELLED(c!)" "DONE(d!)")
+     (sequence "EVT(e)" "|" "CANCELLED(c!)" "DONE(d!)")
+     (sequence "|" "DECISION(c)")))
+  (org-use-fast-todo-selection 'expert)
+  (org-capture-templates
    '(("t" "Task" entry (file "tasks.org")
       "* TODO %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
       :prepend t)
@@ -613,20 +624,11 @@
       "* EVT %? :event:\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
       :tree-type week
       :prepend t)))
-	(org-enforce-todo-dependencies t)
-	(org-agenda-custom-commands '((n "Next actions" todo "TODO") ("w" "Waiting" todo "WAIT")))
-	(org-tag-alist my/org-tag-alist)
+  (org-enforce-todo-dependencies t)
+  (org-agenda-custom-commands '((n "Next actions" todo "TODO") ("w" "Waiting" todo "WAIT")))
+  (org-tag-alist my/org-tag-alist)
 
-	:bind
-	(:map mymacs-mode-map
-				("C-c o" . my/org-prefix-map))
-	(:prefix-map
-	 my/org-prefix-map
-	 :prefix "C-c o"
-	 ("a" . org-agenda)
-	 ("o" . org-capture))
-
-	:config
+  :config
   ;; Fixed-pitch for code/tables in variable-pitch org docs
   (set-face-attribute 'org-block nil :inherit 'fixed-pitch)
   (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
@@ -639,7 +641,7 @@
 
 (use-package ispell
   :hook ((text-mode . flyspell-mode)
-				 (prog-mode . flyspell-prog-mode))
+         (prog-mode . flyspell-prog-mode))
   :custom
   (ispell-program-name "aspell")
   (ispell-dictionary "en_US"))
@@ -664,64 +666,66 @@
 
 
 ;;; Programming
-(use-package eglot
-	:bind
-	(:map eglot-mode-map
-				("C-c l" . my/eglot-prefix-map))
-	(:prefix-map
-	 my/eglot-prefix-map
-	 :prefix "C-c l"
-	 ("a" . eglot-code-actions)
-	 ("d" . xref-find-definitions)
-	 ("r" . eglot-rename)
-	 ("h" . eldoc)
-	 ("f" . eglot-format-buffer)
-	 ("F" . eglot-format)
-	 ("C" . flymake-show-project-diagnostics)
-	 ("c" . consult-flymake))
-	:custom
-	(read-process-output-max (* 1024 1024))
-	(eglot-server-programs
-	 '((ruby-ts-mode . ("ruby-lsp"))
-		 (go-ts-mode . ("gopls"))))
 
-  :preface
-	(defun my/scala-metals-contact ()
-    "Build the Eglot contact spec for Metals."
-    (append
-     (list "metals")
-     (mapcar (lambda (arg) (format "-J%s" arg)) my/scala-metals-java-options)
-     my/scala-metals-server-arguments
-     (list :initializationOptions my/scala-metals-initialization-options)))
-  (defun my/scala-eglot-setup ()
-    "Disable Metals on-type formatting in Scala buffers."
-    (setq-local eglot-ignored-server-capabilities
-                (cons :documentOnTypeFormattingProvider
-                      eglot-ignored-server-capabilities)))
+(use-package xref
+  :custom
+  (xref-show-definitions-function #'xref-show-definitions-buffer))
+
+;;;; compilation mode colors
+(use-package compile
+  :custom
+  (compilation-scroll-output t))
+
+(use-package ansi-color
+  :hook (compilation-filter . ansi-color-compilation-filter))
+
+(use-package eglot
+  :bind
+  (:map eglot-mode-map
+        ("C-c l" . my/eglot-prefix-map))
+  (:prefix-map
+   my/eglot-prefix-map
+   :prefix "C-c l"
+   ("a" . eglot-code-actions)
+   ("d" . xref-find-definitions)
+   ("r" . eglot-rename)
+   ("h" . eldoc)
+   ("f" . eglot-format-buffer)
+   ("F" . eglot-format)
+   ("C" . flymake-show-project-diagnostics)
+   ("c" . consult-flymake))
+  
+  :custom
+  (read-process-output-max (* 1024 1024))
+  (eglot-server-programs
+   '((ruby-ts-mode . ("ruby-lsp"))
+     (go-ts-mode . ("gopls"))))
+
+
   :config
   (add-to-list 'eglot-server-programs
-               `(scala-ts-mode . ,(my/scala-metals-contact))))
+               `(scala-ts-mode . ("metals" :initializationOptions (:isHttpEnabled t)))))
 
 (use-package treesit
   :custom
-  (treesit-font-lock-level 5)
+  (treesit-font-lock-level 4)
   :config
   (add-to-list 'treesit-language-source-alist
                '(scala "https://github.com/tree-sitter/tree-sitter-scala")))
 
 ;;;; diagnostics
 (use-package flymake
+  :bind
+  (:map goto-map
+        ("n e" . flymake-goto-next-error)
+        ("p e" . flymake-goto-prev-error))
+  (:map flymake-mode-map
+        ("M-n" . flymake-goto-next-error)
+        ("M-p" . flymake-goto-prev-error))
   :custom
   (flymake-indicator-type 'margins)
   (flymake-margin-indicator-position 'left-margin)
-  (flymake-mode-line-lighter "")
-  :bind
-  (:map goto-map
-				("n e" . flymake-goto-next-error)
-				("p e" . flymake-goto-prev-error))
-  (:map flymake-mode-map
-				("M-n" . flymake-goto-next-error)
-				("M-p" . flymake-goto-prev-error)))
+  (flymake-mode-line-lighter ""))
 
 ;;;; ruby
 (use-package ruby-ts-mode
@@ -739,20 +743,27 @@
 
 ;;;; go lang
 (use-package go-ts-mode
-	:mode "\\.go\\'"
+  :mode "\\.go\\'"
   :hook (go-ts-mode . eglot-ensure)
   :init
   (setq-default go-ts-mode-indent-offset 4))
 
 ;;;; scala
 (use-package scala-ts-mode
-  :ensure nil
+  :ensure t
+  :pin "melpa"
   :mode ("\\.scala\\'" "\\.sc\\'" "\\.sbt\\'")
   :hook ((scala-ts-mode . my/scala-eglot-setup)
          (scala-ts-mode . eglot-ensure))
   :bind
   (:map scala-ts-mode-map
-				("C-c C-t" . +scala-test-only)))
+        ("C-c C-t" . +scala-test-only))
+  :preface
+  (defun my/scala-eglot-setup ()
+    "Disable Metals on-type formatting in Scala buffers."
+    (setq-local eglot-ignored-server-capabilities
+                (cons :documentOnTypeFormattingProvider
+                      eglot-ignored-server-capabilities))))
 
 ;;;; yaml
 (use-package yaml-ts-mode
