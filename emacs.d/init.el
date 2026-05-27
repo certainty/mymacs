@@ -47,6 +47,8 @@
 (defcustom my/font-weight 'light "The font weigh" :type 'symbol :group 'mymacs)
 (defcustom my/org-directory "~/org" "The main org directory" :type 'string :group 'mymacs)
 (defcustom my/org-tag-alist nil "The tag quick keys" :type '(alist :key-type string :value-type character))
+(defcustom my/pmd-enabled nil "Enable consult-pmd" :type 'boolean :group 'mymacs)
+(defcustom my/pmd-base-url nil "The pmd url" :type 'string :group 'mymacs)
 
 ;;;; load custom file
 (setopt custom-file (locate-user-emacs-file "custom.el"))
@@ -217,6 +219,7 @@
                   mode-line-end-spaces)))
 
 ;;;; outline
+
 (use-package outline
   :hook ((prog-mode . outline-minor-mode)
          (org-mode . outline-minor-mode)
@@ -519,8 +522,6 @@
 (use-package consult
   :ensure t
   :bind
-  (:map outline-minor-mode-map
-        ("C-c O" . consult-outline))
   (:map goto-map
         ("b" . consult-project-buffer)
         ("o" . consult-recent-file)
@@ -530,7 +531,10 @@
         ("d" . consult-flymake))
   (:map search-map
         ("/" . consult-ripgrep)
-        ("v" . consult-git-grep)))
+        ("v" . consult-git-grep))
+  :config
+  (with-eval-after-load 'outline
+    (keymap-set outline-minor-mode-map "C-c O" #'consult-outline)))
 
 ;; wgrep no longer needed, since emacs 31 has grep-edit-mode
 
@@ -579,6 +583,7 @@
                ("o" . org-capture))
   :custom
   (org-directory (file-truename (expand-file-name my/org-directory)))
+  (org-persist-directory (locate-user-emacs-file "org-persist/"))
   (org-agenda-files (list (concat org-directory "/tasks.org")
                           (concat org-directory "/log.org")))
   (org-agenda-window-setup 'other-window)
@@ -790,8 +795,8 @@
 ;;;; lisp
 
 ;;;; PMD
-(use-package consult-pmd
-  :ensure nil
+(when my/pmd-enabled
+(use-package emacs 
   :commands (+pmd-projects
              +pmd-teams
              +pmd-people
@@ -805,4 +810,6 @@
                ("t" . +pmd-teams)
                ("p" . +pmd-people)
                ("s" . +pmd-servicegroups)
-               ("c" . +pmd-cache-clear)))
+               ("c" . +pmd-cache-clear))
+  :custom
+  (pmd-base-url my/pmd-base-url)))
