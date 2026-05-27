@@ -490,10 +490,18 @@
 
 (use-package dired
   :custom
-  (dired-listing-switches "-agho --group-directories-first")
+  (dired-listing-switches
+   (if (and (eq system-type 'darwin)
+            (not (executable-find "gls")))
+       "-agho"
+     "-agho --group-directories-first"))
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
   (global-auto-revert-non-file-buffers t)
+  :init
+  (when-let* ((gls (and (eq system-type 'darwin)
+                        (executable-find "gls"))))
+    (setq insert-directory-program gls))
   :bind
   (:map mymacs-mode-map ("C-c e" . dired-jump)))
 
@@ -742,7 +750,9 @@
 ;;;; ruby
 (use-package ruby-ts-mode
   :mode ("\\.rb\\'" "Rakefile\\'" "Gemfile\\'" "\\.rake\\'" "\\.gemspec\\'" "\\.ru\\'")
-  :hook (ruby-ts-mode . eglot-ensure)
+  :hook
+  (ruby-ts-mode . eglot-ensure)
+  (ruby-mode . ruby-ts-mode)
   :bind
   (:map ruby-ts-mode-map
         ("C-c t t" . +ruby-test-dwim)
