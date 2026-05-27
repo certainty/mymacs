@@ -123,7 +123,7 @@
   (ring-bell-function 'ignore)
   (inhibit-startup-screen t)
   (inhibit-startup-message t)
-  (initial-scratch-message nil)
+  (initial-scratch-message ";; Hack the planet!\n\n")
 
   ;;; editing
   (kill-whole-line t)
@@ -627,7 +627,7 @@
       :tree-type week
       :prepend t)))
   (org-enforce-todo-dependencies t)
-  (org-agenda-custom-commands '((n "Next actions" todo "TODO") ("w" "Waiting" todo "WAIT")))
+  (org-agenda-custom-commands '(("n" "Next actions" todo "TODO") ("w" "Waiting" todo "WAIT") ("d" "Decisions" todod "DECISION")))
   (org-tag-alist my/org-tag-alist)
 
   :config
