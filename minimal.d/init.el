@@ -581,6 +581,7 @@
   (org-directory (file-truename (expand-file-name my/org-directory)))
   (org-agenda-files (list (concat org-directory "/tasks.org")
                           (concat org-directory "/log.org")))
+  (org-agenda-window-setup 'other-window)
   (org-pretty-entities t)
   (org-startup-folded t)
   (org-hide-leading-stars t)
