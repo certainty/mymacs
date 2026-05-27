@@ -787,3 +787,21 @@
   :mode ("\\.css\\'" "\\.css\\.erb\\'" "\\.css\\.gotmpl\\'"))
 
 ;;;; lisp
+
+;;;; PMD
+(use-package consult-pmd
+  :ensure nil
+  :commands (+pmd-projects
+             +pmd-teams
+             +pmd-people
+             +pmd-servicegroups
+             +pmd-cache-clear)
+  :bind
+  (:map mymacs-mode-map
+        ("C-c ," . my/pmd-prefix-map))
+  (:prefix-map my/pmd-prefix-map :prefix "C-c ,"
+               ("," . +pmd-projects)
+               ("t" . +pmd-teams)
+               ("p" . +pmd-people)
+               ("s" . +pmd-servicegroups)
+               ("c" . +pmd-cache-clear)))
