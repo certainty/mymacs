@@ -299,7 +299,8 @@
      ("\\*xref\\*" . ,my/bottom-window-config)
      ("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\)\\*" . ,my/side-window-config)
      (".*"
-      (display-buffer-reuse-window
+      (display-buffer-same-window
+       display-buffer-reuse-window
        display-buffer-use-some-window
        display-buffer-pop-up-window))))
 
