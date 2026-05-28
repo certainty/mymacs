@@ -49,6 +49,8 @@
 (defcustom my/org-tag-alist nil "The tag quick keys" :type '(alist :key-type string :value-type character))
 (defcustom my/pmd-enabled nil "Enable consult-pmd" :type 'boolean :group 'mymacs)
 (defcustom my/pmd-base-url nil "The pmd url" :type 'string :group 'mymacs)
+(defcustom my/denote-directory "" "The path to my notes" :type 'string :group 'mymacs)
+(defcustom my/denote-keywords nil "List of keywords for denote" :type '(repeat string) :group 'mymacs)
 
 ;;;; load custom file
 (setopt custom-file (locate-user-emacs-file "custom.el"))
@@ -106,6 +108,11 @@
         ("C-c <" . indent-rigidly-left-to-tab-stop)
         ("C-c >" . indent-rigidly-right-to-tab-stop)
         ("C-g" . +escape-dwim)
+        ("C-o" . my/open-line-indented)
+        ("C-O" . my/open-line-above-indented)
+        ("M-D" . backward-kill-sexp)
+        ("M-<backspace>" . my/backward-kill-line)
+        ("M-z" . zap-up-to-char)
         ("<f1>" . start-kbd-macro)
         ("<f2>" . end-kbd-macro)
         ("<f5>" . display-line-numbers-mode)
@@ -129,6 +136,7 @@
 
   ;;; editing
   (kill-whole-line t)
+  (next-line-add-newlines t)
   (set-mark-command-repeat-pop t)
 
   ;;; theme configuration
@@ -162,6 +170,25 @@
       (abort-recursive-edit))
      (t
       (keyboard-quit))))
+
+  (defun my/open-line-above-indented ()
+    (interactive)
+    (back-to-indentation)
+    (forward-line -1)
+    (indent-according-to-mode))
+  
+  (defun my/open-line-indent-indented ()
+    (interactive)
+    (end-of-line)
+    (forward-line 1)
+    (indent-according-to-mode))
+
+  (defun my/backward-kill-line ()
+    "Kills the whole line backwards starting from point"
+    (interactive)
+    (let ((curr (point)))
+      (back-to-indentation)
+      (delete-region (point) curr)))
 
   :init
   ;;; modes
@@ -217,7 +244,7 @@
                       '("  " flymake-mode-line-format
                         "  " mode-line-misc-info))))
                   mode-line-end-spaces)))
-
+  
 ;;;; outline
 
 (use-package outline
@@ -411,36 +438,10 @@
   (electric-pair-mode))
 
 ;;;; core editing / structural
-;;; TODO: replace with paredit?
-(use-package emacs
-  :bind
-  (:map mymacs-mode-map
-        ("C-c s" . my/sexp-prefix-map)
-        ("C-c )" . treesit-forward-sexp)
-        ("C-c (" . treesit-backward-sexp)
-        ("C-c [" . treesit-beginning-of-defun)
-        ("C-c ]" . treesit-end-of-defun))
-  (:prefix-map my/sexp-prefix-map :prefix "C-c s"
-               ("m" . mark-sexp)
-               (")" . treesit-forward-sexp)
-               ("f" . treesit-forward-sexp)
-               ("F" . kill-sexp)
-               ("(" . treesit-backward-sexp)
-               ("b" . treesit-backward-sexp)
-               ("B" . backward-kill-sexp)
-               ("u" . treesit-up-list)
-               ("d" . treesit-down-list)
-               ("t" . transpose-sexps)
-               ("=" . indent-sexp))
-  (:repeat-map my/movement-repeat-map
-               ("p" . previous-line)
-               ("n" . next-line))
-  (:repeat-map my/sexp-repeat-map
-               ("f" . treesit-forward-sexp)
-               ("b" . treesit-backward-sexp)
-               ("u" . treesit-up-list)
-               ("d" . treesit-down-list)
-               ("t" . transpose-sexps)))
+(use-package paredit
+  :ensure t
+  :pin "nongnu"
+  :hook (lisp-mode . paredit-mode))
 
 ;;;; embark
 (use-package embark
@@ -501,6 +502,7 @@
 ;;;; dired
 
 (use-package dired
+  :hook (dired-mode . hl-line-mode)
   :commands (dired dired-jump dired-find-alternate-file)
   :custom
   (dired-listing-switches
@@ -510,16 +512,15 @@
      "-agho --group-directories-first"))
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
+  (dired-auto-revert-buffer #'dired-directory-changed-p)
   (global-auto-revert-non-file-buffers t)
+  (dired-dwim-target t)
   :init
-  (put 'dired-find-alternate-file 'disabled nil)
   (when-let* ((gls (and (eq system-type 'darwin)
                         (executable-find "gls"))))
     (setq insert-directory-program gls))
   :bind
-  (:map dired-mode-map
-        ("RET" . dired-find-alternate-file)
-        :map mymacs-mode-map
+  (:map mymacs-mode-map
         ("C-c e" . dired-jump)))
 
 (use-package wdired
@@ -530,8 +531,11 @@
 
 ;;; Search
 (use-package isearch
+  :hook (occur-mode . hl-line-mode)
+  :bind
+  (:map isearch-mode-map
+        ("C-g" . isearch-cancel))
   :custom
-  (search-whitespace-regexp "*.?")
   (isearch-lax-whitespace t)
   (isearch-regexp-lax-whitespace nil)
   (search-highlight t)
@@ -700,6 +704,26 @@
 
 
 ;;;; Denote
+(use-package denote
+  :ensure t
+  :hook (dired-mode . denote-dired-mode)
+  :bind
+  (:map mymacs-mode-map
+        ("C-c j" . denote))
+  :custom
+  (denote-directory my/denote-directory)
+  (denote-save-buffers nil)
+  (denote-known-keywords my/denote-keywords)
+  (denote-infer-keywords t)
+  (denote-sort-keywords t)
+  (denote-file-type nil) ; Org is the default, set others here
+  (denote-prompts '(title keywords template))
+  (denote-excluded-directories-regexp nil)
+  (denote-excluded-keywords-regexp nil)
+  (denote-rename-confirmations '(rewrite-front-matter modify-file-name))
+  (denote-date-prompt-use-org-read-date t)
+  (denote-backlinks-show-context t))
+
 
 
 ;;; Programming
