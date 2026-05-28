@@ -108,11 +108,11 @@
         ("C-c <" . indent-rigidly-left-to-tab-stop)
         ("C-c >" . indent-rigidly-right-to-tab-stop)
         ("C-g" . +escape-dwim)
-        ("C-o" . my/open-line-indented)
-        ("C-O" . my/open-line-above-indented)
+        ("C-o" . my/open-line-above-indented)
         ("M-D" . backward-kill-sexp)
         ("M-<backspace>" . my/backward-kill-line)
         ("M-z" . zap-up-to-char)
+        ("C-^" . just-one-spacpe)
         ("<f1>" . start-kbd-macro)
         ("<f2>" . end-kbd-macro)
         ("<f5>" . display-line-numbers-mode)
@@ -173,16 +173,11 @@
 
   (defun my/open-line-above-indented ()
     (interactive)
-    (back-to-indentation)
     (forward-line -1)
-    (indent-according-to-mode))
-  
-  (defun my/open-line-indent-indented ()
-    (interactive)
     (end-of-line)
-    (forward-line 1)
+    (insert "\n")
     (indent-according-to-mode))
-
+ 
   (defun my/backward-kill-line ()
     "Kills the whole line backwards starting from point"
     (interactive)
@@ -243,8 +238,7 @@
                      (format-mode-line
                       '("  " flymake-mode-line-format
                         "  " mode-line-misc-info))))
-                  mode-line-end-spaces)))
-  
+                  mode-line-end-spaces)))  
 ;;;; outline
 
 (use-package outline
