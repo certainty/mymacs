@@ -372,7 +372,7 @@
         ("C-y" . completion-preview-insert))
   :custom
   (completion-preview-message-format nil)
-  (completion-preview-minimum-symbol-length 1)
+  (setopt completion-preview-minimum-symbol-length 0)
   (completion-preview-idle-delay nil)
   (completion-preview-message-format nil)
   :init
@@ -380,6 +380,17 @@
 
 (use-package cape
   :ensure t
+  :hook
+  (emacs-lisp-mode . my/cape-elisp-completion)
+  (text-mode . my/cape-text-completion)
+  :preface
+  (defun my/cape-text-completion ()
+    (setq-local completions-at-point-functions
+                (list (cape-capf-super #'cape-dict))))
+  
+  (defun my/cape-elisp-completion ()
+    (setq-local completions-at-point-functions
+                (list (cape-capf-super #'cape-elisp-block #'cape-elisp-symbol))))
   :init
   (add-to-list 'completion-at-point-functions	'cape-dabbrev)
   (add-to-list 'completion-at-point-functions 'cape-file))
@@ -387,7 +398,6 @@
 ;;; Editing
 
 ;;;; handling pairs (quotes, parens, etc.)
-
 (use-package elec-pair
   :bind
   (:map mymacs-mode-map
