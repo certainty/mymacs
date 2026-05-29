@@ -112,7 +112,7 @@
         ("M-D" . backward-kill-sexp)
         ("M-<backspace>" . my/backward-kill-line)
         ("M-z" . zap-up-to-char)
-        ("C-^" . just-one-spacpe)
+        ("C-^" . just-one-space)
         ("<f1>" . start-kbd-macro)
         ("<f2>" . end-kbd-macro)
         ("<f5>" . display-line-numbers-mode)
@@ -448,20 +448,20 @@
   (:map icomplete-minibuffer-map
         ("C-." . embark-act)
         ("C-," . embark-dwim)
-        ("C-c c" . embark-collect)
-        ("C-c e" . embark-export)
-        ("C-c m" . embark-select)
-        ("C-c a" . embark-act-all))
+        ("C-c C-c" . embark-collect)
+        ("C-c C-e" . embark-export)
+        ("C-c C-m" . embark-select)
+        ("C-c C-a" . embark-act-all))
   (:map minibuffer-mode-map
-        ("C-c c" . embark-collect)
-        ("C-c e" . embark-export)
-        ("C-c m" . embark-select)
-        ("C-c a" . embark-act-all))
+        ("C-c C-c" . embark-collect)
+        ("C-c C-e" . embark-export)
+        ("C-c C-m" . embark-select)
+        ("C-c C-a" . embark-act-all))
   (:map minibuffer-local-map
-        ("C-c c" . embark-collect)
-        ("C-c e" . embark-export)
-        ("C-c m" . embark-select)
-        ("C-c a" . embark-act-all))
+        ("C-c C-c" . embark-collect)
+        ("C-c C-e" . embark-export)
+        ("C-c C-m" . embark-select)
+        ("C-c C-a" . embark-act-all))
   :custom
   (embark-prompter 'embark-completing-read-prompter)
   (prefix-help-command 'embark-prefix-help-command)
@@ -589,7 +589,7 @@
   :commands (vterm my/vterm-project my/toggle-vterm-project)
   :bind
   (:map mymacs-mode-map
-        ("C-c t" . my/toggle-vterm-project)
+        ("C-c /" . my/toggle-vterm-project)
         ("C-c T" . my/vterm-project))
   :custom
   (vterm-kill-buffer-on-exit t)
