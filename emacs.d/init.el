@@ -251,24 +251,25 @@
 
 ;;;; windows and buffers
 
-(defun my/window-config (display-action side size-key size-value &optional mode)
+(defun my/window-config (display-action side size-key size-value &optional mode slot)
   (append
    `((,display-action display-buffer-in-side-window)
      (side . ,side)
-     (slot . 0)
+     (slot . ,(or slot 0))
      (,size-key . ,size-value)
      (window-parameters . ((no-other-window . t) (no-delete-other-windows . t))))
    (when mode `((mode . ,mode)))))
 
-(defun my/side-window-config (&optional mode)
-  (my/window-config 'display-buffer-reuse-mode-window 'right 'window-width 0.33 mode))
+(defun my/side-window-config (&optional mode slot)
+  (my/window-config 'display-buffer-reuse-mode-window 'right 'window-width 0.33 mode slot))
 
-(defun my/bottom-window-config (&optional mode reuse-action)
+(defun my/bottom-window-config (&optional mode reuse-action slot)
   (my/window-config (or reuse-action 'display-buffer-reuse-mode-window)
                     'bottom
                     'window-height
                     0.25
-                    mode))
+                    mode
+                    slot))
 
 (use-package window
   :bind
@@ -299,6 +300,8 @@
    `(("\\*Org Select\\*" . ,(my/bottom-window-config))
      ("\\`CAPTURE-" . ,(my/bottom-window-config nil 'display-buffer-reuse-window))
      ("\\*Capture\\*" . ,(my/bottom-window-config))
+     ("\\*vc-log\\*" . ,(my/bottom-window-config nil 'display-buffer-reuse-window 0))
+     ("\\*log-edit-files\\*" . ,(my/bottom-window-config 'special-mode 'display-buffer-reuse-window 1))
      ("^\\*vc-git.*\\*$" . ,(my/bottom-window-config 'special-mode))
      ("^\\*vc-dir\\*" . ,(my/side-window-config 'special-mode))
      ("\\*xref\\*" . ,(my/bottom-window-config 'special-mode))
@@ -595,7 +598,7 @@
   :commands (vterm my/vterm-project my/toggle-vterm-project)
   :bind
   (:map mymacs-mode-map
-        ("C-j /" . my/toggle-vterm-project)
+        ("C-j \\" . my/toggle-vterm-project)
         ("C-j T" . my/vterm-project))
   :custom
   (vterm-kill-buffer-on-exit t)
