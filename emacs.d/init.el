@@ -105,8 +105,8 @@
 (use-package emacs
   :bind
   (:map mymacs-mode-map
-        ("C-c <" . indent-rigidly-left-to-tab-stop)
-        ("C-c >" . indent-rigidly-right-to-tab-stop)
+        ("C-j <" . indent-rigidly-left-to-tab-stop)
+        ("C-j >" . indent-rigidly-right-to-tab-stop)
         ("C-g" . +escape-dwim)
         ("C-o" . my/open-line-above-indented)
         ("M-D" . backward-kill-sexp)
@@ -251,26 +251,29 @@
 
 ;;;; windows and buffers
 
-(defvar my/side-window-config
-  '((display-buffer-reuse-mode-window display-buffer-in-side-window)
-    (side . right)
-    (slot . 0)
-    (window-width . 0.33)
-    (mode . special-mode)
-    (window-parameters . ((no-other-window . t) (no-delete-other-windows . t)))))
+(defun my/window-config (display-action side size-key size-value &optional mode)
+  (append
+   `((,display-action display-buffer-in-side-window)
+     (side . ,side)
+     (slot . 0)
+     (,size-key . ,size-value)
+     (window-parameters . ((no-other-window . t) (no-delete-other-windows . t))))
+   (when mode `((mode . ,mode)))))
 
-(defvar my/bottom-window-config
-  '((display-buffer-reuse-mode-window display-buffer-in-side-window)
-    (side . bottom)
-    (slot . 0)
-    (window-height . 0.25)
-    (mode . special-mode)
-    (window-parameters . ((no-other-window . t) (no-delete-other-windows . t)))))
+(defun my/side-window-config (&optional mode)
+  (my/window-config 'display-buffer-reuse-mode-window 'right 'window-width 0.33 mode))
+
+(defun my/bottom-window-config (&optional mode reuse-action)
+  (my/window-config (or reuse-action 'display-buffer-reuse-mode-window)
+                    'bottom
+                    'window-height
+                    0.25
+                    mode))
 
 (use-package window
   :bind
   (:map mymacs-mode-map
-        ("C-c |" . split-window-right)
+        ("C-j |" . split-window-right)
         ("C-q" . bury-buffer)
         ("C-Q" . kill-current-buffer))
   (:map goto-map
@@ -280,8 +283,8 @@
                ("{" . shrink-window-horizontally)
                ("}" . enlarge-window-horizontally))
   (:repeat-map my/buffer-repeat-map
-               ("n" . next-buffer)
-               ("p" . previous-buffer))
+               ("C-n" . next-buffer)
+               ("C-p" . previous-buffer))
   :custom
   ;; prefer splitting to the side
   (split-height-threshold nil)
@@ -290,14 +293,16 @@
   (window-combination-resize t)
   (window-divider-default-right-width 7)
   (window-divider-default-bottom-width 7)
-
+  
   ;;;;; buffer arrangement
   (display-buffer-alist
-   `(("\\*Capture\\*" . ,my/bottom-window-config)
-     ("^\\*vc-git.*\\*$" . ,my/bottom-window-config)
-     ("^\\*vc-dir\\*" . ,my/side-window-config)
-     ("\\*xref\\*" . ,my/bottom-window-config)
-     ("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\)\\*" . ,my/side-window-config)
+   `(("\\*Org Select\\*" . ,(my/bottom-window-config))
+     ("\\`CAPTURE-" . ,(my/bottom-window-config nil 'display-buffer-reuse-window))
+     ("\\*Capture\\*" . ,(my/bottom-window-config))
+     ("^\\*vc-git.*\\*$" . ,(my/bottom-window-config 'special-mode))
+     ("^\\*vc-dir\\*" . ,(my/side-window-config 'special-mode))
+     ("\\*xref\\*" . ,(my/bottom-window-config 'special-mode))
+     ("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\)\\*" . ,(my/side-window-config 'special-mode))
      (".*"
       (display-buffer-same-window
        display-buffer-reuse-window
@@ -370,7 +375,7 @@
         ("C-n" . icomplete-forward-completions)
         ("C-p" . icomplete-backward-completions)
         ("C-y" . icomplete-force-complete-and-exit)
-        ("C-j" . icomplete-force-complete))
+        ("C-<return>" . icomplete-force-complete))
   :custom
   (icomplete-delay-completions-threshold 0)
   (icomplete-in-buffer t)
@@ -516,7 +521,7 @@
     (setq insert-directory-program gls))
   :bind
   (:map mymacs-mode-map
-        ("C-c e" . dired-jump)))
+        ("C-j e" . dired-jump)))
 
 (use-package wdired
   :commands wdired-change-to-wdired-mode
@@ -569,8 +574,9 @@
   
   :bind
   (:map mymacs-mode-map
-        ("C-c p" . project-switch-project)
-        ("C-c v" . project-vc-dir))
+        ("C-j p" . project-switch-project)
+        ("C-j v" . project-vc-dir)
+        ("C-j c" . project-compile))
   (:map goto-map
         ("f" . project-find-file)
         ("P" . project-switch-project))
@@ -589,20 +595,20 @@
   :commands (vterm my/vterm-project my/toggle-vterm-project)
   :bind
   (:map mymacs-mode-map
-        ("C-c /" . my/toggle-vterm-project)
-        ("C-c T" . my/vterm-project))
+        ("C-j /" . my/toggle-vterm-project)
+        ("C-j T" . my/vterm-project))
   :custom
   (vterm-kill-buffer-on-exit t)
   (vterm-max-scrollback 10000)
   :init
-  (push `("\\*vterm.*\\*" . ,my/side-window-config) display-buffer-alist))
+  (push `("\\*vterm.*\\*" . ,(my/side-window-config)) display-buffer-alist))
 
 ;;; GTD
 (use-package org
   :bind
   (:map mymacs-mode-map
-        ("C-c o" . my/org-prefix-map))
-  (:prefix-map my/org-prefix-map :prefix "C-c o"
+        ("C-j o" . my/org-prefix-map))
+  (:prefix-map my/org-prefix-map :prefix "C-j o"
                ("a" . org-agenda)
                ("o" . org-capture))
   :custom
@@ -704,7 +710,7 @@
   :hook (dired-mode . denote-dired-mode)
   :bind
   (:map mymacs-mode-map
-        ("C-c j" . denote))
+        ("C-j j" . denote))
   :custom
   (denote-directory my/denote-directory)
   (denote-save-buffers nil)
@@ -784,6 +790,9 @@
   (:map flymake-mode-map
         ("M-n" . flymake-goto-next-error)
         ("M-p" . flymake-goto-prev-error))
+  (:repeat-map my/flymake-repeat-map
+               ("C-n" . flymake-goto-next-error)
+               ("C-p" . flymake-goto-prev-error))
   :custom
   (flymake-indicator-type 'margins)
   (flymake-margin-indicator-position 'left-margin)
@@ -856,8 +865,8 @@
              +pmd-cache-clear)
   :bind
   (:map mymacs-mode-map
-        ("C-c ," . my/pmd-prefix-map))
-  (:prefix-map my/pmd-prefix-map :prefix "C-c ,"
+        ("C-j ," . my/pmd-prefix-map))
+  (:prefix-map my/pmd-prefix-map :prefix "C-j ,"
                ("," . +pmd-projects)
                ("t" . +pmd-teams)
                ("p" . +pmd-people)
