@@ -441,6 +441,13 @@
   (electric-pair-mode))
 
 ;;;; core editing / structural
+(use-package expreg
+  :ensure t
+  :bind
+  (:map mymacs-mode-map
+        ("C-=" . expreg-expand)
+        ("C--" . expreg-contract)))
+
 (use-package paredit
   :ensure t
   :pin "nongnu"
