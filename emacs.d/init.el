@@ -644,6 +644,18 @@
   ;; Logging
   (org-log-done 'time)
   (org-log-into-drawer t)
+  (org-clock-into-drawer t)
+  (org-clock-out-when-done t)
+  (org-clock-persist 'history)
+  (org-clock-persist-query-save nil)
+  (org-clock-persist-query-resume t)
+  (org-clock-idle-time 10)
+  (org-clock-auto-clock-resolution 'when-no-clock-is-running)
+  (org-clock-report-include-clocking-task t)
+  (org-clock-mode-line-total 'today)
+  (org-agenda-start-with-clockreport-mode t)
+  (org-agenda-clockreport-parameter-plist
+   '(:link t :maxlevel 3 :fileskip0 t :compact t))
 
   ;; Refile
   (org-refile-targets '((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5)))
@@ -685,7 +697,8 @@
   (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
   (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
   (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
-  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+  (org-clock-persistence-insinuate))
 
 ;;; Writing
 (defvar flyspell-mode-map)
