@@ -113,8 +113,6 @@
         ("M-<backspace>" . my/backward-kill-line)
         ("M-z" . zap-up-to-char)
         ("C-^" . just-one-space)
-        ("<f1>" . start-kbd-macro)
-        ("<f2>" . end-kbd-macro)
         ("<f5>" . display-line-numbers-mode)
         ("<f6>" . toggle-frame-maximized))
   (:map goto-map
@@ -449,9 +447,13 @@
         ("C--" . expreg-contract)))
 
 (use-package paredit
-  :ensure t
-  :pin "nongnu"
-  :hook (lisp-mode . paredit-mode))
+;  :load-path "user-lisp"
+  :bind
+  (:map paredit-mode-map
+        ("C-j" . nil)) ;; C-j is our global prefix
+  :hook
+  (emacs-lisp-mode . paredit-mode)
+  (lisp-mode . paredit-mode))
 
 ;;;; embark
 (use-package embark
@@ -564,7 +566,7 @@
   (:map goto-map
         ("b" . consult-project-buffer)
         ("o" . consult-recent-file)
-        ("r" . consult-bookmarks)
+        ("r" . consult-bookmark)
         ("i".  consult-imenu)
         ("M" . consult-mark)
         ("d" . consult-flymake))
@@ -597,6 +599,13 @@
     "Search for symbol under point in whole project"
     (interactive)
     (consult-ripgrep (project-root (project-current t)) (thing-at-point 'symbol))))
+
+;;;; vc
+(use-package diff-hl
+  :ensure t
+  :hook
+  (prog-mode . turn-on-diff-hl-mode)
+  (vc-dir-mode . turn-on-diff-hl-mode))
 
 ;;;; terminal
 (use-package vterm
@@ -751,6 +760,8 @@
 
 
 ;;; Programming
+(use-package emacs
+  :hook (prog-mode . display-line-numbers-mode))
 
 (use-package xref
   :custom
@@ -785,7 +796,6 @@
   (eglot-server-programs
    '((ruby-ts-mode . ("ruby-lsp"))
      (go-ts-mode . ("gopls"))))
-
 
   :config
   (add-to-list 'eglot-server-programs
