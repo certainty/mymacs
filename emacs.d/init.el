@@ -628,6 +628,8 @@
   :bind
   (:map mymacs-mode-map
         ("C-j t" . eat))
+  :custom
+  (eat-term-name "xterm-256color")
   :init
   (push `("\\*eat.*\\*" . ,(my/side-window-config)) display-buffer-alist))
 
