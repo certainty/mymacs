@@ -51,6 +51,7 @@
 (defcustom my/pmd-base-url nil "The pmd url" :type 'string :group 'mymacs)
 (defcustom my/denote-directory "" "The path to my notes" :type 'string :group 'mymacs)
 (defcustom my/denote-keywords nil "List of keywords for denote" :type '(repeat string) :group 'mymacs)
+(defcustom my/agent-shell-enabled nil "Enable AI with agent-shell?" :type 'boolean :group 'mymacs)
 
 ;;;; load custom file
 (setopt custom-file (locate-user-emacs-file "custom.el"))
@@ -108,8 +109,8 @@
         ("C-j <" . indent-rigidly-left-to-tab-stop)
         ("C-j >" . indent-rigidly-right-to-tab-stop)
         ("C-g" . +escape-dwim)
-        ("C-o" . my/open-line-above-indented)
         ("M-D" . backward-kill-sexp)
+        ("C-o" . my/open-line-above-indented)
         ("M-<backspace>" . my/backward-kill-line)
         ("M-z" . zap-up-to-char)
         ("C-^" . just-one-space)
@@ -117,11 +118,12 @@
         ("<f6>" . toggle-frame-maximized))
   (:map goto-map
         ("<" . pop-to-mark-command)
-        ("m" . pop-global-mark)
-        ("n" . nil)
-        ("p" . nil))
+        ("m" . pop-global-mark))
+  (:repeat-map my/navigation-repeat-map
+               ("n" . forward-line)
+               ("p" . previous-line))
   (:repeat-map my/mark-repeat-map
-               ("<" . pop-to-mark-command)
+               ("<" . pop-to-marnk-command)
                ("m" . pop-global-mark))
   
   :custom
@@ -281,9 +283,6 @@
   (:repeat-map my/window-resize-repeat-map
                ("{" . shrink-window-horizontally)
                ("}" . enlarge-window-horizontally))
-  (:repeat-map my/buffer-repeat-map
-               ("C-n" . next-buffer)
-               ("C-p" . previous-buffer))
   :custom
   ;; prefer splitting to the side
   (split-height-threshold nil)
@@ -608,6 +607,15 @@
   (vc-dir-mode . turn-on-diff-hl-mode))
 
 ;;;; terminal
+(use-package eat
+  :ensure t
+  :pin "nongnu"
+  :bind
+  (:map mymacs-mode-map
+        ("C-j t" . eat))
+  :init
+  (push `("\\*eat.*\\*" . ,(my/side-window-config)) display-buffer-alist))
+
 (use-package vterm
   :ensure t
   :pin "melpa"
@@ -823,9 +831,6 @@
   (:map flymake-mode-map
         ("M-n" . flymake-goto-next-error)
         ("M-p" . flymake-goto-prev-error))
-  (:repeat-map my/flymake-repeat-map
-               ("C-n" . flymake-goto-next-error)
-               ("C-p" . flymake-goto-prev-error))
   :custom
   (flymake-indicator-type 'margins)
   (flymake-margin-indicator-position 'left-margin)
@@ -907,3 +912,11 @@
                ("c" . +pmd-cache-clear))
   :custom
   (pmd-base-url my/pmd-base-url)))
+
+;;;; AI
+(use-package agent-shell
+  :ensure t
+  :pin "melpa"
+  :if my/agent-shell-enabled
+  :config
+  (setopt agent-shell-openai-authentication (agent-shell-openai-make-authentication :login t)))
