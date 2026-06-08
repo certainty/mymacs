@@ -4,5 +4,4 @@ auto-save-list
 .projects.eld
 /eln-cache/
 /vendor/*
-!/vendor/acp.el/
 !/vendor/README.md
