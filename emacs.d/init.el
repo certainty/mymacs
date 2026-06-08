@@ -277,6 +277,13 @@
                     mode
                     slot))
 
+(defun my/agent-shell-buffer-p (buffer-name _action)
+  (when-let* ((buffer (get-buffer buffer-name)))
+    (with-current-buffer buffer
+      (or (derived-mode-p 'agent-shell-mode)
+          (derived-mode-p 'agent-shell-viewport-view-mode)
+          (derived-mode-p 'agent-shell-viewport-edit-mode)))))
+
 (use-package window
   :bind
   (:map mymacs-mode-map
@@ -309,6 +316,8 @@
      ("^\\*vc-dir\\*" . ,(my/side-window-config 'special-mode))
      ("\\*xref\\*" . ,(my/bottom-window-config 'special-mode))
      ("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\)\\*" . ,(my/side-window-config 'special-mode))
+     ,@(when my/agent-shell-enabled
+         `((my/agent-shell-buffer-p . ,(my/side-window-config))))
      (".*"
       (display-buffer-same-window
        display-buffer-reuse-window
@@ -920,6 +929,9 @@
   (pmd-base-url my/pmd-base-url)))
 
 ;;;; AI
+(declare-function agent-shell-openai-make-authentication "agent-shell-openai"
+                  (&rest args))
+
 (use-package acp
   :ensure t
   :if my/agent-shell-enabled
@@ -929,5 +941,26 @@
   :ensure t
   :pin "melpa"
   :if my/agent-shell-enabled
+  :commands (agent-shell agent-shell-toggle agent-shell-new-shell agent-shell-send-dwim)
+  :bind
+  (:map mymacs-mode-map
+        ("C-j a" . my/agent-shell-prefix-map))
+  (:prefix-map my/agent-shell-prefix-map :prefix "C-j a"
+               ("a" . agent-shell)
+               ("." . agent-shell-send-dwim)
+               ("t" . agent-shell-toggle)
+               ("n" . agent-shell-new-shell))
+  :custom
+  (agent-shell-display-action (my/side-window-config))
+  (agent-shell-prefer-viewport-interaction t)
+  (agent-shell-context-sources '(region files error line))
+  (agent-shell-preferred-agent-config 'codex)
+  (agent-shell-session-strategy 'prompt)
+  (agent-shell-buffer-name-format 'kebab-case)
+  (agent-shell-confirm-interrupt nil)
+  (agent-shell-show-session-id t)
+  (agent-shell-show-welcome-message nil)
+  (agent-shell-tool-use-expand-by-default t)
+  (agent-shell-user-message-expand-by-default t)
   :config
   (setopt agent-shell-openai-authentication (agent-shell-openai-make-authentication :login t)))
