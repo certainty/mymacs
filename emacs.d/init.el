@@ -414,9 +414,8 @@
         ("C-y" . completion-preview-insert))
   :custom
   (completion-preview-message-format nil)
-  (setopt completion-preview-minimum-symbol-length 0)
+  (completion-preview-minimum-symbol-length nil)
   (completion-preview-idle-delay nil)
-  (completion-preview-message-format nil)
   :init
   (abbrev-mode))
 
@@ -427,11 +426,11 @@
   (text-mode . my/cape-text-completion)
   :preface
   (defun my/cape-text-completion ()
-    (setq-local completions-at-point-functions
+    (setq-local completion-at-point-functions
                 (list (cape-capf-super #'cape-dict))))
   
   (defun my/cape-elisp-completion ()
-    (setq-local completions-at-point-functions
+    (setq-local completion-at-point-functions
                 (list (cape-capf-super #'cape-elisp-block #'cape-elisp-symbol))))
   :init
   (add-to-list 'completion-at-point-functions	'cape-dabbrev)
