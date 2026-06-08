@@ -80,11 +80,12 @@
         network-security-level 'high
         gnutls-verify-error t
         package-install-upgrade-built-in nil
-        package-check-signature t
+        package-check-signature nil
         package-review-policy '((archive . "melpa"))
         package-native-compile t
         ;; don't required to refresh packages all the time
         package-quickstart nil)
+
 
 ;;; Environment setup (to start emacs from launcher)
 (use-package exec-path-from-shell
@@ -117,6 +118,8 @@
         ("<f5>" . display-line-numbers-mode)
         ("<f6>" . toggle-frame-maximized))
   (:map goto-map
+        ("n" . nil)
+        ("p" . nil)
         ("<" . pop-to-mark-command)
         ("m" . pop-global-mark))
   (:repeat-map my/navigation-repeat-map
@@ -236,8 +239,11 @@
                   (:eval
                    (when (mode-line-window-selected-p)
                      (format-mode-line
-                      '("  " flymake-mode-line-format
-                        "  " mode-line-misc-info))))
+                      `("  "
+                        ,@(when flymake--state
+                            '(flymake-mode-line-format
+                              "  "))
+                        mode-line-misc-info))))
                   mode-line-end-spaces)))  
 ;;;; outline
 
@@ -914,6 +920,11 @@
   (pmd-base-url my/pmd-base-url)))
 
 ;;;; AI
+(use-package acp
+  :ensure t
+  :if my/agent-shell-enabled
+  :load-path "vendor/acp.el")
+
 (use-package agent-shell
   :ensure t
   :pin "melpa"
