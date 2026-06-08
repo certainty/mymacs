@@ -5,3 +5,4 @@ auto-save-list
 /eln-cache/
 /vendor/*
 !/vendor/README.md
+/transient/
