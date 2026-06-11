@@ -344,6 +344,27 @@
   (add-to-list 'aw-dispatch-alist
                '(?q ace-delete-window "Delete Window")))
 
+(use-package popper
+  :ensure t
+  :bind
+  (:map mymacs-mode-map
+        ("C-`"   . popper-toggle)
+        ("M-`"   . popper-cycle)
+        ("C-M-`" . popper-toggle-type))
+  :custom
+  (popper-display-control nil)
+  :init
+  (setq popper-reference-buffers
+        '("\\*Messages\\*"
+          "Output\\*$"
+          "\\*Async Shell Command\\*"
+          "\\*vc-.*\\*"
+          occur-mode
+          help-mode
+          compilation-mode))
+  (popper-mode +1)
+  (popper-echo-mode +1))
+
 ;;;; auto-revert
 (use-package autorevert
   :custom
