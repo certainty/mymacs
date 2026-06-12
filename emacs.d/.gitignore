@@ -5,4 +5,5 @@ auto-save-list
 /eln-cache/
 /vendor/*
 !/vendor/README.md
+!/vendor/agent-shell-tramp.el
 /transient/

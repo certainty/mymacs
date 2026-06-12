@@ -992,6 +992,10 @@
   :if my/agent-shell-enabled
   :load-path "vendor/acp.el")
 
+(use-package agent-shell-tramp
+  :if my/agent-shell-enabled
+  :load-path "vendor")
+
 (use-package agent-shell
   :ensure t
   :pin "melpa"
@@ -1018,4 +1022,6 @@
   (agent-shell-tool-use-expand-by-default t)
   (agent-shell-user-message-expand-by-default t)
   :config
-  (setopt agent-shell-openai-authentication (agent-shell-openai-make-authentication :login t)))
+  (setopt agent-shell-openai-authentication (agent-shell-openai-make-authentication :login t))
+  (require 'agent-shell-tramp)
+  (agent-shell-tramp-mode 1))
