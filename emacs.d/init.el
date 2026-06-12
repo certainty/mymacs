@@ -25,6 +25,10 @@
 
 ;;; Customization
 (defvar-keymap mymacs-mode-map :doc "mymacs global keys")
+(defvar mymacs-emulation-mode-map-alist
+  `((mymacs-mode . ,mymacs-mode-map))
+  "Keymap alist giving `mymacs-mode-map' precedence.")
+
 (define-minor-mode mymacs-mode
   "My personal minor mode"
   :init-value t
@@ -33,6 +37,7 @@
   :lighter " MyM"
   :keymap mymacs-mode-map)
 
+(add-to-list 'emulation-mode-map-alists 'mymacs-emulation-mode-map-alist)
 (mymacs-mode 1) ;; enable immediately
 
 (defgroup mymacs nil
@@ -142,7 +147,7 @@
   (next-line-add-newlines t)
   (set-mark-command-repeat-pop t)
 
-  ;;; theme configuration
+;;; theme configuration
   (modus-themes-custom-auto-reload t)
   (modus-themes-disable-other-themes t)
   (modus-themes-italic-constructs t)
@@ -240,11 +245,20 @@
                    (when (mode-line-window-selected-p)
                      (format-mode-line
                       `("  "
-                        ,@(when flymake--state
+                        ,@(when (bound-and-true-p flymake-mode)
                             '(flymake-mode-line-format
                               "  "))
                         mode-line-misc-info))))
                   mode-line-end-spaces)))  
+
+(use-package easy-kill
+  :ensure t
+  :bind
+  ([remap mark-sexp] . easy-mark)
+  ([remap kill-ring-save] . easy-kill)
+  (:map mymacs-mode-map
+        ("M-j" . mark-sexp)))
+
 ;;;; outline
 
 (use-package outline
@@ -359,6 +373,7 @@
           "Output\\*$"
           "\\*Async Shell Command\\*"
           "\\*vc-.*\\*"
+          "\\*eat\\*"
           occur-mode
           help-mode
           compilation-mode))
@@ -463,9 +478,7 @@
 (use-package elec-pair
   :bind
   (:map mymacs-mode-map
-        ;; original binding is susped frame which I never want
-        ("C-z" . delete-pair)
-        ("C-Z" . electric-pair-delete-pair))
+        ("C-z" . delete-pair))
   :custom
   (delete-pair-blink-delay 0.0)
   (delete-pair-push-mark t)
@@ -473,6 +486,7 @@
   (electric-pair-mode))
 
 ;;;; core editing / structural
+;; TODO: do we still need it since we have easy-kill enabled?
 (use-package expreg
   :ensure t
   :bind
@@ -534,6 +548,10 @@
   (auto-save-default nil)
   (create-lockfiles nil)
   (find-file-visit-truename t))
+
+(use-package alternate-file
+  :demand t
+  :load-path "user-lisp")
 
 ;;;; recent
 (use-package recentf
@@ -881,13 +899,22 @@
   (ruby-mode . ruby-ts-mode)
   :bind
   (:map ruby-ts-mode-map
+        ("C-c a" . +find-alternate-file)
         ("C-c t t" . +ruby-test-dwim)
         ("C-c t o" . +ruby-test-file)
         ("C-c t r" . +ruby-rspec-dwim)
         ("C-c t m" . +ruby-minitest-dwim))
   :custom
   (ruby-indent-level 2)
-  (ruby-insert-encoding-magic-comment nil))
+  (ruby-insert-encoding-magic-comment nil)
+  :init
+  (setf (alist-get 'ruby-ts-mode my/alternate-file-mappings)
+        '((:source ("app" "")
+           :test ("spec" "test" "test/unit" "test/system")
+           :suffixes ("_spec" "_test"))
+          (:source ("lib")
+           :test ("spec/lib" "test/lib" "test/unit" "test/system")
+           :suffixes ("_spec" "_test")))))
 
 ;;;; go lang
 (use-package go-ts-mode
@@ -905,13 +932,19 @@
          (scala-ts-mode . eglot-ensure))
   :bind
   (:map scala-ts-mode-map
+        ("C-c a" . +find-alternate-file)
         ("C-c C-t" . +scala-test-only))
   :preface
   (defun my/scala-eglot-setup ()
     "Disable Metals on-type formatting in Scala buffers."
     (setq-local eglot-ignored-server-capabilities
                 (cons :documentOnTypeFormattingProvider
-                      eglot-ignored-server-capabilities))))
+                      eglot-ignored-server-capabilities)))
+  :init
+  (setf (alist-get 'scala-ts-mode my/alternate-file-mappings)
+        '((:source ("src/main/scala")
+           :test ("src/test/scala" "src/it/scala")
+           :suffixes ("Spec" "Suite" "Test")))))
 
 ;;;; yaml
 (use-package yaml-ts-mode
