@@ -671,20 +671,6 @@
   :init
   (push `("\\*eat.*\\*" . ,(my/side-window-config)) display-buffer-alist))
 
-(use-package vterm
-  :ensure t
-  :pin "melpa"
-  :commands (vterm my/vterm-project my/toggle-vterm-project)
-  :bind
-  (:map mymacs-mode-map
-        ("C-j \\" . my/toggle-vterm-project)
-        ("C-j T" . my/vterm-project))
-  :custom
-  (vterm-kill-buffer-on-exit t)
-  (vterm-max-scrollback 10000)
-  :init
-  (push `("\\*vterm.*\\*" . ,(my/side-window-config)) display-buffer-alist))
-
 ;;; GTD
 (use-package org
   :bind
@@ -725,7 +711,6 @@
   (org-clock-auto-clock-resolution 'when-no-clock-is-running)
   (org-clock-report-include-clocking-task t)
   (org-clock-mode-line-total 'today)
-  (org-agenda-start-with-clockreport-mode t)
   (org-agenda-clockreport-parameter-plist
    '(:link t :maxlevel 3 :fileskip0 t :compact t))
 
