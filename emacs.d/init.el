@@ -985,6 +985,8 @@
   :ensure t
   :pin "melpa"
   :if my/agent-shell-enabled
+  :hook
+  (agent-shell-mode . my/agent-shell-follow-output)
   :commands (agent-shell agent-shell-toggle agent-shell-new-shell agent-shell-send-dwim)
   :bind
   (:map mymacs-mode-map
@@ -1006,6 +1008,10 @@
   (agent-shell-show-welcome-message nil)
   (agent-shell-tool-use-expand-by-default t)
   (agent-shell-user-message-expand-by-default t)
+  :preface
+  (defun my/agent-shell-follow-output ()
+    (setq-local comint-move-point-for-output 'all)
+    (setq-local comint-scroll-to-bottom-on-output t))
   :config
   (setopt agent-shell-openai-authentication (agent-shell-openai-make-authentication :login t))
   (require 'agent-shell-tramp)
