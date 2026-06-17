@@ -671,6 +671,8 @@
 
 ;;; GTD
 (use-package org
+  :hook
+  (org-mode . auto-revert-mode)
   :bind
   (:map mymacs-mode-map
         ("C-j o" . my/org-prefix-map))
@@ -684,6 +686,7 @@
   (org-agenda-window-setup 'other-window)
   (org-agenda-skip-scheduled-if-done t)
   (org-pretty-entities t)
+  (org-use-sub-superscripts '{})
   (org-startup-folded t)
   (org-hide-leading-stars t)
   (org-hide-emphasis-marker nil)
