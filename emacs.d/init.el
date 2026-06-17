@@ -88,8 +88,7 @@
         package-check-signature nil
         package-review-policy '((archive . "melpa"))
         package-native-compile t
-        ;; don't required to refresh packages all the time
-        package-quickstart nil)
+        package-quickstart t)
 
 
 ;;; Environment setup (to start emacs from launcher)
@@ -223,8 +222,7 @@
   (dolist (m '(mode-line mode-line-active mode-line-inactive))
     (set-face-attribute m nil :background 'unspecified :box nil :overline "gray50" :underline nil))
 
-  (setopt project-mode-line t
-          mode-line-compact nil
+  (setopt mode-line-compact nil
           mode-line-right-align-edge 'right-margin)
 
   (setq-default mode-line-format
@@ -237,8 +235,7 @@
                   (:eval
                    (when (mode-line-window-selected-p)
                      (format-mode-line
-                      '("  " (project-mode-line project-mode-line-format)
-                        "  " (vc-mode vc-mode)
+                      '("  " (vc-mode vc-mode)
                         "  " mode-name mode-line-process))))
                   mode-line-format-right-align
                   (:eval
@@ -396,10 +393,11 @@
 
 (use-package savehist
   :custom
+  (history-length 200)
   (savehist-save-minibuffer-history t)
   (savehist-autosave-interval 100)
   :init
-  (savehist-mode))
+  (add-hook 'emacs-startup-hook #'savehist-mode))
 
 ;;; Completion
 ;; I have previously used vertico, marginalia, orderless and corfu as the completion stack
@@ -558,10 +556,10 @@
   :bind
   (:map mymacs-mode-map ("C-x R" . recentf-open))
   :custom
-  (recentf-max-saved-items 1000)
+  (recentf-max-saved-items 200)
   (recentf-exclude '(".gz" ".xz" ".zip" "COMMIT_EDITMSG"))
   :init
-  (recentf-mode))
+  (add-hook 'emacs-startup-hook #'recentf-mode))
 
 ;;;; dired
 
@@ -682,9 +680,9 @@
   :custom
   (org-directory (file-truename (expand-file-name my/org-directory)))
   (org-persist-directory (locate-user-emacs-file "org-persist/"))
-  (org-agenda-files (list (concat org-directory "/tasks.org")
-                          (concat org-directory "/log.org")))
+  (org-agenda-files  (list org-directory))
   (org-agenda-window-setup 'other-window)
+  (org-agenda-skip-scheduled-if-done t)
   (org-pretty-entities t)
   (org-startup-folded t)
   (org-hide-leading-stars t)
@@ -755,22 +753,17 @@
   (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
   (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
-  (org-clock-persistence-insinuate))
+  (add-hook 'emacs-startup-hook #'org-clock-persistence-insinuate))
 
 ;;; Writing
-(defvar flyspell-mode-map)
-
-(use-package ispell
-  :hook ((text-mode . flyspell-mode)
-         (prog-mode . flyspell-prog-mode))
+(use-package flyspell
+  :hook (text-mode . flyspell-mode)
+  :commands (flyspell-mode flyspell-prog-mode)
   :custom
   (ispell-program-name "aspell")
-  (ispell-dictionary "en_US"))
-
-(use-package flyspell
-  :bind
-  (:map flyspell-mode-map
-        ("C-," . nil)))
+  (ispell-dictionary "en_US")
+  :config
+  (keymap-set flyspell-mode-map "C-," nil))
 
 (use-package eldoc
   :custom
@@ -969,50 +962,80 @@
   (pmd-base-url my/pmd-base-url)))
 
 ;;;; AI
-(declare-function agent-shell-openai-make-authentication "agent-shell-openai"
-                  (&rest args))
+(when my/agent-shell-enabled
+  (declare-function agent-shell-openai-make-authentication "agent-shell-openai"
+                    (&rest args))
 
-(use-package acp
-  :ensure t
-  :if my/agent-shell-enabled
-  :load-path "vendor/acp.el")
+  (use-package acp
+    :ensure t
+    :commands (acp-make-client)
+    :load-path "vendor/acp.el")
 
-(use-package agent-shell-tramp
-  :if my/agent-shell-enabled
-  :load-path "vendor")
+  (use-package agent-shell-tramp
+    :if my/agent-shell-enabled
+    :commands (agent-shell-tramp-mode)
+    :load-path "vendor")
 
-(use-package agent-shell
-  :ensure t
-  :pin "melpa"
-  :if my/agent-shell-enabled
-  :hook
-  (agent-shell-mode . my/agent-shell-follow-output)
-  :commands (agent-shell agent-shell-toggle agent-shell-new-shell agent-shell-send-dwim)
-  :bind
-  (:map mymacs-mode-map
-        ("C-j a" . my/agent-shell-prefix-map))
-  (:prefix-map my/agent-shell-prefix-map :prefix "C-j a"
-               ("a" . agent-shell)
-               ("." . agent-shell-send-dwim)
-               ("t" . agent-shell-toggle)
-               ("n" . agent-shell-new-shell))
-  :custom
-  (agent-shell-display-action (my/side-window-config))
-  (agent-shell-prefer-viewport-interaction t)
-  (agent-shell-context-sources '(region files error line))
-  (agent-shell-preferred-agent-config 'codex)
-  (agent-shell-session-strategy 'prompt)
-  (agent-shell-buffer-name-format 'kebab-case)
-  (agent-shell-confirm-interrupt nil)
-  (agent-shell-show-session-id t)
-  (agent-shell-show-welcome-message nil)
-  (agent-shell-tool-use-expand-by-default t)
-  (agent-shell-user-message-expand-by-default t)
-  :preface
-  (defun my/agent-shell-follow-output ()
-    (setq-local comint-move-point-for-output 'all)
-    (setq-local comint-scroll-to-bottom-on-output t))
-  :config
-  (setopt agent-shell-openai-authentication (agent-shell-openai-make-authentication :login t))
-  (require 'agent-shell-tramp)
-  (agent-shell-tramp-mode 1))
+  (use-package agent-shell
+    :ensure t
+    :pin "melpa"
+    :hook
+    (agent-shell-mode . my/agent-shell-follow-output)
+    :commands (agent-shell agent-shell-toggle agent-shell-new-shell agent-shell-send-dwim)
+    :bind
+    (:map mymacs-mode-map
+          ("C-j a" . my/agent-shell-prefix-map))
+    (:prefix-map my/agent-shell-prefix-map :prefix "C-j a"
+                 ("a" . my/agent-shell-open)
+                 ("." . my/agent-shell-send-dwim)
+                 ("t" . my/agent-shell-toggle)
+                 ("n" . my/agent-shell-new-shell))
+    :custom
+    (agent-shell-display-action (my/side-window-config))
+    (agent-shell-prefer-viewport-interaction t)
+    (agent-shell-context-sources '(region files error line))
+    (agent-shell-preferred-agent-config 'codex)
+    (agent-shell-session-strategy 'prompt)
+    (agent-shell-buffer-name-format 'kebab-case)
+    (agent-shell-confirm-interrupt nil)
+    (agent-shell-show-session-id t)
+    (agent-shell-show-welcome-message nil)
+    (agent-shell-tool-use-expand-by-default t)
+    (agent-shell-user-message-expand-by-default t)
+    :preface
+    (defvar my/agent-shell-bootstrapped nil)
+
+    (defun my/agent-shell-bootstrap ()
+      (unless my/agent-shell-bootstrapped
+        (require 'agent-shell-openai)
+        (setopt agent-shell-openai-authentication
+                (agent-shell-openai-make-authentication :login t))
+        (require 'agent-shell-tramp)
+        (agent-shell-tramp-mode 1)
+        (setq my/agent-shell-bootstrapped t)))
+
+    (defun my/agent-shell-open ()
+      (interactive)
+      (my/agent-shell-bootstrap)
+      (call-interactively #'agent-shell))
+
+    (defun my/agent-shell-send-dwim ()
+      (interactive)
+      (my/agent-shell-bootstrap)
+      (call-interactively #'agent-shell-send-dwim))
+
+    (defun my/agent-shell-toggle ()
+      (interactive)
+      (my/agent-shell-bootstrap)
+      (call-interactively #'agent-shell-toggle))
+
+    (defun my/agent-shell-new-shell ()
+      (interactive)
+      (my/agent-shell-bootstrap)
+      (call-interactively #'agent-shell-new-shell))
+
+    (defun my/agent-shell-follow-output ()
+      (setq-local comint-move-point-for-output 'all)
+      (setq-local comint-scroll-to-bottom-on-output t))
+    :config
+    nil))
