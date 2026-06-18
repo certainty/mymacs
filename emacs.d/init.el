@@ -300,7 +300,11 @@
   (:map mymacs-mode-map
         ("C-j |" . split-window-right)
         ("C-q" . bury-buffer)
-        ("C-Q" . kill-current-buffer))
+        ("C-Q" . kill-current-buffer)
+        ("C-x w t"   . window-layout-transpose) 
+        ("C-x w r"   . window-layout-rotate-clockwise) 
+        ("C-x w f h" . window-layout-flip-leftright)   
+        ("C-x w f v" . window-layout-flip-topdown))
   (:map goto-map
         ("n b" . next-buffer)
         ("p b" . previous-buffer))
@@ -409,6 +413,7 @@
   :custom
   (completion-sort 'historical)
   (completion-eager-update t)
+  (completion-eager-display 'auto)
   (completion-auto-select t)
   (completions-auto-help 'visible)
   (completions-max-height 20)
@@ -526,7 +531,9 @@
         ("C-c C-m" . embark-select)
         ("C-c C-a" . embark-act-all))
   :custom
-  (embark-prompter 'embark-completing-read-prompter)
+  (embark-indicators '(embark-minimal-indicator
+                       embark-highlight-indicator
+                       embark-isearch-highlight-indicator))
   (prefix-help-command 'embark-prefix-help-command)
   :init
   (add-to-list 'display-buffer-alist
@@ -651,6 +658,12 @@
     (consult-ripgrep (project-root (project-current t)) (thing-at-point 'symbol))))
 
 ;;;; vc
+(use-package vc
+  :custom
+  (vc-auto-revert-mode t)
+  (vc-allow-rewriting-published-history t)
+  (vc-dir-hide-up-to-date-on-revert t))
+
 (use-package diff-hl
   :ensure t
   :hook
@@ -805,7 +818,9 @@
 
 ;;; Programming
 (use-package emacs
-  :hook (prog-mode . display-line-numbers-mode))
+  :hook (prog-mode . display-line-numbers-mode)
+  :custom
+  (eldoc-help-at-pt t))
 
 (use-package xref
   :custom
@@ -836,6 +851,8 @@
    ("c" . consult-flymake))
   
   :custom
+  (eglot-documentation-renderer 'markdown-ts-view-mode) 
+  (eglot-code-action-indications nil)  
   (read-process-output-max (* 1024 1024))
   (eglot-server-programs
    '((ruby-ts-mode . ("ruby-lsp"))
@@ -853,6 +870,8 @@
 
 (use-package treesit
   :custom
+  (treesit-auto-install-grammar t)
+  (treesit-enabled-modes t)
   (treesit-font-lock-level 4)
   :config
   (add-to-list 'treesit-language-source-alist
