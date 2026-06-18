@@ -184,9 +184,35 @@ Each value is an alist with `data' and `timestamp' keys.")
   "Recover the entity of TYPE with ID."
   (let ((record (gethash type pmd--entities-data)))
     (cl-assert record "[BUG] No data fetched for entity type %s" type)
-    (let ((data (gethash id (alist-get 'data record))))
+    (let* ((entities (alist-get 'data record))
+           (resolved-id (pmd--resolve-entity-id type id entities))
+           (data (and resolved-id (gethash resolved-id entities))))
       (cl-assert (hash-table-p data) "[BUG] No data for entity with given id")
       data)))
+
+(defun pmd--entity-display-function (type)
+  "Return display function for entity TYPE."
+  (pcase type
+    (`pmd-project #'pmd--projects-display)
+    (`pmd-team #'pmd--teams-display)
+    (`pmd-service-group #'pmd--servicegroups-display)
+    (`pmd-people #'pmd--people-display)
+    (_ nil)))
+
+(defun pmd--resolve-entity-id (type target entities)
+  "Resolve PMD TARGET for TYPE to canonical entity id in ENTITIES."
+  (or (get-text-property 0 'pmd-id target)
+      (and (stringp target)
+           (gethash target entities)
+           target)
+      (when-let* ((display-fn (pmd--entity-display-function type)))
+        (catch 'match
+          (maphash
+           (lambda (id data)
+             (when (equal (funcall display-fn data) target)
+               (throw 'match id)))
+           entities)
+          nil))))
 
 (defun pmd--cache-clear-type (type)
   "Clear the PMD cache for TYPE."
