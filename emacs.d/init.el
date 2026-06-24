@@ -108,6 +108,12 @@
     "Environment variables imported from the shell on macOS."))
 
 ;;; Essentials
+(use-package modus-themes
+  :ensure t)
+
+(use-package ef-themes
+  :ensure t)
+
 (use-package emacs
   :bind
   (:map mymacs-mode-map
@@ -134,14 +140,14 @@
                ("m" . pop-global-mark))
   
   :custom
-  ;;; ui
+;;; ui
   (use-short-answers t)
   (ring-bell-function 'ignore)
   (inhibit-startup-screen t)
   (inhibit-startup-message t)
   (initial-scratch-message ";; Hack the planet!\n\n")
 
-  ;;; editing
+;;; editing
   (kill-whole-line t)
   (next-line-add-newlines t)
   (set-mark-command-repeat-pop t)
@@ -193,7 +199,7 @@
       (delete-region (point) curr)))
 
   :init
-  ;;; modes
+;;; modes
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
@@ -203,22 +209,22 @@
   (global-subword-mode)
   (save-place-mode)
 
-  ;;; tab settings
+;;; tab settings
   (setq-default indent-tabs-mode nil)
   (setq-default standard-indent 2)
   (setq-default tab-width 2)
 
-  ;;; default font
+;;; default font
   (set-face-attribute
    'default nil
    :font my/font
    :height my/font-height
    :weight my/font-weight)
 
-  ;;;; load theme
+;;;; load theme
   (load-theme my/theme)
 
-  ;;;; modeline
+;;;; modeline
   (dolist (m '(mode-line mode-line-active mode-line-inactive))
     (set-face-attribute m nil :background 'unspecified :box nil :overline "gray50" :underline nil))
 
