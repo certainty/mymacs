@@ -989,6 +989,24 @@
   :init
   (setq-default go-ts-mode-indent-offset 4))
 
+;;;; templates
+(use-package mmm-mode
+  :ensure t
+  :custom
+  (mmm-global-mode 'maybe)
+  :init
+  (require 'mmm-auto)
+  :config
+  (mmm-add-classes
+   '((gotmpl
+      :submode go-ts-mode
+      :face mmm-code-submode-face
+      :front "{{-?"
+      :back "-?}}"
+      :end-not-begin t)))
+  (mmm-add-mode-ext-class 'yaml-ts-mode nil 'gotmpl)
+  (mmm-add-mode-ext-class nil "\\.gotmpl\\'" 'gotmpl))
+
 ;;;; scala
 (use-package scala-ts-mode
   :ensure t
