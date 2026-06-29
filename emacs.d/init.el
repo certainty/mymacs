@@ -574,6 +574,60 @@
   :init
   (add-hook 'emacs-startup-hook #'recentf-mode))
 
+;;;; ibuffer
+
+(use-package ibuffer
+  :hook (ibuffer-mode . my/ibuffer-setup)
+  :commands (ibuffer)
+  :custom
+  (ibuffer-show-empty-filter-groups nil)
+  (ibuffer-saved-filter-groups
+   '(("default"
+      ("Emacs"
+       (or
+        (name . "^\\*scratch\\*$")
+        (name . "^\\*Messages\\*$")
+        (name . "^\\*Warnings\\*$")
+        (name . "^\\*Backtrace\\*$")
+        (name . "^\\*Completions\\*$")
+        (name . "^\\*Embark Collect.*\\*$")))
+      ("Org and text"
+       (or
+        (mode . org-agenda-mode)
+        (mode . org-mode)
+        (mode . markdown-mode)
+        (mode . text-mode)))
+      ("Directories" (mode . dired-mode))
+      ("Shells"
+       (or
+        (mode . shell-mode)
+        (mode . eshell-mode)
+        (mode . eat-mode)
+        (mode . term-mode)
+        (name . "^\\*eat.*\\*$")))
+      ("Code" (predicate . (derived-mode-p 'prog-mode)))
+      ("Version control"
+       (or
+        (mode . vc-dir-mode)
+        (mode . diff-mode)
+        (mode . log-view-mode)))
+      ("Help and diagnostics"
+       (or
+        (mode . help-mode)
+        (mode . compilation-mode)
+        (mode . grep-mode)
+        (mode . occur-mode)
+        (mode . flymake-diagnostics-buffer-mode)
+        (mode . xref--xref-buffer-mode))))))
+  :preface
+  (declare-function ibuffer-auto-mode "ibuf-ext" (&optional arg))
+  (declare-function ibuffer-switch-to-saved-filter-groups "ibuf-ext" (name))
+  (defun my/ibuffer-setup ()
+    "Apply stable defaults to Ibuffer buffers."
+    (require 'ibuf-ext)
+    (ibuffer-switch-to-saved-filter-groups "default")
+    (ibuffer-auto-mode 1)))
+
 ;;;; dired
 
 (use-package dired
@@ -840,6 +894,17 @@
 (use-package ansi-color
   :hook (compilation-filter . ansi-color-compilation-filter))
 
+(setq eglot-server-programs
+      (cons '((elixir-mode elixir-ts-mode heex-ts-mode)
+              "expert" "--stdio")
+            (bound-and-true-p eglot-server-programs)))
+(setq eglot-server-programs
+      (cons '(scala-ts-mode
+              "metals"
+              :initializationOptions
+              (:isHttpEnabled t))
+            eglot-server-programs))
+
 (use-package eglot
   :bind
   (:map eglot-mode-map
@@ -860,13 +925,8 @@
   (eglot-documentation-renderer 'markdown-ts-view-mode) 
   (eglot-code-action-indications nil)  
   (read-process-output-max (* 1024 1024))
-  (eglot-server-programs
-   '((ruby-ts-mode . ("ruby-lsp"))
-     (go-ts-mode . ("gopls"))))
-
   :config
-  (add-to-list 'eglot-server-programs
-               `(scala-ts-mode . ("metals" :initializationOptions (:isHttpEnabled t)))))
+  nil)
 
 ;;; snippets
 ;; these also act as a provider for eglot
@@ -951,6 +1011,17 @@
         '((:source ("src/main/scala")
            :test ("src/test/scala" "src/it/scala")
            :suffixes ("Spec" "Suite" "Test")))))
+
+;;;; elixir
+(use-package elixir-ts-mode
+  :mode ("\\.elixir\\'" "\\.ex\\'" "\\.exs\\'" "mix\\.lock\\'")
+  :hook (elixir-ts-mode . eglot-ensure)
+  :custom
+  (elixir-ts-indent-offset 2))
+
+(use-package heex-ts-mode
+  :mode "\\.[hl]?eex\\'"
+  :hook (heex-ts-mode . eglot-ensure))
 
 ;;;; yaml
 (use-package yaml-ts-mode
