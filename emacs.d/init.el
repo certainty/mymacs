@@ -51,6 +51,7 @@
 (defcustom my/font-height 110 "The font height" :type 'number :group 'mymacs)
 (defcustom my/font-weight 'light "The font weigh" :type 'symbol :group 'mymacs)
 (defcustom my/org-directory "~/org" "The main org directory" :type 'string :group 'mymacs)
+(defcustom my/org-categories nil "Available Org categories." :type '(repeat string) :group 'mymacs)
 (defcustom my/org-tag-alist nil "The tag quick keys" :type '(alist :key-type string :value-type character))
 (defcustom my/pmd-enabled nil "Enable consult-pmd" :type 'boolean :group 'mymacs)
 (defcustom my/pmd-base-url nil "The pmd url" :type 'string :group 'mymacs)
@@ -803,6 +804,9 @@
    '(("t" "Task" entry (file "tasks.org")
       "* TODO %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
       :prepend t)
+     ("b" "Backlog" entry (file "tasks.org")
+      "* BACKLOG %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
+      :prepend t)
      ("n" "Note" entry (file+olp+datetree "log.org")
       "* %<%H:%M> %?\n:PROPERTIES:\n:CAPTURED: %T\n:END:"
       :tree-type week)
@@ -818,9 +822,32 @@
   (org-enforce-todo-dependencies t)
   (org-agenda-custom-commands
    '(("n" "Next actions" tags-todo "+nextup")
+     ("b" "Backlog" search "*BACKLOG")
      ("w" "Waiting" todo "WAIT")
      ("d" "Decisions" todod "DECISION")))
   (org-tag-alist my/org-tag-alist)
+  :preface
+  (declare-function org-back-to-heading "org" (&optional invisible-ok))
+  (declare-function org-entry-get "org" (epom property &optional inherit literal-nil))
+  (declare-function org-set-property "org" (property value))
+  (defun my/org-set-category ()
+    "Set the CATEGORY property on the current Org heading."
+    (interactive)
+    (unless (derived-mode-p 'org-mode)
+      (user-error "Not in Org mode"))
+    (unless my/org-categories
+      (user-error "No categories configured in my/org-categories"))
+    (org-back-to-heading t)
+    (org-set-property
+     "CATEGORY"
+     (completing-read
+      "Category: "
+      my/org-categories
+      nil
+      t
+      nil
+      nil
+      (org-entry-get nil "CATEGORY"))))
 
   :config
   ;; Fixed-pitch for code/tables in variable-pitch org docs
