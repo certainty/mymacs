@@ -164,6 +164,13 @@
   (modus-themes-completions
    '((matches . (extrabold underline))
      (selection . (semibold italic))))
+  (modus-vivendi-palette-overrides
+   '((bg-line-number-active bg-main)
+     (bg-line-number-inactive bg-main)
+     (bg-paren-match bg-magenta-intense)
+     (bg-fringe bg-main)
+     (fringe bg-main)
+     (bg-space bg-main)))
   (modus-vivendi-tinted-palette-overrides
    '((bg-line-number-active bg-main)
      (bg-line-number-inactive bg-main)
@@ -803,9 +810,6 @@
   (org-capture-templates
    '(("t" "Task" entry (file "tasks.org")
       "* TODO %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
-      :prepend t)
-     ("b" "Backlog" entry (file "tasks.org")
-      "* BACKLOG %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
       :prepend t)
      ("n" "Note" entry (file+olp+datetree "log.org")
       "* %<%H:%M> %?\n:PROPERTIES:\n:CAPTURED: %T\n:END:"
