@@ -1073,6 +1073,14 @@
 (use-package css-mode
   :mode ("\\.css\\'" "\\.css\\.erb\\'" "\\.css\\.gotmpl\\'"))
 
+;;;; mise
+(use-package mise
+  :ensure t
+  :demand t
+  :pin "melpa"
+  :config
+  (global-mise-mode 1))
+
 ;;;; lisp
 
 ;;;; PMD
