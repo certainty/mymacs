@@ -57,7 +57,6 @@
 (defcustom my/pmd-base-url nil "The pmd url" :type 'string :group 'mymacs)
 (defcustom my/denote-directory "" "The path to my notes" :type 'string :group 'mymacs)
 (defcustom my/denote-keywords nil "List of keywords for denote" :type '(repeat string) :group 'mymacs)
-(defcustom my/agent-shell-enabled nil "Enable AI with agent-shell?" :type 'boolean :group 'mymacs)
 
 ;;;; load custom file
 (setopt custom-file (locate-user-emacs-file "custom.el"))
@@ -302,13 +301,6 @@
                     mode
                     slot))
 
-(defun my/agent-shell-buffer-p (buffer-name _action)
-  (when-let* ((buffer (get-buffer buffer-name)))
-    (with-current-buffer buffer
-      (or (derived-mode-p 'agent-shell-mode)
-          (derived-mode-p 'agent-shell-viewport-view-mode)
-          (derived-mode-p 'agent-shell-viewport-edit-mode)))))
-
 (use-package window
   :bind
   (:map mymacs-mode-map
@@ -345,8 +337,6 @@
      ("^\\*vc-dir\\*" . ,(my/side-window-config 'special-mode))
      ("\\*xref\\*" . ,(my/bottom-window-config 'special-mode))
      ("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\)\\*" . ,(my/side-window-config 'special-mode))
-     ,@(when my/agent-shell-enabled
-         `((my/agent-shell-buffer-p . ,(my/side-window-config))))
      (".*"
       (display-buffer-same-window
        display-buffer-reuse-window
@@ -925,17 +915,6 @@
 (use-package ansi-color
   :hook (compilation-filter . ansi-color-compilation-filter))
 
-(setq eglot-server-programs
-      (cons '((elixir-mode elixir-ts-mode heex-ts-mode)
-              "expert" "--stdio")
-            (bound-and-true-p eglot-server-programs)))
-(setq eglot-server-programs
-      (cons '(scala-ts-mode
-              "metals"
-              :initializationOptions
-              (:isHttpEnabled t))
-            eglot-server-programs))
-
 (use-package eglot
   :bind
   (:map eglot-mode-map
@@ -951,13 +930,20 @@
    ("F" . eglot-format)
    ("C" . flymake-show-project-diagnostics)
    ("c" . consult-flymake))
-  
+
   :custom
-  (eglot-documentation-renderer 'markdown-ts-view-mode) 
-  (eglot-code-action-indications nil)  
+  (eglot-documentation-renderer 'markdown-ts-view-mode)
+  (eglot-code-action-indications nil)
   (read-process-output-max (* 1024 1024))
   :config
-  nil)
+  (add-to-list 'eglot-server-programs
+               '((elixir-mode elixir-ts-mode heex-ts-mode)
+                 "expert" "--stdio"))
+  (add-to-list 'eglot-server-programs
+               '(scala-ts-mode
+                 "metals"
+                 :initializationOptions
+                 (:isHttpEnabled t))))
 
 ;;; snippets
 ;; these also act as a provider for eglot
@@ -1108,82 +1094,3 @@
                ("c" . +pmd-cache-clear))
   :custom
   (pmd-base-url my/pmd-base-url)))
-
-;;;; AI
-(when my/agent-shell-enabled
-  (declare-function agent-shell-openai-make-authentication "agent-shell-openai"
-                    (&rest args))
-
-  (use-package acp
-    :ensure t
-    :commands (acp-make-client)
-    :load-path "vendor/acp.el")
-
-  (use-package agent-shell-tramp
-    :if my/agent-shell-enabled
-    :commands (agent-shell-tramp-mode)
-    :load-path "vendor")
-
-  (use-package agent-shell
-    :ensure t
-    :pin "melpa"
-    :hook
-    (agent-shell-mode . my/agent-shell-follow-output)
-    :commands (agent-shell agent-shell-toggle agent-shell-new-shell agent-shell-send-dwim)
-    :bind
-    (:map mymacs-mode-map
-          ("C-j a" . my/agent-shell-prefix-map))
-    (:prefix-map my/agent-shell-prefix-map :prefix "C-j a"
-                 ("a" . my/agent-shell-open)
-                 ("." . my/agent-shell-send-dwim)
-                 ("t" . my/agent-shell-toggle)
-                 ("n" . my/agent-shell-new-shell))
-    :custom
-    (agent-shell-display-action (my/side-window-config))
-    (agent-shell-prefer-viewport-interaction t)
-    (agent-shell-context-sources '(region files error line))
-    (agent-shell-preferred-agent-config 'codex)
-    (agent-shell-session-strategy 'prompt)
-    (agent-shell-buffer-name-format 'kebab-case)
-    (agent-shell-confirm-interrupt nil)
-    (agent-shell-show-session-id t)
-    (agent-shell-show-welcome-message nil)
-    (agent-shell-tool-use-expand-by-default t)
-    (agent-shell-user-message-expand-by-default t)
-    :preface
-    (defvar my/agent-shell-bootstrapped nil)
-
-    (defun my/agent-shell-bootstrap ()
-      (unless my/agent-shell-bootstrapped
-        (require 'agent-shell-openai)
-        (setopt agent-shell-openai-authentication
-                (agent-shell-openai-make-authentication :login t))
-        (require 'agent-shell-tramp)
-        (agent-shell-tramp-mode 1)
-        (setq my/agent-shell-bootstrapped t)))
-
-    (defun my/agent-shell-open ()
-      (interactive)
-      (my/agent-shell-bootstrap)
-      (call-interactively #'agent-shell))
-
-    (defun my/agent-shell-send-dwim ()
-      (interactive)
-      (my/agent-shell-bootstrap)
-      (call-interactively #'agent-shell-send-dwim))
-
-    (defun my/agent-shell-toggle ()
-      (interactive)
-      (my/agent-shell-bootstrap)
-      (call-interactively #'agent-shell-toggle))
-
-    (defun my/agent-shell-new-shell ()
-      (interactive)
-      (my/agent-shell-bootstrap)
-      (call-interactively #'agent-shell-new-shell))
-
-    (defun my/agent-shell-follow-output ()
-      (setq-local comint-move-point-for-output 'all)
-      (setq-local comint-scroll-to-bottom-on-output t))
-    :config
-    nil))
