@@ -937,6 +937,9 @@
   (read-process-output-max (* 1024 1024))
   :config
   (add-to-list 'eglot-server-programs
+               '((ruby-mode ruby-ts-mode)
+                 "ruby-lsp"))
+  (add-to-list 'eglot-server-programs
                '((elixir-mode elixir-ts-mode heex-ts-mode)
                  "expert" "--stdio"))
   (add-to-list 'eglot-server-programs
@@ -979,6 +982,8 @@
   :mode ("\\.rb\\'" "Rakefile\\'" "Gemfile\\'" "\\.rake\\'" "\\.gemspec\\'" "\\.ru\\'")
   :hook
   (ruby-ts-mode . eglot-ensure)
+  (ruby-ts-mode . meow-mode)
+  (ruby-mode . meow-mode)
   (ruby-mode . ruby-ts-mode)
   :bind
   (:map ruby-ts-mode-map
@@ -1102,3 +1107,104 @@
                ("c" . +pmd-cache-clear))
   :custom
   (pmd-base-url my/pmd-base-url)))
+
+;;;; modal editing
+(use-package meow
+  :ensure t
+  :demand t
+  :pin "melpa"
+  :custom
+  (meow-display-thing-help nil)
+  (meow-keypad-message nil)
+  (meow-mode-state-list
+   '((special-mode . motion)
+     (dired-mode . motion)
+     (term-mode . insert)
+     (shell-mode . insert)
+     (eshell-mode . insert)
+     (comint-mode . insert)
+     (eat-mode . insert)
+     (conf-mode . normal)
+     (fundamental-mode . normal)
+     (help-mode . motion)))
+  
+  :preface
+  (defun my/meow-escape ()
+    (interactive)
+    (if (region-active-p)
+        (meow-cancel-selection)
+      (+escape-dwim)))
+
+  (defun my/meow-insert-at-bol ()
+    (interactive)
+    (back-to-indentation)
+    (meow-insert))
+
+  (defun my/meow-append-at-eol ()
+    (interactive)
+    (end-of-line)
+    (meow-append))
+
+  (defun my/meow-setup ()
+    (meow-motion-define-key
+     '("<escape>" . my/meow-escape)
+     '("j" . meow-next)
+     '("k" . meow-prev)
+     '("h" . meow-left)
+     '("l" . meow-right))
+    (meow-normal-define-key
+     '("0" . meow-expand-0)
+     '("1" . meow-expand-1)
+     '("2" . meow-expand-2)
+     '("3" . meow-expand-3)
+     '("4" . meow-expand-4)
+     '("5" . meow-expand-5)
+     '("6" . meow-expand-6)
+     '("7" . meow-expand-7)
+     '("8" . meow-expand-8)
+     '("9" . meow-expand-9)
+     '("-" . negative-argument)
+     '(";" . meow-reverse)
+     '("," . meow-inner-of-thing)
+     '("." . meow-bounds-of-thing)
+     '("[" . meow-beginning-of-thing)
+     '("]" . meow-end-of-thing)
+     '("a" . meow-append)
+     '("A" . my/meow-append-at-eol)
+     '("b" . meow-back-word)
+     '("c" . meow-change)
+     '("d" . meow-kill)
+     '("e" . meow-next-symbol)
+     '("E" . meow-back-symbol)
+     '("f" . meow-find)
+     '("F" . meow-find-expand)
+     '("g" . beginning-of-buffer)
+     '("G" . end-of-buffer)
+     '("h" . meow-left)
+     '("i" . meow-insert)
+     '("I" . my/meow-insert-at-bol)
+     '("j" . meow-next)
+     '("k" . meow-prev)
+     '("l" . meow-right)
+     '("H" . meow-left-expand)
+     '("J" . meow-next-expand)
+     '("K" . meow-prev-expand)
+     '("L" . meow-right-expand)
+     '("m" . meow-block)
+     '("n" . meow-search)
+     '("o" . meow-open-below)
+     '("O" . meow-open-above)
+     '("p" . meow-yank)
+     '("/" . meow-visit)
+     '("t" . meow-till)
+     '("T" . meow-till-expand)
+     '("u" . meow-undo)
+     '("v" . expreg-expand)
+     '("V" . expreg-contract)
+     '("w" . meow-next-word)
+     '("x" . meow-line)
+     '("y" . meow-save)
+     '("<escape>" . my/meow-escape)))
+  :config
+  (my/meow-setup)
+  (meow-global-mode 1))
