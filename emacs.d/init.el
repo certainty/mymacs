@@ -24,7 +24,17 @@
 ;; - :config
 
 ;;; Customization
-(defvar-keymap mymacs-mode-map :doc "mymacs global keys")
+(defvar-keymap my/leader-map :doc "Shared leader keymap.")
+(defvar-keymap my/org-prefix-map :doc "Org leader submap.")
+(defvar-keymap my/pmd-prefix-map :doc "PMD leader submap.")
+
+(keymap-set my/leader-map "o" my/org-prefix-map)
+(keymap-set my/leader-map "," my/pmd-prefix-map)
+
+(defvar-keymap mymacs-mode-map
+  :doc "mymacs global keys"
+  "C-j" my/leader-map)
+
 (defvar mymacs-emulation-mode-map-alist
   `((mymacs-mode . ,mymacs-mode-map))
   "Keymap alist giving `mymacs-mode-map' precedence.")
@@ -117,8 +127,6 @@
 (use-package emacs
   :bind
   (:map mymacs-mode-map
-        ("C-j <" . indent-rigidly-left-to-tab-stop)
-        ("C-j >" . indent-rigidly-right-to-tab-stop)
         ("C-g" . +escape-dwim)
         ("M-D" . backward-kill-sexp)
         ("C-o" . my/open-line-above-indented)
@@ -127,6 +135,9 @@
         ("C-^" . just-one-space)
         ("<f5>" . display-line-numbers-mode)
         ("<f6>" . toggle-frame-maximized))
+  (:map my/leader-map
+        ("<" . indent-rigidly-left-to-tab-stop)
+        (">" . indent-rigidly-right-to-tab-stop))
   (:map goto-map
         ("n" . nil)
         ("p" . nil)
@@ -204,6 +215,11 @@
     (let ((curr (point)))
       (back-to-indentation)
       (delete-region (point) curr)))
+
+  (defun my/disable-meow-locally ()
+    "Disable Meow in the current buffer."
+    (when (fboundp 'meow-mode)
+      (meow-mode -1)))
 
   :init
 ;;; modes
@@ -305,7 +321,6 @@
   :commands (+delete-other-windows)
   :bind
   (:map mymacs-mode-map
-        ("C-j |" . split-window-right)
         ("C-q" . bury-buffer)
         ("C-Q" . kill-current-buffer)
         ([remap delete-other-windows] . +delete-other-windows)
@@ -313,6 +328,8 @@
         ("C-x w r"   . window-layout-rotate-clockwise) 
         ("C-x w f h" . window-layout-flip-leftright)   
         ("C-x w f v" . window-layout-flip-topdown))
+  (:map my/leader-map
+        ("|" . split-window-right))
   (:map goto-map
         ("n b" . next-buffer)
         ("p b" . previous-buffer))
@@ -514,7 +531,7 @@
 ;  :load-path "user-lisp"
   :bind
   (:map paredit-mode-map
-        ("C-j" . nil)) ;; C-j is our global prefix
+        ("C-j" . nil))
   :hook
   (emacs-lisp-mode . paredit-mode)
   (lisp-mode . paredit-mode))
@@ -568,6 +585,10 @@
   (find-file-visit-truename t))
 
 (use-package alternate-file
+  :demand t
+  :load-path "user-lisp")
+
+(use-package my-meow-helix
   :demand t
   :load-path "user-lisp")
 
@@ -656,8 +677,8 @@
                         (executable-find "gls"))))
     (setq insert-directory-program gls))
   :bind
-  (:map mymacs-mode-map
-        ("C-j e" . dired-jump)))
+  (:map my/leader-map
+        ("." . dired-jump)))
 
 (use-package wdired
   :commands wdired-change-to-wdired-mode
@@ -709,10 +730,10 @@
   (project-vc-extra-root-markers '(".project.el"))
   
   :bind
-  (:map mymacs-mode-map
-        ("C-j p" . project-switch-project)
-        ("C-j v" . project-vc-dir)
-        ("C-j c" . project-compile))
+  (:map my/leader-map
+        ("p" . project-switch-project)
+        ("v" . project-vc-dir)
+        ("c" . project-compile))
   (:map goto-map
         ("f" . project-find-file)
         ("P" . project-switch-project))
@@ -726,6 +747,8 @@
 
 ;;;; vc
 (use-package vc
+  :hook
+  (vc-dir-mode . my/disable-meow-locally)
   :custom
   (vc-auto-revert-mode t)
   (vc-allow-rewriting-published-history t)
@@ -742,8 +765,8 @@
   :ensure t
   :pin "nongnu"
   :bind
-  (:map mymacs-mode-map
-        ("C-j t" . eat))
+  (:map my/leader-map
+        ("t" . eat))
   :custom
   (eat-term-name "xterm-256color")
   :init
@@ -753,12 +776,11 @@
 (use-package org
   :hook
   (org-mode . auto-revert-mode)
+  (org-agenda-mode . my/disable-meow-locally)
   :bind
-  (:map mymacs-mode-map
-        ("C-j o" . my/org-prefix-map))
-  (:prefix-map my/org-prefix-map :prefix "C-j o"
-               ("a" . org-agenda)
-               ("o" . org-capture))
+  (:map my/org-prefix-map
+        ("a" . org-agenda)
+        ("o" . org-capture))
   :custom
   (org-directory (file-truename (expand-file-name my/org-directory)))
   (org-persist-directory (locate-user-emacs-file "org-persist/"))
@@ -888,8 +910,8 @@
   :ensure t
   :hook (dired-mode . denote-dired-mode)
   :bind
-  (:map mymacs-mode-map
-        ("C-j j" . denote))
+  (:map my/leader-map
+        ("j" . denote))
   :custom
   (denote-directory my/denote-directory)
   (denote-save-buffers nil)
@@ -1104,14 +1126,12 @@
              +pmd-servicegroups
              +pmd-cache-clear)
   :bind
-  (:map mymacs-mode-map
-        ("C-j ," . my/pmd-prefix-map))
-  (:prefix-map my/pmd-prefix-map :prefix "C-j ,"
-               ("," . +pmd-projects)
-               ("t" . +pmd-teams)
-               ("p" . +pmd-people)
-               ("s" . +pmd-servicegroups)
-               ("c" . +pmd-cache-clear))
+  (:map my/pmd-prefix-map
+        ("," . +pmd-projects)
+        ("t" . +pmd-teams)
+        ("p" . +pmd-people)
+        ("s" . +pmd-servicegroups)
+        ("c" . +pmd-cache-clear))
   :custom
   (pmd-base-url my/pmd-base-url)))
 
@@ -1121,7 +1141,16 @@
   :demand t
   :pin "melpa"
   :custom
-  (meow-display-thing-help nil)
+  (meow-display-thing-help t)
+  (meow-expand-hint-counts
+   '((word . 0)
+     (line . 0)
+     (block . 0)
+     (find . 0)
+     (till . 0)
+     (symbol . 0)))
+  (meow-keypad-leader-dispatch my/leader-map)
+  (meow-keypad-leader-transparent 'normal)
   (meow-keypad-message nil)
   (meow-mode-state-list
    '((special-mode . motion)
@@ -1181,6 +1210,7 @@
      '("-" . negative-argument)
      '("@" . meow-mark-word)
      '("C-@" . meow-mark-symbol)
+     '("?" . my/meow-search-backward)
      '("(" . my/meow-backward-sexp)
      '(")" . my/meow-forward-sexp)
      '(";" . meow-reverse)
@@ -1193,11 +1223,10 @@
      '("b" . meow-back-word)
      '("c" . meow-change)
      '("d" . meow-kill)
-     '("e" . meow-next-symbol)
-     '("E" . meow-back-symbol)
+     '("e" . meow-next-word)
      '("f" . meow-find)
-     '("F" . meow-find-expand)
-     '("g" . beginning-of-buffer)
+     '("F" . my/meow-find-backward)
+     (cons "g" my/meow-goto-map)
      '("G" . end-of-buffer)
      '("h" . meow-left)
      '("i" . meow-insert)
@@ -1209,26 +1238,44 @@
      '("H" . meow-left-expand)
      '("K" . meow-prev-expand)
      '("L" . meow-right-expand)
-     '("m" . meow-block)
-     '("n" . meow-search)
+     (cons "m" my/meow-match-map)
+     '("M" . meow-block)
+     '("n" . my/meow-search-next)
+     '("N" . my/meow-search-prev)
      '("o" . meow-open-below)
      '("O" . meow-open-above)
      '("p" . meow-yank)
      '("P" . meow-pop-selection)
-     '("/" . meow-visit)
+     '("/" . my/meow-search-forward)
      '("t" . meow-till)
-     '("T" . meow-till-expand)
+     '("T" . my/meow-till-backward)
      '("u" . meow-undo)
      '("v" . expreg-expand)
      '("V" . expreg-contract)
-     '("w" . meow-next-word)
+     '("w" . meow-mark-word)
      '("x" . meow-line)
      '("X" . meow-delete)
      '("y" . meow-save)
+     '("W" . meow-mark-symbol)
+     '("B" . meow-back-symbol)
+     '("E" . meow-next-symbol)
      '("<backspace>" . meow-backspace)
      '("DEL" . meow-backspace)
      '("C-h" . meow-backspace)
      '("<escape>" . my/meow-escape)))
   :config
+  (keymap-set my/leader-map "f" #'project-find-file)
+  (keymap-set my/leader-map "F" #'find-file)
+  (keymap-set my/leader-map "e" #'project-dired)
+  (keymap-set my/leader-map "b" #'consult-project-buffer)
+  (keymap-set my/leader-map "s" #'consult-imenu)
+  (keymap-set my/leader-map "S" #'consult-imenu-multi)
+  (keymap-set my/leader-map "/" #'consult-ripgrep)
+  (keymap-set my/leader-map "d" #'consult-flymake)
+  (keymap-set my/leader-map "D" #'flymake-show-project-diagnostics)
+  (keymap-set my/leader-map "a" #'eglot-code-actions)
+  (keymap-set my/leader-map "r" #'eglot-rename)
+  (keymap-set my/leader-map "k" #'eldoc)
+  (keymap-set my/leader-map "h" #'xref-find-references)
   (my/meow-setup)
   (meow-global-mode 1))
