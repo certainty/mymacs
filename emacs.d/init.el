@@ -302,11 +302,13 @@
                     slot))
 
 (use-package window
+  :commands (+delete-other-windows)
   :bind
   (:map mymacs-mode-map
         ("C-j |" . split-window-right)
         ("C-q" . bury-buffer)
         ("C-Q" . kill-current-buffer)
+        ([remap delete-other-windows] . +delete-other-windows)
         ("C-x w t"   . window-layout-transpose) 
         ("C-x w r"   . window-layout-rotate-clockwise) 
         ("C-x w f h" . window-layout-flip-leftright)   
@@ -342,6 +344,13 @@
        display-buffer-reuse-window
        display-buffer-use-some-window
        display-buffer-pop-up-window))))
+
+  :preface
+  (defun +delete-other-windows (&optional window)
+    "Delete all other windows, including special windows and popups."
+    (interactive)
+    (let ((ignore-window-parameters t))
+      (delete-other-windows window)))
 
   :config
   (set-face-foreground 'window-divider (face-background 'default))
@@ -982,8 +991,6 @@
   :mode ("\\.rb\\'" "Rakefile\\'" "Gemfile\\'" "\\.rake\\'" "\\.gemspec\\'" "\\.ru\\'")
   :hook
   (ruby-ts-mode . eglot-ensure)
-  (ruby-ts-mode . meow-mode)
-  (ruby-mode . meow-mode)
   (ruby-mode . ruby-ts-mode)
   :bind
   (:map ruby-ts-mode-map
@@ -1090,8 +1097,8 @@
 
 ;;;; PMD
 (when my/pmd-enabled
-(use-package emacs 
-  :commands (+pmd-projects
+  (use-package emacs 
+    :commands (+pmd-projects
              +pmd-teams
              +pmd-people
              +pmd-servicegroups
@@ -1145,6 +1152,14 @@
     (end-of-line)
     (meow-append))
 
+  (defun my/meow-backward-sexp ()
+    (interactive)
+    (mark-sexp -1))
+
+  (defun my/meow-forward-sexp ()
+    (interactive)
+    (mark-sexp 1))
+
   (defun my/meow-setup ()
     (meow-motion-define-key
      '("<escape>" . my/meow-escape)
@@ -1164,6 +1179,10 @@
      '("8" . meow-expand-8)
      '("9" . meow-expand-9)
      '("-" . negative-argument)
+     '("@" . meow-mark-word)
+     '("C-@" . meow-mark-symbol)
+     '("(" . my/meow-backward-sexp)
+     '(")" . my/meow-forward-sexp)
      '(";" . meow-reverse)
      '("," . meow-inner-of-thing)
      '("." . meow-bounds-of-thing)
@@ -1184,10 +1203,10 @@
      '("i" . meow-insert)
      '("I" . my/meow-insert-at-bol)
      '("j" . meow-next)
+     '("J" . meow-join)
      '("k" . meow-prev)
      '("l" . meow-right)
      '("H" . meow-left-expand)
-     '("J" . meow-next-expand)
      '("K" . meow-prev-expand)
      '("L" . meow-right-expand)
      '("m" . meow-block)
@@ -1195,6 +1214,7 @@
      '("o" . meow-open-below)
      '("O" . meow-open-above)
      '("p" . meow-yank)
+     '("P" . meow-pop-selection)
      '("/" . meow-visit)
      '("t" . meow-till)
      '("T" . meow-till-expand)
@@ -1203,7 +1223,11 @@
      '("V" . expreg-contract)
      '("w" . meow-next-word)
      '("x" . meow-line)
+     '("X" . meow-delete)
      '("y" . meow-save)
+     '("<backspace>" . meow-backspace)
+     '("DEL" . meow-backspace)
+     '("C-h" . meow-backspace)
      '("<escape>" . my/meow-escape)))
   :config
   (my/meow-setup)
