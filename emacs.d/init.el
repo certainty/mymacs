@@ -1263,6 +1263,7 @@
      '("DEL" . meow-backspace)
      '("C-h" . meow-backspace)
      '("<escape>" . my/meow-escape)))
+  
   :config
   (keymap-set my/leader-map "f" #'project-find-file)
   (keymap-set my/leader-map "F" #'find-file)

@@ -26,6 +26,96 @@ These basic rules have to be applied consistently.
 * [scripts](./scripts/) *contains emacs-tool which provides common functionality to test the config and interact with an emacs configured for a certain profile* 
 * [emacs.d](./emacs.d/) *current active profile. link this into `~/.emacs.d` to activate*
 
+## Keybindings
+
+The configuration uses Meow as the main modal editing layer. Normal text buffers start in Meow normal state.
+
+### Leader
+
+The global leader is `C-j`.
+Inside Meow keypad mode the same leader map is available on `SPC`.
+
+Common leader bindings:
+
+- `C-j f` / `SPC f` - `project-find-file`
+- `C-j F` / `SPC F` - `find-file`
+- `C-j e` / `SPC e` - `project-dired`
+- `C-j b` / `SPC b` - `consult-project-buffer`
+- `C-j /` / `SPC /` - `consult-ripgrep`
+- `C-j s` / `SPC s` - `consult-imenu`
+- `C-j S` / `SPC S` - `consult-imenu-multi`
+- `C-j d` / `SPC d` - `consult-flymake`
+- `C-j D` / `SPC D` - `flymake-show-project-diagnostics`
+- `C-j a` / `SPC a` - `eglot-code-actions`
+- `C-j r` / `SPC r` - `eglot-rename`
+- `C-j h` / `SPC h` - `xref-find-references`
+- `C-j k` / `SPC k` - `eldoc`
+- `C-j p` - `project-switch-project`
+- `C-j v` - `project-vc-dir`
+- `C-j c` - `project-compile`
+- `C-j t` - `eat`
+- `C-j j` - `denote`
+- `C-j o a` - `org-agenda`
+- `C-j o o` - `org-capture`
+
+### Meow normal state
+
+The Meow layer is intentionally close to Helix in a few high-value places.
+
+Core movement and editing:
+
+- `h j k l` - left, down, up, right
+- `w` - mark word
+- `W` - mark symbol
+- `b` / `B` - back word / back symbol
+- `e` / `E` - next word / next symbol
+- `i` / `I` - insert / insert at indentation
+- `a` / `A` - append / append at end of line
+- `c d y p u` - change, kill, save, yank, undo
+- `x` / `X` - line, delete
+- `o` / `O` - open below, open above
+- `v` / `V` - expand-region expand / contract
+
+Search and local navigation:
+
+- `/` / `?` - search forward / backward
+- `n` / `N` - repeat search forward / backward
+- `f` / `F` - find forward / backward
+- `t` / `T` - till forward / backward
+- `(` / `)` - backward sexp / forward sexp
+
+Prefix maps:
+
+- `g` - goto map
+- `m` - match map
+
+`g` map:
+
+- `g` / `e` - beginning / end of buffer
+- `h` / `l` - beginning / end of line
+- `s` - first non-whitespace on line
+- `t` / `c` / `b` - top / center / bottom of window
+- `d` / `D` - definition / declaration
+- `y` / `r` / `i` - type definition / references / implementation
+- `a` - alternate file
+- `n` / `p` - next / previous buffer
+
+`m` map:
+
+- `m` - jump to matching delimiter
+- `a` - bounds of thing
+- `i` - inner of thing
+- `s` - wrap selection with a typed delimiter
+
+### Mode exceptions
+
+Meow is intentionally disabled in:
+
+- `org-agenda-mode`
+- `vc-dir-mode`
+
+Those modes already use unmodified keys for their own modal interfaces and should not be shadowed.
+
 
 ## System Requirements
 
