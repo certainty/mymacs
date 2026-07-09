@@ -1136,6 +1136,11 @@
   (pmd-base-url my/pmd-base-url)))
 
 ;;;; modal editing
+(use-package embrace
+  :ensure t
+  :pin "melpa"
+  :commands (embrace-add embrace-change embrace-delete))
+
 (use-package meow
   :ensure t
   :demand t

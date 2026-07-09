@@ -6,6 +6,9 @@
 (declare-function eglot-find-implementation "eglot")
 (declare-function eglot-find-typeDefinition "eglot")
 (declare-function +find-alternate-file "alternate-file")
+(declare-function embrace-add "embrace")
+(declare-function embrace-change "embrace")
+(declare-function embrace-delete "embrace")
 (declare-function meow-back-symbol "meow")
 (declare-function meow-back-word "meow")
 (declare-function meow-bounds-of-thing "meow")
@@ -45,7 +48,9 @@
   "m" #'my/meow-match-pair
   "a" #'meow-bounds-of-thing
   "i" #'meow-inner-of-thing
-  "s" #'my/meow-wrap-selection)
+  "s" #'embrace-add
+  "r" #'embrace-change
+  "d" #'embrace-delete)
 
 (defun my/meow-search-forward ()
   "Start forward Meow visit."
@@ -103,30 +108,6 @@
       (goto-char (nth 1 (syntax-ppss))))
      (t
       (user-error "No matching delimiter at point")))))
-
-(defun my/meow-delimiter-pair (delimiter)
-  "Return the delimiter pair for DELIMITER."
-  (pcase delimiter
-    (?\( (cons ?\( ?\)))
-    (?\[ (cons ?\[ ?\]))
-    (?\{ (cons ?\{ ?\}))
-    (?\< (cons ?\< ?\>))
-    (_ (cons delimiter delimiter))))
-
-(defun my/meow-wrap-selection (delimiter)
-  "Wrap current region with DELIMITER pair."
-  (interactive
-   (list (read-char "Wrap with: ")))
-  (unless (region-active-p)
-    (user-error "No active selection"))
-  (pcase-let* ((`(,open . ,close) (my/meow-delimiter-pair delimiter))
-               (beg (region-beginning))
-               (end (region-end)))
-    (save-excursion
-      (goto-char end)
-      (insert close)
-      (goto-char beg)
-      (insert open))))
 
 (provide 'my-meow-helix)
 ;;; my-meow-helix.el ends here
