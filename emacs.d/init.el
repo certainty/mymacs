@@ -1142,6 +1142,20 @@
   :pin "melpa"
   :custom
   (meow-display-thing-help t)
+  (meow-char-thing-table
+   '((?\( . round)
+     (?\[ . square)
+     (?\{ . curly)
+     (?\" . string)
+     (?e . symbol)
+     (?w . word)
+     (?W . window)
+     (?b . buffer)
+     (?p . paragraph)
+     (?l . line)
+     (?v . visual-line)
+     (?d . defun)
+     (?. . sentence)))
   (meow-expand-hint-counts
    '((word . 0)
      (line . 0)
@@ -1278,5 +1292,6 @@
   (keymap-set my/leader-map "r" #'eglot-rename)
   (keymap-set my/leader-map "k" #'eldoc)
   (keymap-set my/leader-map "h" #'xref-find-references)
+  (meow-thing-register 'word 'word 'word)
   (my/meow-setup)
   (meow-global-mode 1))
