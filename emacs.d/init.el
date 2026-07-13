@@ -488,7 +488,7 @@
   (completion-preview-minimum-symbol-length nil)
   (completion-preview-idle-delay nil)
   :init
-  (abbrev-mode))
+  (setq-default abbrev-mode t))
 
 (use-package cape
   :ensure t
@@ -496,16 +496,25 @@
   (emacs-lisp-mode . my/cape-elisp-completion)
   (text-mode . my/cape-text-completion)
   :preface
-  (defun my/cape-text-completion ()
+  (defun my/cape-default-capfs ()
+    (list #'cape-file #'cape-dabbrev))
+
+  (defun my/cape-extend-capfs (&rest capfs)
     (setq-local completion-at-point-functions
-                (list (cape-capf-super #'cape-dict))))
+                (append capfs (default-value 'completion-at-point-functions))))
+
+  (defun my/cape-text-completion ()
+    (my/cape-extend-capfs
+     (cape-capf-super #'cape-dict)))
   
   (defun my/cape-elisp-completion ()
-    (setq-local completion-at-point-functions
-                (list (cape-capf-super #'cape-elisp-block #'cape-elisp-symbol))))
+    (my/cape-extend-capfs
+     (cape-capf-super #'cape-elisp-block #'cape-elisp-symbol)))
   :init
-  (add-to-list 'completion-at-point-functions	'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions 'cape-file))
+  (setq-default completion-at-point-functions
+                (append
+                 (my/cape-default-capfs)
+                 (default-value 'completion-at-point-functions))))
 
 ;;; Editing
 
