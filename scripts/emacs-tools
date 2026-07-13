@@ -52,17 +52,17 @@ Subcommands:
   describe-function <symbol>
       Print function documentation.
       Uses --init-directory when EMACS_CONFIG_ROOT is set so
-      third-party packages are available for inspection.
+      third-party packages from that config root are available for inspection.
 
   describe-variable <symbol>
       Print variable documentation.
       Uses --init-directory when EMACS_CONFIG_ROOT is set so
-      third-party packages are available for inspection.
+      third-party packages from that config root are available for inspection.
 
   find-library <library>
       Locate an Emacs library.
       Uses --init-directory when EMACS_CONFIG_ROOT is set so
-      third-party packages are available for lookup.
+      third-party packages from that config root are available for lookup.
 
   manual [topic]
       Open an Info manual
@@ -81,9 +81,9 @@ Examples:
   emacs-tools doctor
   emacs-tools manual elisp
 
-  With EMACS_CONFIG_ROOT set, describe/lookup commands load
-  the profile's packages before inspection:
-    EMACS_CONFIG_ROOT=profiles/05-2026 emacs-tools describe-variable corfu-auto
+  In this repo, use EMACS_CONFIG_ROOT=emacs.d for live config.
+  EMACS_CONFIG_ROOT can also target another config root when needed:
+    EMACS_CONFIG_ROOT=emacs.d emacs-tools describe-variable corfu-auto
 EOF
 }
 

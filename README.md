@@ -23,8 +23,8 @@ These basic rules have to be applied consistently.
 ## Repository layout
 
 - [doc](./doc) *in depth documentation for some aspects of the config, including package workflows*
-* [scripts](./scripts/) *contains emacs-tool which provides common functionality to test the config and interact with an emacs configured for a certain profile* 
-* [emacs.d](./emacs.d/) *current active profile. link this into `~/.emacs.d` to activate*
+* [scripts](./scripts/) *contains `emacs-tools`, which tests config and interacts with Emacs. It uses `emacs.d` by default here, but still supports other config roots via `EMACS_CONFIG_ROOT`.*
+* [emacs.d](./emacs.d/) *live config. Link this into `~/.emacs.d` to activate.*
 
 ## Keybindings
 

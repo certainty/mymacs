@@ -63,18 +63,18 @@ If an option doesn't apply the order resumes with the next one.
 ## Documentation-First Requirement
 
 Never guess how Emacs or a package works. Use the documentation that comes with emacs.
-./scripts/emacs-tools can be used to interact with emacs with support for different configuration roots.
+./scripts/emacs-tools can be used to interact with Emacs. `emacs.d` is live config in this repo. `EMACS_CONFIG_ROOT` exists so scripts can also target other config roots when needed.
 
 Use:
 
-- `emacs-tools describe-function <symbol>` -- pass `EMACS_CONFIG_ROOT` to load the profile's packages for third-party symbol inspection
-- `emacs-tools describe-variable <symbol>` -- pass `EMACS_CONFIG_ROOT` to load the profile's packages for third-party variable inspection
-- `emacs-tools find-library <name>` -- pass `EMACS_CONFIG_ROOT` to locate packages installed by the profile
+- `emacs-tools describe-function <symbol>` -- pass `EMACS_CONFIG_ROOT` to load packages from that config root for third-party symbol inspection
+- `emacs-tools describe-variable <symbol>` -- pass `EMACS_CONFIG_ROOT` to load packages from that config root for third-party variable inspection
+- `emacs-tools find-library <name>` -- pass `EMACS_CONFIG_ROOT` to locate packages installed for that config root
 - `emacs-tools manual emacs`
 - `emacs-tools manual elisp`
 - `emacs-tools eval "<elisp>"` -- for checking values or behavior at runtime
 
-When inspecting third-party packages, always set `EMACS_CONFIG_ROOT` to the profile directory so the package is loaded before inspection. Without it, only built-in symbols are available.
+When inspecting third-party packages, always set `EMACS_CONFIG_ROOT` to config root so package is loaded before inspection. In this repo that is usually `emacs.d`. Without it, only built-in symbols are available.
 
 Example:
 

@@ -15,5 +15,4 @@ description: use whenever you change or add lisp code in this configuration. use
   * `native-compile` to make sure the file compiles
   * `byte-compile` to make sure all forms are correct and bound
 
-* make sure you use the correct profile path via `EMACS_CONFIG_ROOT`
-
+* make sure you use correct config root via `EMACS_CONFIG_ROOT` (`emacs.d` in this repo unless intentionally targeting another root)

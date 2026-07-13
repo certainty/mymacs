@@ -26,9 +26,11 @@
 ;;; Customization
 (defvar-keymap my/leader-map :doc "Shared leader keymap.")
 (defvar-keymap my/org-prefix-map :doc "Org leader submap.")
+(defvar-keymap my/denote-prefix-map :doc "Denote leader submap.")
 (defvar-keymap my/pmd-prefix-map :doc "PMD leader submap.")
 
 (keymap-set my/leader-map "o" my/org-prefix-map)
+(keymap-set my/leader-map "j" my/denote-prefix-map)
 (keymap-set my/leader-map "," my/pmd-prefix-map)
 
 (defvar-keymap mymacs-mode-map
@@ -780,7 +782,13 @@
   :bind
   (:map my/org-prefix-map
         ("a" . org-agenda)
-        ("o" . org-capture))
+        ("o" . org-capture)
+        ("l" . my/org-open-logbook)
+        ("r" . my/org-show-latest-logbook-entry)
+        ("t" . my/org-show-today-logbook-entry)
+        ("y" . my/org-show-yesterday-logbook-entry))
+  (:map org-mode-map
+        ("M-g i" . consult-org-heading))
   :custom
   (org-directory (file-truename (expand-file-name my/org-directory)))
   (org-persist-directory (locate-user-emacs-file "org-persist/"))
@@ -852,9 +860,84 @@
      ("d" "Decisions" todod "DECISION")))
   (org-tag-alist my/org-tag-alist)
   :preface
+  (declare-function org-datetree-find-date-create "org-datetree" (d &optional keep-restriction))
+  (declare-function org-fold-show-entry "org-fold" (&optional loc))
+  (declare-function org-fold-show-subtree "org-fold" (&optional loc))
+  (declare-function org-tree-to-indirect-buffer "org" (&optional arg))
   (declare-function org-back-to-heading "org" (&optional invisible-ok))
   (declare-function org-entry-get "org" (epom property &optional inherit literal-nil))
+  (declare-function org-find-exact-headline-in-buffer "org" (heading &optional buffer pos-only))
+  (declare-function org-narrow-to-subtree "org" ())
   (declare-function org-set-property "org" (property value))
+  (defun my/org-logbook-file ()
+    "Return absolute path to logbook file."
+    (expand-file-name "log.org" (expand-file-name my/org-directory)))
+
+  (defun my/org--display-logbook-subtree (name)
+    "Display current subtree in popup named NAME."
+    (org-fold-show-entry)
+    (org-fold-show-subtree)
+    (let ((display-buffer-overriding-action
+           '(display-buffer-in-side-window
+             (side . bottom)
+             (slot . 1)
+             (window-height . 0.3)
+             (window-parameters . ((no-other-window . t)
+                                   (no-delete-other-windows . t))))))
+      (org-tree-to-indirect-buffer))
+    (widen)
+    (rename-buffer name t)
+    (read-only-mode 1))
+
+  (defun my/org-open-logbook ()
+    "Open logbook file."
+    (interactive)
+    (find-file (my/org-logbook-file)))
+
+  (defun my/org--date-headline (time)
+    "Return Org datetree headline for TIME."
+    (format-time-string "%Y-%m-%d %A" time))
+
+  (defun my/org--show-logbook-entry (time)
+    "Show logbook entry for TIME in indirect buffer."
+    (let* ((file (my/org-logbook-file))
+           (month-heading (format-time-string "%Y-%m %B" time))
+           (day-heading (my/org--date-headline time)))
+      (with-current-buffer (find-file-noselect file)
+        (widen)
+        (goto-char (point-min))
+        (unless (org-find-exact-headline-in-buffer month-heading)
+          (user-error "No logbook month entry for %s" month-heading))
+        (goto-char (org-find-exact-headline-in-buffer month-heading))
+        (org-narrow-to-subtree)
+        (unless (org-find-exact-headline-in-buffer day-heading)
+          (widen)
+          (user-error "No logbook entry for %s" day-heading))
+        (goto-char (org-find-exact-headline-in-buffer day-heading))
+        (my/org--display-logbook-subtree (format "*logbook: %s*" day-heading)))))
+
+  (defun my/org-show-today-logbook-entry ()
+    "Show today's logbook entry."
+    (interactive)
+    (my/org--show-logbook-entry (current-time)))
+
+  (defun my/org-show-yesterday-logbook-entry ()
+    "Show yesterday's logbook entry."
+    (interactive)
+    (my/org--show-logbook-entry (time-subtract (current-time) (days-to-time 1))))
+
+  (defun my/org-show-latest-logbook-entry ()
+    "Show latest existing logbook entry."
+    (interactive)
+    (with-current-buffer (find-file-noselect (my/org-logbook-file))
+      (widen)
+      (goto-char (point-max))
+      (unless (re-search-backward "^\\*+ \\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\} .*\\)$" nil t)
+        (user-error "No logbook date entry found"))
+      (org-back-to-heading t)
+      (my/org--display-logbook-subtree
+       (format "*logbook: %s*" (match-string 1)))))
+
   (defun my/org-set-category ()
     "Set the CATEGORY property on the current Org heading."
     (interactive)
@@ -910,8 +993,10 @@
   :ensure t
   :hook (dired-mode . denote-dired-mode)
   :bind
-  (:map my/leader-map
-        ("j" . denote))
+  (:map my/denote-prefix-map
+        ("j" . denote)
+        ("f" . my/denote-find-file)
+        ("/" . my/denote-ripgrep))
   :custom
   (denote-directory my/denote-directory)
   (denote-save-buffers nil)
@@ -924,7 +1009,28 @@
   (denote-excluded-keywords-regexp nil)
   (denote-rename-confirmations '(rewrite-front-matter modify-file-name))
   (denote-date-prompt-use-org-read-date t)
-  (denote-backlinks-show-context t))
+  (denote-backlinks-show-context t)
+  :preface
+  (defun my/denote-root ()
+    "Return the configured Denote directory."
+    (unless (and (stringp my/denote-directory)
+                 (not (string-empty-p my/denote-directory)))
+      (user-error "Set `my/denote-directory' before using Denote search"))
+    (file-name-as-directory (expand-file-name my/denote-directory)))
+
+  (defun my/denote-project ()
+    "Return a transient project for the Denote directory."
+    (project-current "Select Denote directory: " (my/denote-root)))
+
+  (defun my/denote-find-file ()
+    "Find a file in the Denote directory."
+    (interactive)
+    (project-find-file-in nil (list (my/denote-root)) (my/denote-project)))
+
+  (defun my/denote-ripgrep ()
+    "Search across files in the Denote directory."
+    (interactive)
+    (consult-ripgrep (my/denote-root))))
 
 
 
