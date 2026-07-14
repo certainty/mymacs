@@ -1297,7 +1297,10 @@
      (conf-mode . normal)
      (fundamental-mode . normal)
      (help-mode . motion)))
-  
+  :init
+  (setq meow-cursor-type-normal 'box
+        meow-cursor-type-insert '(bar . 2)
+        meow-cursor-type-motion 'hollow)
   :preface
   (defun my/meow-escape ()
     (interactive)
