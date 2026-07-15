@@ -744,7 +744,7 @@
   (:map my/leader-map
         ("p" . project-switch-project)
         ("v" . project-vc-dir)
-        ("c" . project-compile))
+        (";" . project-compile))
   (:map goto-map
         ("f" . project-find-file)
         ("P" . project-switch-project))
