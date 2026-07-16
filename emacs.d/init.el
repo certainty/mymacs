@@ -496,25 +496,19 @@
   (emacs-lisp-mode . my/cape-elisp-completion)
   (text-mode . my/cape-text-completion)
   :preface
-  (defun my/cape-default-capfs ()
-    (list #'cape-file #'cape-dabbrev))
-
-  (defun my/cape-extend-capfs (&rest capfs)
-    (setq-local completion-at-point-functions
-                (append capfs (default-value 'completion-at-point-functions))))
+  (defun my/cape-add-local-capf (capf)
+    (add-hook 'completion-at-point-functions capf t t))
 
   (defun my/cape-text-completion ()
-    (my/cape-extend-capfs
+    (my/cape-add-local-capf
      (cape-capf-super #'cape-dict)))
-  
+
   (defun my/cape-elisp-completion ()
-    (my/cape-extend-capfs
+    (my/cape-add-local-capf
      (cape-capf-super #'cape-elisp-block #'cape-elisp-symbol)))
   :init
-  (setq-default completion-at-point-functions
-                (append
-                 (my/cape-default-capfs)
-                 (default-value 'completion-at-point-functions))))
+  (add-hook 'completion-at-point-functions #'cape-file t)
+  (add-hook 'completion-at-point-functions #'cape-dabbrev t))
 
 ;;; Editing
 
