@@ -1096,7 +1096,7 @@
 
 (use-package treesit
   :custom
-  (treesit-auto-install-grammar t)
+  (treesit-auto-install-grammar 'ask)
   (treesit-enabled-modes t)
   (treesit-font-lock-level 4)
   :config
