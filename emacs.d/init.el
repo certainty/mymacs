@@ -67,6 +67,9 @@
 (defcustom my/org-tag-alist nil "The tag quick keys" :type '(alist :key-type string :value-type character))
 (defcustom my/pmd-enabled nil "Enable consult-pmd" :type 'boolean :group 'mymacs)
 (defcustom my/pmd-base-url nil "The pmd url" :type 'string :group 'mymacs)
+(defcustom my/agent-shell-enabled nil "Enable agent-shell." :type 'boolean :group 'mymacs)
+(defcustom my/agent-shell-codex-model "gpt-5.4" "Default agent-shell Codex model." :type '(choice (const nil) string) :group 'mymacs)
+(defcustom my/agent-shell-codex-effort "medium" "Default agent-shell Codex effort." :type '(choice (const nil) string) :group 'mymacs)
 (defcustom my/denote-directory "" "The path to my notes" :type 'string :group 'mymacs)
 (defcustom my/denote-keywords nil "List of keywords for denote" :type '(repeat string) :group 'mymacs)
 
@@ -242,7 +245,7 @@
 ;;; default font
   (set-face-attribute
    'default nil
-   :font my/font
+   :family my/font
    :height my/font-height
    :weight my/font-weight)
 
@@ -1243,6 +1246,12 @@
         ("c" . +pmd-cache-clear))
   :custom
   (pmd-base-url my/pmd-base-url)))
+
+;;;; agent-shell
+(when my/agent-shell-enabled
+  (use-package my-agent-shell
+    :demand t
+    :load-path "user-lisp"))
 
 ;;;; modal editing
 (use-package embrace
