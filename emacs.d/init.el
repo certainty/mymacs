@@ -149,7 +149,7 @@
                ("n" . forward-line)
                ("p" . previous-line))
   (:repeat-map my/mark-repeat-map
-               ("<" . pop-to-marnk-command)
+               ("<" . pop-to-mark-command)
                ("m" . pop-global-mark))
   
   :custom
