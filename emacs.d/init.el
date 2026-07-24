@@ -68,8 +68,6 @@
 (defcustom my/pmd-enabled nil "Enable consult-pmd" :type 'boolean :group 'mymacs)
 (defcustom my/pmd-base-url nil "The pmd url" :type 'string :group 'mymacs)
 (defcustom my/agent-shell-enabled nil "Enable agent-shell." :type 'boolean :group 'mymacs)
-(defcustom my/agent-shell-codex-model "gpt-5.4" "Default agent-shell Codex model." :type '(choice (const nil) string) :group 'mymacs)
-(defcustom my/agent-shell-codex-effort "medium" "Default agent-shell Codex effort." :type '(choice (const nil) string) :group 'mymacs)
 (defcustom my/denote-directory "" "The path to my notes" :type 'string :group 'mymacs)
 (defcustom my/denote-keywords nil "List of keywords for denote" :type '(repeat string) :group 'mymacs)
 
@@ -1248,10 +1246,18 @@
   (pmd-base-url my/pmd-base-url)))
 
 ;;;; agent-shell
-(when my/agent-shell-enabled
-  (use-package my-agent-shell
-    :demand t
-    :load-path "user-lisp"))
+(use-package my-agent-shell
+  :if my/agent-shell-enabled
+  :demand t
+  :load-path "user-lisp"
+  :commands (+vm-agent-shell +vm-agent-shell-command +vm-agent-shell-check)
+  :custom
+  (my-agent-shell-codex-model "gpt-5.4")
+  (my-agent-shell-codex-effort "medium")
+  (my-agent-shell-lima-instance "agent-vm")
+  (my-agent-shell-lima-global-flags '("--tty=false"))
+  (my-agent-shell-lima-flags '("--start"))
+  (my-agent-shell-path-map '(("~/code" . "/home/dev/code"))))
 
 ;;;; modal editing
 (use-package embrace
