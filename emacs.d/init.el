@@ -1197,6 +1197,11 @@
   :custom
   (elixir-ts-indent-offset 2))
 
+;;;; ocaml
+(use-package neocaml
+  :ensure t
+  :pin "melpa")
+
 (use-package heex-ts-mode
   :mode "\\.[hl]?eex\\'"
   :hook (heex-ts-mode . eglot-ensure))
