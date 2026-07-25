@@ -104,7 +104,7 @@ After every meaningful change, run validation commands.
 Required checks:
 
 ```bash id="jlwmm1"
-EMACS_CONFIG_ROOT=emacs.d ./script/emacs-tools  doctor
+EMACS_CONFIG_ROOT=emacs.d ./scripts/emacs-tools doctor
 ```
 
 For targeted checks:
@@ -113,6 +113,9 @@ For targeted checks:
 EMACS_CONFIG_ROOT=emacs.d ./scripts/emacs-tools check-parens path/to/file.el
 EMACS_CONFIG_ROOT=emacs.d ./scripts/emacs-tools byte-compile path/to/file.el
 ```
+
+After byte-compilation or `doctor`, delete generated `.elc` files such as
+`emacs.d/init.elc`. Stale bytecode can hide source changes and cause load-order bugs.
 
 ---
 

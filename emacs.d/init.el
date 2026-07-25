@@ -67,6 +67,7 @@
 (defcustom my/org-tag-alist nil "The tag quick keys" :type '(alist :key-type string :value-type character))
 (defcustom my/pmd-enabled nil "Enable consult-pmd" :type 'boolean :group 'mymacs)
 (defcustom my/pmd-base-url nil "The pmd url" :type 'string :group 'mymacs)
+(defcustom my/agent-shell-enabled nil "Enable agent-shell." :type 'boolean :group 'mymacs)
 (defcustom my/denote-directory "" "The path to my notes" :type 'string :group 'mymacs)
 (defcustom my/denote-keywords nil "List of keywords for denote" :type '(repeat string) :group 'mymacs)
 
@@ -149,7 +150,7 @@
                ("n" . forward-line)
                ("p" . previous-line))
   (:repeat-map my/mark-repeat-map
-               ("<" . pop-to-marnk-command)
+               ("<" . pop-to-mark-command)
                ("m" . pop-global-mark))
   
   :custom
@@ -242,7 +243,7 @@
 ;;; default font
   (set-face-attribute
    'default nil
-   :font my/font
+   :family my/font
    :height my/font-height
    :weight my/font-weight)
 
@@ -1248,6 +1249,20 @@
         ("c" . +pmd-cache-clear))
   :custom
   (pmd-base-url my/pmd-base-url)))
+
+;;;; agent-shell
+(use-package my-agent-shell
+  :if my/agent-shell-enabled
+  :demand t
+  :load-path "user-lisp"
+  :commands (+vm-agent-shell +vm-agent-shell-command +vm-agent-shell-check)
+  :custom
+  (my-agent-shell-codex-model "gpt-5.4")
+  (my-agent-shell-codex-effort "medium")
+  (my-agent-shell-lima-instance "agent-vm")
+  (my-agent-shell-lima-global-flags '("--tty=false"))
+  (my-agent-shell-lima-flags '("--start"))
+  (my-agent-shell-path-map '(("~/code" . "/home/dev/code"))))
 
 ;;;; modal editing
 (use-package embrace
