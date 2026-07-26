@@ -1070,14 +1070,17 @@
   (add-to-list 'eglot-server-programs
                '((ruby-mode ruby-ts-mode)
                  "ruby-lsp"))
-  (add-to-list 'eglot-server-programs
-               '((elixir-mode elixir-ts-mode heex-ts-mode)
-                 "expert" "--stdio"))
-  (add-to-list 'eglot-server-programs
-               '(scala-ts-mode
-                 "metals"
-                 :initializationOptions
-                 (:isHttpEnabled t))))
+   (add-to-list 'eglot-server-programs
+                '((elixir-mode elixir-ts-mode heex-ts-mode)
+                  "expert" "--stdio"))
+   (add-to-list 'eglot-server-programs
+                '((racket-mode racket-hash-lang-mode)
+                  "racket-langserver"))
+   (add-to-list 'eglot-server-programs
+                '(scala-ts-mode
+                  "metals"
+                  :initializationOptions
+                  (:isHttpEnabled t))))
 
 ;;; snippets
 ;; these also act as a provider for eglot
@@ -1139,6 +1142,16 @@
   :hook (go-ts-mode . eglot-ensure)
   :init
   (setq-default go-ts-mode-indent-offset 4))
+
+;;;; racket
+(use-package racket-mode
+  :ensure t
+  :pin "nongnu"
+  :mode (("\\.rkt\\'" . racket-mode)
+         ("\\.rktd\\'" . racket-mode)
+         ("\\.scrbl\\'" . racket-hash-lang-mode))
+  :hook ((racket-mode . eglot-ensure)
+         (racket-hash-lang-mode . eglot-ensure)))
 
 ;;;; templates
 (use-package mmm-mode
