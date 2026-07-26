@@ -1074,9 +1074,6 @@
                 '((elixir-mode elixir-ts-mode heex-ts-mode)
                   "expert" "--stdio"))
    (add-to-list 'eglot-server-programs
-                '((racket-mode racket-hash-lang-mode)
-                  "racket-langserver"))
-   (add-to-list 'eglot-server-programs
                 '(scala-ts-mode
                   "metals"
                   :initializationOptions
@@ -1150,8 +1147,7 @@
   :mode (("\\.rkt\\'" . racket-mode)
          ("\\.rktd\\'" . racket-mode)
          ("\\.scrbl\\'" . racket-hash-lang-mode))
-  :hook ((racket-mode . eglot-ensure)
-         (racket-hash-lang-mode . eglot-ensure)))
+  :hook (racket-mode . racket-xp-mode))
 
 ;;;; templates
 (use-package mmm-mode
