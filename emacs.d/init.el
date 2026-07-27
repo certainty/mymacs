@@ -242,15 +242,16 @@
   (setq-default standard-indent 2)
   (setq-default tab-width 2)
 
+;;;; load theme
+  (load-theme my/theme)
+
 ;;; default font
   (set-face-attribute
    'default nil
-   :family my/font
+   :font my/font
    :height my/font-height
    :weight my/font-weight)
-
-;;;; load theme
-  (load-theme my/theme)
+  
 
 ;;;; modeline
   (dolist (m '(mode-line mode-line-active mode-line-inactive))
@@ -657,8 +658,6 @@
         (mode . flymake-diagnostics-buffer-mode)
         (mode . xref--xref-buffer-mode))))))
   :preface
-  (declare-function ibuffer-auto-mode "ibuf-ext" (&optional arg))
-  (declare-function ibuffer-switch-to-saved-filter-groups "ibuf-ext" (name))
   (defun my/ibuffer-setup ()
     "Apply stable defaults to Ibuffer buffers."
     (require 'ibuf-ext)
@@ -867,15 +866,6 @@
      ("d" "Decisions" todod "DECISION")))
   (org-tag-alist my/org-tag-alist)
   :preface
-  (declare-function org-datetree-find-date-create "org-datetree" (d &optional keep-restriction))
-  (declare-function org-fold-show-entry "org-fold" (&optional loc))
-  (declare-function org-fold-show-subtree "org-fold" (&optional loc))
-  (declare-function org-tree-to-indirect-buffer "org" (&optional arg))
-  (declare-function org-back-to-heading "org" (&optional invisible-ok))
-  (declare-function org-entry-get "org" (epom property &optional inherit literal-nil))
-  (declare-function org-find-exact-headline-in-buffer "org" (heading &optional buffer pos-only))
-  (declare-function org-narrow-to-subtree "org" ())
-  (declare-function org-set-property "org" (property value))
   (defun my/org-logbook-file ()
     "Return absolute path to logbook file."
     (expand-file-name "log.org" (expand-file-name my/org-directory)))
@@ -1083,14 +1073,14 @@
   (add-to-list 'eglot-server-programs
                '((ruby-mode ruby-ts-mode)
                  "ruby-lsp"))
-  (add-to-list 'eglot-server-programs
-               '((elixir-mode elixir-ts-mode heex-ts-mode)
-                 "expert" "--stdio"))
-  (add-to-list 'eglot-server-programs
-               '(scala-ts-mode
-                 "metals"
-                 :initializationOptions
-                 (:isHttpEnabled t))))
+   (add-to-list 'eglot-server-programs
+                '((elixir-mode elixir-ts-mode heex-ts-mode)
+                  "expert" "--stdio"))
+   (add-to-list 'eglot-server-programs
+                '(scala-ts-mode
+                  "metals"
+                  :initializationOptions
+                  (:isHttpEnabled t))))
 
 ;;; snippets
 ;; these also act as a provider for eglot
@@ -1153,6 +1143,15 @@
   :init
   (setq-default go-ts-mode-indent-offset 4))
 
+;;;; racket
+(use-package racket-mode
+  :ensure t
+  :pin "nongnu"
+  :mode (("\\.rkt\\'" . racket-mode)
+         ("\\.rktd\\'" . racket-mode)
+         ("\\.scrbl\\'" . racket-hash-lang-mode))
+  :hook (racket-mode . racket-xp-mode))
+
 ;;;; templates
 (use-package mmm-mode
   :ensure t
@@ -1200,6 +1199,11 @@
   :hook (elixir-ts-mode . eglot-ensure)
   :custom
   (elixir-ts-indent-offset 2))
+
+;;;; ocaml
+(use-package neocaml
+  :ensure t
+  :pin "melpa")
 
 (use-package heex-ts-mode
   :mode "\\.[hl]?eex\\'"
@@ -1252,7 +1256,7 @@
 (use-package my-agent-shell
   :if my/agent-shell-enabled
   :demand t
-  :load-path "user-lisp"
+  :load-path "optional"
   :commands (+vm-agent-shell +vm-agent-shell-command +vm-agent-shell-check)
   :bind
   (:map my/ai-prefix-map
@@ -1418,9 +1422,9 @@
      '("E" . meow-next-symbol)
      '("<backspace>" . meow-backspace)
      '("DEL" . meow-backspace)
-     '("C-h" . meow-backspace)
+     '("z" . meow-grab)
+     '("Z" . meow-sync-grab)
      '("<escape>" . my/meow-escape)))
-  
   :config
   (keymap-set my/leader-map "f" #'project-find-file)
   (keymap-set my/leader-map "F" #'find-file)
@@ -1435,6 +1439,5 @@
   (keymap-set my/leader-map "r" #'eglot-rename)
   (keymap-set my/leader-map "k" #'eldoc)
   (keymap-set my/leader-map "h" #'xref-find-references)
-  (meow-thing-register 'word 'word 'word)
   (my/meow-setup)
   (meow-global-mode 1))

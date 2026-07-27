@@ -2,8 +2,9 @@
 
 ;;; Code:
 
-(require 'agent-shell)
-(require 'agent-shell-openai)
+(when my/agent-shell-enabled
+  (require 'agent-shell)
+  (require 'agent-shell-openai))
 (require 'map)
 (require 'seq)
 (require 'subr-x)
@@ -145,10 +146,11 @@
   (+vm-agent-shell-command)
   (agent-shell-openai-start-codex))
 
-(setopt agent-shell-openai-default-model-id my-agent-shell-codex-model
-        agent-shell-openai-default-session-mode-id my-agent-shell-codex-session-mode
-        agent-shell-command-prefix #'my-agent-shell--command-prefix
-        agent-shell-path-resolver-function #'my-agent-shell-translate-path)
+(when my/agent-shell-enabled
+  (setopt agent-shell-openai-default-model-id my-agent-shell-codex-model
+          agent-shell-openai-default-session-mode-id my-agent-shell-codex-effort
+          agent-shell-command-prefix #'my-agent-shell--command-prefix
+          agent-shell-path-resolver-function #'my-agent-shell-translate-path))
 
 (provide 'my-agent-shell)
 
