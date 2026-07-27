@@ -28,10 +28,12 @@
 (defvar-keymap my/org-prefix-map :doc "Org leader submap.")
 (defvar-keymap my/denote-prefix-map :doc "Denote leader submap.")
 (defvar-keymap my/pmd-prefix-map :doc "PMD leader submap.")
+(defvar-keymap my/ai-prefix-map :doc "AI leader submap.")
 
 (keymap-set my/leader-map "o" my/org-prefix-map)
 (keymap-set my/leader-map "j" my/denote-prefix-map)
 (keymap-set my/leader-map "," my/pmd-prefix-map)
+(keymap-set my/leader-map "i" my/ai-prefix-map)
 
 (defvar-keymap mymacs-mode-map
   :doc "mymacs global keys"
@@ -359,6 +361,7 @@
      ("^\\*vc-dir\\*" . ,(my/side-window-config 'special-mode))
      ("\\*xref\\*" . ,(my/bottom-window-config 'special-mode))
      ("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\)\\*" . ,(my/side-window-config 'special-mode))
+     ((derived-mode . agent-shell-mode) . ,(my/side-window-config 'agent-shell-mode))
      (".*"
       (display-buffer-same-window
        display-buffer-reuse-window
@@ -1251,9 +1254,14 @@
   :demand t
   :load-path "user-lisp"
   :commands (+vm-agent-shell +vm-agent-shell-command +vm-agent-shell-check)
+  :bind
+  (:map my/ai-prefix-map
+        ("a" . +vm-agent-shell)
+        ("c" . +vm-agent-shell-command)
+        ("v" . +vm-agent-shell-check))
   :custom
   (my-agent-shell-codex-model "gpt-5.4")
-  (my-agent-shell-codex-effort "medium")
+  (my-agent-shell-codex-session-mode "agent")
   (my-agent-shell-lima-instance "agent-vm")
   (my-agent-shell-lima-global-flags '("--tty=false"))
   (my-agent-shell-lima-flags '("--start"))
@@ -1393,6 +1401,7 @@
      '("p" . meow-yank)
      '("P" . meow-pop-selection)
      '("/" . my/meow-search-forward)
+     '("s" . meow-swap-grab)
      '("t" . meow-till)
      '("T" . my/meow-till-backward)
      '("u" . meow-undo)
@@ -1402,6 +1411,8 @@
      '("x" . meow-line)
      '("X" . meow-delete)
      '("y" . meow-save)
+     '("z" . meow-grab)
+     '("Z" . meow-sync-grab)
      '("W" . meow-mark-symbol)
      '("B" . meow-back-symbol)
      '("E" . meow-next-symbol)

@@ -21,8 +21,8 @@
            (setopt agent-shell-openai-default-model-id value)))
   :group 'my-agent-shell)
 
-(defcustom my-agent-shell-codex-effort "medium"
-  "Default agent-shell Codex effort."
+(defcustom my-agent-shell-codex-session-mode "agent"
+  "Default agent-shell Codex session mode."
   :type '(choice (const nil) string)
   :set (lambda (symbol value)
          (set-default symbol value)
@@ -146,7 +146,7 @@
   (agent-shell-openai-start-codex))
 
 (setopt agent-shell-openai-default-model-id my-agent-shell-codex-model
-        agent-shell-openai-default-session-mode-id my-agent-shell-codex-effort
+        agent-shell-openai-default-session-mode-id my-agent-shell-codex-session-mode
         agent-shell-command-prefix #'my-agent-shell--command-prefix
         agent-shell-path-resolver-function #'my-agent-shell-translate-path)
 
