@@ -501,19 +501,26 @@
   (emacs-lisp-mode . my/cape-elisp-completion)
   (text-mode . my/cape-text-completion)
   :preface
-  (defun my/cape-add-local-capf (capf)
-    (add-hook 'completion-at-point-functions capf t t))
+  (defun my/cape-set-local-capfs (&rest capfs)
+    (let ((locals (when (local-variable-p 'completion-at-point-functions)
+                    (seq-remove (lambda (capf)
+                                  (or (eq capf t)
+                                      (memq capf capfs)))
+                                completion-at-point-functions))))
+      (setq-local completion-at-point-functions
+                  (append capfs locals (list t)))))
 
   (defun my/cape-text-completion ()
-    (my/cape-add-local-capf
-     (cape-capf-super #'cape-dict)))
+    (my/cape-set-local-capfs #'cape-dict))
 
   (defun my/cape-elisp-completion ()
-    (my/cape-add-local-capf
-     (cape-capf-super #'cape-elisp-block #'cape-elisp-symbol)))
+    (my/cape-set-local-capfs
+     (cape-wrap-nonexclusive
+      (cape-capf-super #'cape-elisp-block #'cape-elisp-symbol))))
   :init
-  (add-hook 'completion-at-point-functions #'cape-file t)
-  (add-hook 'completion-at-point-functions #'cape-dabbrev t))
+  (setq-default completion-at-point-functions
+                (seq-uniq (append (default-value 'completion-at-point-functions)
+                                  (list #'cape-file #'cape-dabbrev)))))
 
 ;;; Editing
 
@@ -1223,6 +1230,11 @@
 
 (use-package css-mode
   :mode ("\\.css\\'" "\\.css\\.erb\\'" "\\.css\\.gotmpl\\'"))
+
+(use-package adoc-mode
+  :ensure t
+  :pin "nongnu"
+  :hook (adoc-mode . flymake-mode))
 
 ;;;; mise
 (use-package mise

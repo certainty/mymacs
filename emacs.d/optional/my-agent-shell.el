@@ -148,7 +148,7 @@
 
 (when my/agent-shell-enabled
   (setopt agent-shell-openai-default-model-id my-agent-shell-codex-model
-          agent-shell-openai-default-session-mode-id my-agent-shell-codex-effort
+          agent-shell-openai-default-session-mode-id my-agent-shell-codex-session-mode
           agent-shell-command-prefix #'my-agent-shell--command-prefix
           agent-shell-path-resolver-function #'my-agent-shell-translate-path))
 
