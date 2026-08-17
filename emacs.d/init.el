@@ -382,7 +382,8 @@
   (dolist (f '(window-divider
                window-divider-first-pixel
                window-divider-last-pixel))
-    (set-face-foreground f "#4f5f73"))
+    (set-face-attribute f nil :foreground "#4f5f73" :background "#4f5f73"))
+  (set-face-attribute 'vertical-border nil :foreground "#4f5f73" :background "#4f5f73")
   :init
   (window-divider-mode))
 
