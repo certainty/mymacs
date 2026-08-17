@@ -379,8 +379,9 @@
       (delete-other-windows window)))
 
   :config
-  (set-face-foreground 'window-divider (face-background 'default))
-  (dolist (f '(window-divider-first-pixel window-divider-last-pixel))
+  (dolist (f '(window-divider
+               window-divider-first-pixel
+               window-divider-last-pixel))
     (set-face-foreground f "#4f5f73"))
   :init
   (window-divider-mode))
