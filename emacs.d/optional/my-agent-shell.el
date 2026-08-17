@@ -39,6 +39,11 @@
            (setopt agent-shell-openai-default-session-mode-id value)))
   :group 'my-agent-shell)
 
+(defcustom my-agent-shell-use-lima t
+  "Run Codex through Lima instead of directly."
+  :type 'boolean
+  :group 'my-agent-shell)
+
 (defcustom my-agent-shell-lima-instance "agent-vm"
   "Lima instance used for agent-shell Codex."
   :type 'string
@@ -101,10 +106,12 @@
    command))
 
 (defun my-agent-shell--codex-command ()
-  "Return command used to start Codex ACP in Lima."
-  (my-agent-shell--lima-command
-   (my-agent-shell-translate-path (agent-shell-cwd))
-   agent-shell-openai-codex-acp-command))
+  "Return command used to start Codex ACP."
+  (if my-agent-shell-use-lima
+      (my-agent-shell--lima-command
+       (my-agent-shell-translate-path (agent-shell-cwd))
+       agent-shell-openai-codex-acp-command)
+    agent-shell-openai-codex-acp-command))
 
 (defun my-agent-shell--quote-shell-argument (argument)
   "Quote ARGUMENT for readable POSIX shell display."
@@ -119,8 +126,9 @@
   (string-join (mapcar #'my-agent-shell--quote-shell-argument command) " "))
 
 (defun my-agent-shell--command-prefix (buffer)
-  "Return Lima command prefix for Codex BUFFER."
-  (when (my-agent-shell--codex-buffer-p buffer)
+  "Return Lima command prefix for Codex BUFFER when configured."
+  (when (and my-agent-shell-use-lima
+             (my-agent-shell--codex-buffer-p buffer))
     (butlast (my-agent-shell--codex-command)
              (length agent-shell-openai-codex-acp-command))))
 
@@ -157,8 +165,8 @@
 (when my/agent-shell-enabled
   (setopt agent-shell-openai-default-model-id my-agent-shell-codex-model
           agent-shell-openai-default-session-mode-id my-agent-shell-codex-session-mode
-          agent-shell-command-prefix #'my-agent-shell--command-prefix
-          agent-shell-path-resolver-function #'my-agent-shell-translate-path))
+          agent-shell-command-prefix (when my-agent-shell-use-lima #'my-agent-shell--command-prefix)
+          agent-shell-path-resolver-function (when my-agent-shell-use-lima #'my-agent-shell-translate-path)))
 
 (provide 'my-agent-shell)
 
