@@ -2,8 +2,10 @@
 
 ;;; Code:
 
-(when my/agent-shell-enabled
-  (require 'agent-shell)
+(use-package agent-shell
+  :if my/agent-shell-enabled
+  :ensure t
+  :config
   (require 'agent-shell-openai))
 (require 'map)
 (require 'seq)
