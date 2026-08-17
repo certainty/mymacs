@@ -229,8 +229,10 @@
   :init
 ;;; modes
   (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
+  (when (fboundp 'tool-bar-mode)
+    (tool-bar-mode -1))
+  (when (fboundp 'scroll-bar-mode)
+    (scroll-bar-mode -1))
   (global-hl-line-mode -1)
   (repeat-mode)
   (delete-selection-mode)
