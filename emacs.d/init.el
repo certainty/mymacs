@@ -1106,7 +1106,7 @@
   (treesit-font-lock-level 4)
   :config
   (add-to-list 'treesit-language-source-alist
-               '(scala "https://github.com/tree-sitter/tree-sitter-scala")))
+               '(scala "https://github.com/tree-sitter/tree-sitter-scala" "v0.22.5")))
 
 ;;;; diagnostics
 (use-package flymake
