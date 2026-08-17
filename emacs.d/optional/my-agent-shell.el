@@ -5,6 +5,7 @@
 (use-package agent-shell
   :if my/agent-shell-enabled
   :ensure t
+  :pin "melpa"
   :config
   (require 'agent-shell-openai))
 (require 'map)
