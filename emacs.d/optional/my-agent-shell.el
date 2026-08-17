@@ -59,9 +59,7 @@
 
 (when my/agent-shell-enabled
   (setopt agent-shell-openai-default-model-id my-agent-shell-codex-model
-          agent-shell-openai-default-session-mode-id my-agent-shell-codex-session-mode
-          agent-shell-command-prefix nil
-          agent-shell-path-resolver-function nil))
+          agent-shell-openai-default-session-mode-id my-agent-shell-codex-session-mode))
 
 (provide 'my-agent-shell)
 
