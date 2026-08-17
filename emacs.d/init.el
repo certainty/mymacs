@@ -1273,19 +1273,15 @@
   :if my/agent-shell-enabled
   :demand t
   :load-path "optional"
-  :commands (+vm-agent-shell +vm-agent-shell-command +vm-agent-shell-check)
+  :commands (+agent-shell +agent-shell-command +agent-shell-check)
   :bind
   (:map my/ai-prefix-map
-        ("a" . +vm-agent-shell)
-        ("c" . +vm-agent-shell-command)
-        ("v" . +vm-agent-shell-check))
+        ("a" . +agent-shell)
+        ("c" . +agent-shell-command)
+        ("v" . +agent-shell-check))
   :custom
   (my-agent-shell-codex-model "gpt-5.4")
-  (my-agent-shell-codex-session-mode "agent")
-  (my-agent-shell-lima-instance "agent-vm")
-  (my-agent-shell-lima-global-flags '("--tty=false"))
-  (my-agent-shell-lima-flags '("--start"))
-  (my-agent-shell-path-map '(("~/code" . "/home/dev/code"))))
+  (my-agent-shell-codex-session-mode "agent"))
 
 ;;;; modal editing
 (use-package embrace
