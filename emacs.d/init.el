@@ -379,11 +379,16 @@
       (delete-other-windows window)))
 
   :config
-  (dolist (f '(window-divider
-               window-divider-first-pixel
-               window-divider-last-pixel))
-    (set-face-attribute f nil :foreground "#4f5f73" :background "#4f5f73"))
-  (set-face-attribute 'vertical-border nil :foreground "#4f5f73" :background "#4f5f73")
+  (defun my/configure-terminal-window-dividers (frame)
+    "Render continuous window dividers on terminal frames."
+    (unless (display-graphic-p frame)
+      (dolist (face '(window-divider
+                      window-divider-first-pixel
+                      window-divider-last-pixel
+                      vertical-border))
+        (set-face-attribute face frame :foreground "#4f5f73" :background "#4f5f73"))))
+  (add-hook 'after-make-frame-functions #'my/configure-terminal-window-dividers)
+  (my/configure-terminal-window-dividers (selected-frame))
   :init
   (window-divider-mode))
 
