@@ -379,8 +379,9 @@
       (delete-other-windows window)))
 
   :config
-  (defun my/configure-terminal-window-dividers (frame)
+  (defun my/configure-terminal-window-dividers (&optional frame)
     "Render continuous window dividers on terminal frames."
+    (setq frame (or frame (selected-frame)))
     (unless (display-graphic-p frame)
       (dolist (face '(window-divider
                       window-divider-first-pixel
@@ -388,7 +389,8 @@
                       vertical-border))
         (set-face-attribute face frame :foreground "#4f5f73" :background "#4f5f73"))))
   (add-hook 'after-make-frame-functions #'my/configure-terminal-window-dividers)
-  (my/configure-terminal-window-dividers (selected-frame))
+  (add-hook 'emacs-startup-hook #'my/configure-terminal-window-dividers)
+  (my/configure-terminal-window-dividers)
   :init
   (window-divider-mode))
 
