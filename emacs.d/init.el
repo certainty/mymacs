@@ -229,8 +229,10 @@
   :init
 ;;; modes
   (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
+  (when (fboundp 'tool-bar-mode)
+    (tool-bar-mode -1))
+  (when (fboundp 'scroll-bar-mode)
+    (scroll-bar-mode -1))
   (global-hl-line-mode -1)
   (repeat-mode)
   (delete-selection-mode)
@@ -377,9 +379,19 @@
       (delete-other-windows window)))
 
   :config
-  (set-face-foreground 'window-divider (face-background 'default))
-  (dolist (f '(window-divider-first-pixel window-divider-last-pixel))
-    (set-face-foreground f "#4f5f73"))
+  (defun my/configure-window-dividers (&optional frame)
+    "Configure window dividers for FRAME's display type."
+    (setq frame (or frame (selected-frame)))
+    (dolist (face '(window-divider
+                    window-divider-first-pixel
+                    window-divider-last-pixel
+                    vertical-border))
+      (if (display-graphic-p frame)
+          (set-face-attribute face frame :foreground 'unspecified :background 'unspecified)
+        (set-face-attribute face frame :foreground "#4f5f73" :background "#4f5f73"))))
+  (add-hook 'window-setup-hook #'my/configure-window-dividers)
+  (add-hook 'after-make-frame-functions #'my/configure-window-dividers)
+  (my/configure-window-dividers)
   :init
   (window-divider-mode))
 
@@ -501,19 +513,26 @@
   (emacs-lisp-mode . my/cape-elisp-completion)
   (text-mode . my/cape-text-completion)
   :preface
-  (defun my/cape-add-local-capf (capf)
-    (add-hook 'completion-at-point-functions capf t t))
+  (defun my/cape-set-local-capfs (&rest capfs)
+    (let ((locals (when (local-variable-p 'completion-at-point-functions)
+                    (seq-remove (lambda (capf)
+                                  (or (eq capf t)
+                                      (memq capf capfs)))
+                                completion-at-point-functions))))
+      (setq-local completion-at-point-functions
+                  (append capfs locals (list t)))))
 
   (defun my/cape-text-completion ()
-    (my/cape-add-local-capf
-     (cape-capf-super #'cape-dict)))
+    (my/cape-set-local-capfs #'cape-dict))
 
   (defun my/cape-elisp-completion ()
-    (my/cape-add-local-capf
-     (cape-capf-super #'cape-elisp-block #'cape-elisp-symbol)))
+    (my/cape-set-local-capfs
+     (cape-wrap-nonexclusive
+      (cape-capf-super #'cape-elisp-block #'cape-elisp-symbol))))
   :init
-  (add-hook 'completion-at-point-functions #'cape-file t)
-  (add-hook 'completion-at-point-functions #'cape-dabbrev t))
+  (setq-default completion-at-point-functions
+                (seq-uniq (append (default-value 'completion-at-point-functions)
+                                  (list #'cape-file #'cape-dabbrev)))))
 
 ;;; Editing
 
@@ -1095,7 +1114,7 @@
   (treesit-font-lock-level 4)
   :config
   (add-to-list 'treesit-language-source-alist
-               '(scala "https://github.com/tree-sitter/tree-sitter-scala")))
+               '(scala "https://github.com/tree-sitter/tree-sitter-scala" "v0.22.5")))
 
 ;;;; diagnostics
 (use-package flymake
@@ -1226,6 +1245,11 @@
 (use-package css-mode
   :mode ("\\.css\\'" "\\.css\\.erb\\'" "\\.css\\.gotmpl\\'"))
 
+(use-package adoc-mode
+  :ensure t
+  :pin "nongnu"
+  :hook (adoc-mode . flymake-mode))
+
 ;;;; mise
 (use-package mise
   :ensure t
@@ -1259,19 +1283,15 @@
   :if my/agent-shell-enabled
   :demand t
   :load-path "optional"
-  :commands (+vm-agent-shell +vm-agent-shell-command +vm-agent-shell-check)
+  :commands (+agent-shell +agent-shell-command +agent-shell-check)
   :bind
   (:map my/ai-prefix-map
-        ("a" . +vm-agent-shell)
-        ("c" . +vm-agent-shell-command)
-        ("v" . +vm-agent-shell-check))
+        ("a" . +agent-shell)
+        ("c" . +agent-shell-command)
+        ("v" . +agent-shell-check))
   :custom
   (my-agent-shell-codex-model "gpt-5.4")
-  (my-agent-shell-codex-session-mode "agent")
-  (my-agent-shell-lima-instance "agent-vm")
-  (my-agent-shell-lima-global-flags '("--tty=false"))
-  (my-agent-shell-lima-flags '("--start"))
-  (my-agent-shell-path-map '(("~/code" . "/home/dev/code"))))
+  (my-agent-shell-codex-session-mode "agent"))
 
 ;;;; modal editing
 (use-package embrace
