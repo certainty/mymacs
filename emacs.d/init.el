@@ -1150,7 +1150,9 @@
   :mode (("\\.rkt\\'" . racket-mode)
          ("\\.rktd\\'" . racket-mode)
          ("\\.scrbl\\'" . racket-hash-lang-mode))
-  :hook (racket-mode . racket-xp-mode))
+  :hook
+  (racket-mode . racket-xp-mode)
+  (racket-xp-mode . paredit-mode))
 
 ;;;; templates
 (use-package mmm-mode
@@ -1369,8 +1371,10 @@
      '("@" . meow-mark-word)
      '("C-@" . meow-mark-symbol)
      '("?" . my/meow-search-backward)
-     '("(" . my/meow-backward-sexp)
-     '(")" . my/meow-forward-sexp)
+     '(")" . my/meow-backward-sexp)
+     '("(" . my/meow-forward-sexp)
+     '(">" . paredit-forward-slurp-sexp)
+     '("<" . paredit-backward-barf-sexp) 
      '(";" . meow-reverse)
      '("," . meow-inner-of-thing)
      '("." . meow-bounds-of-thing)
