@@ -800,6 +800,7 @@
   :ensure t
   :hook
   (prog-mode . turn-on-diff-hl-mode)
+  (text-mode . turn-on-diff-hl-mode)
   (vc-dir-mode . turn-on-diff-hl-mode)
   :config
   (unless (display-graphic-p)
@@ -819,6 +820,12 @@
    #'magit-display-buffer-same-window-except-diff-v1))
 
 ;;;; terminal
+(use-package clipetty
+  :ensure t
+  :pin "melpa"
+  :config
+  (global-clipetty-mode 1))
+
 (use-package eat
   :ensure t
   :pin "nongnu"
@@ -1108,6 +1115,8 @@
   :hook (compilation-filter . ansi-color-compilation-filter))
 
 (use-package eglot
+  :hook ((markdown-ts-mode . eglot-ensure)
+         (org-mode . eglot-ensure))
   :bind
   (:map eglot-mode-map
         ("C-c l" . my/eglot-prefix-map))
@@ -1332,6 +1341,7 @@
   :pin "melpa"
   :custom
   (meow-display-thing-help t)
+  (meow-use-clipboard t)
   (meow-char-thing-table
    '((?\( . round)
      (?\[ . square)
@@ -1426,8 +1436,8 @@
      '(";" . meow-reverse)
      '("," . meow-inner-of-thing)
      '("." . meow-bounds-of-thing)
-     '("[" . meow-beginning-of-thing)
-     '("]" . meow-end-of-thing)
+     (cons "[" my/meow-prev-map)
+     (cons "]" my/meow-next-map)
      '("{" . backward-paragraph)
      '("}" . forward-paragraph)
      '("a" . meow-append)
@@ -1435,6 +1445,7 @@
      '("b" . meow-back-word)
      '("c" . meow-change)
      '("d" . meow-kill)
+     '("D" . meow-C-k)
      '("e" . meow-next-word)
      '("f" . meow-find)
      '("F" . my/meow-find-backward)
@@ -1444,14 +1455,14 @@
      '("i" . meow-insert)
      '("I" . my/meow-insert-at-bol)
      '("j" . meow-next)
-     '("J" . meow-join)
+     '("J" . my/meow-join-lines)
      '("k" . meow-prev)
      '("l" . meow-right)
      '("H" . meow-left-expand)
      '("K" . meow-prev-expand)
      '("L" . meow-right-expand)
      (cons "m" my/meow-match-map)
-     '("M" . meow-block)
+     '("M" . meow-tree-sitter-node)
      '("n" . my/meow-search-next)
      '("N" . my/meow-search-prev)
      '("o" . meow-open-below)
@@ -1469,15 +1480,14 @@
      '("x" . meow-line)
      '("X" . meow-delete)
      '("y" . meow-save)
-     '("z" . meow-grab)
-     '("Z" . meow-sync-grab)
+     '("#" . meow-grab)
+     '("z" . meow-view-mode)
+     '("Z" . meow-view-mode)
      '("W" . meow-mark-symbol)
      '("B" . meow-back-symbol)
      '("E" . meow-next-symbol)
      '("<backspace>" . meow-backspace)
      '("DEL" . meow-backspace)
-     '("z" . meow-grab)
-     '("Z" . meow-sync-grab)
      '("<escape>" . my/meow-escape)))
   :config
   (keymap-set my/leader-map "f" #'project-find-file)
