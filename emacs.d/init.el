@@ -257,6 +257,8 @@ Each entry is a cons cell of the form (DESCRIPTION . URL)."
   (delete-selection-mode)
   (global-subword-mode)
   (save-place-mode)
+  (unless (display-graphic-p)
+    (xterm-mouse-mode 1))
 
 ;;; tab settings
   (setq-default indent-tabs-mode nil)
@@ -1354,6 +1356,14 @@ Each entry is a cons cell of the form (DESCRIPTION . URL)."
   :custom
   (meow-display-thing-help t)
   (meow-use-clipboard t)
+  (meow-selection-command-fallback
+   '((meow-change . meow-change-char)
+     (meow-kill . meow-delete)
+     (meow-save . kill-ring-save)
+     (meow-cancel-selection . keyboard-quit)
+     (meow-pop-selection . meow-pop-grab)
+     (meow-beacon-change . meow-beacon-change-char)
+     (meow-expand . meow-digit-argument)))
   (meow-char-thing-table
    '((?\( . round)
      (?\[ . square)
@@ -1456,7 +1466,7 @@ Each entry is a cons cell of the form (DESCRIPTION . URL)."
      '("A" . my/meow-append-at-eol)
      '("b" . meow-back-word)
      '("c" . meow-change)
-     '("d" . meow-delete)
+     '("d" . meow-kill)
      '("D" . meow-C-k)
      '("e" . meow-next-word)
      '("f" . meow-find)
