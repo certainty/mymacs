@@ -632,7 +632,7 @@ When INCLUDE-FORGE is non-nil, clone under a forge-specific subdirectory."
   "Open the Confluence page of TEAM-ID in the browser."
   (when-let* ((data (pmd--recover-entity pmd--team-type team-id))
               (confluence-key (pmd--string (pmd--dig data "confluence" "key"))))
-    (pmd--open-url (format "https://new-work.atlassian.net/wiki/spaces/%s"
+      (pmd--open-url (format "https://new-work.atlassian.net/wiki/spaces/%s"
                            confluence-key))))
 
 (with-eval-after-load 'embark

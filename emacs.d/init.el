@@ -84,6 +84,11 @@
 (defcustom my/org-tag-alist nil "The tag quick keys" :type '(alist :key-type string :value-type character))
 (defcustom my/pmd-enabled nil "Enable consult-pmd" :type 'boolean :group 'mymacs)
 (defcustom my/pmd-base-url nil "The pmd url" :type 'string :group 'mymacs)
+(defcustom my/quick-links nil
+  "Alist of frequently used web bookmarks.
+Each entry is a cons cell of the form (DESCRIPTION . URL)."
+  :type '(alist :key-type string :value-type string)
+  :group 'mymacs)
 (defcustom my/denote-directory "" "The path to my notes" :type 'string :group 'mymacs)
 (defcustom my/denote-keywords nil "List of keywords for denote" :type '(repeat string) :group 'mymacs)
 
@@ -585,11 +590,11 @@
   :ensure t
   :bind
   (:map mymacs-mode-map
-        ("C-." . embark-act)
-        ("C-," . embark-dwim))
+        ("C-c ." . embark-act)
+        ("C-c ," . embark-dwim))
   (:map icomplete-minibuffer-map
-        ("C-." . embark-act)
-        ("C-," . embark-dwim)
+        ("C-c ." . embark-act)
+        ("C-c ," . embark-dwim)
         ("C-c C-c" . embark-collect)
         ("C-c C-e" . embark-export)
         ("C-c C-m" . embark-select)
@@ -634,6 +639,10 @@
 
 (use-package my-meow-helix
   :demand t
+  :load-path "user-lisp")
+
+(use-package links
+  :commands +links-bookmarks
   :load-path "user-lisp")
 
 ;;;; recent
@@ -901,6 +910,9 @@
   (org-use-fast-todo-selection 'expert)
   (org-capture-templates
    '(("t" "Task" entry (file "tasks.org")
+      "* TODO %?\nSCHEDULED: %t\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
+      :prepend t)
+     ("T" "Inbox task" entry (file "tasks.org")
       "* TODO %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:"
       :prepend t)
      ("n" "Note" entry (file+olp+datetree "log.org")
@@ -1444,7 +1456,7 @@
      '("A" . my/meow-append-at-eol)
      '("b" . meow-back-word)
      '("c" . meow-change)
-     '("d" . meow-kill)
+     '("d" . meow-delete)
      '("D" . meow-C-k)
      '("e" . meow-next-word)
      '("f" . meow-find)
