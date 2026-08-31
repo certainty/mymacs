@@ -6,9 +6,11 @@
 (declare-function eglot-find-implementation "eglot")
 (declare-function eglot-find-typeDefinition "eglot")
 (declare-function +find-alternate-file "alternate-file")
+(declare-function avy-goto-word-0 "avy")
 (declare-function embrace-add "embrace")
 (declare-function embrace-change "embrace")
 (declare-function embrace-delete "embrace")
+(declare-function diff-hl-hunk-overlay-at "diff-hl")
 (declare-function meow-back-symbol "meow")
 (declare-function meow-back-word "meow")
 (declare-function meow-bounds-of-thing "meow")
@@ -36,6 +38,7 @@
   "b" #'my/meow-goto-window-bottom
   "d" #'xref-find-definitions
   "D" #'eglot-find-declaration
+  "w" #'avy-goto-word-0
   "y" #'eglot-find-typeDefinition
   "r" #'xref-find-references
   "i" #'eglot-find-implementation
@@ -107,7 +110,13 @@
      ((nth 1 (syntax-ppss))
       (goto-char (nth 1 (syntax-ppss))))
      (t
-      (user-error "No matching delimiter at point")))))
+     (user-error "No matching delimiter at point")))))
+
+(defun my/diff-hl-current-hunk-bounds ()
+  "Return bounds of the current `diff-hl' hunk, if any."
+  (when (fboundp 'diff-hl-hunk-overlay-at)
+    (when-let* ((overlay (diff-hl-hunk-overlay-at (point))))
+      (cons (overlay-start overlay) (overlay-end overlay)))))
 
 (provide 'my-meow-helix)
 ;;; my-meow-helix.el ends here

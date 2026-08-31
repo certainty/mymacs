@@ -28,12 +28,27 @@
 (defvar-keymap my/org-prefix-map :doc "Org leader submap.")
 (defvar-keymap my/denote-prefix-map :doc "Denote leader submap.")
 (defvar-keymap my/pmd-prefix-map :doc "PMD leader submap.")
-(defvar-keymap my/ai-prefix-map :doc "AI leader submap.")
+(defvar-keymap my/window-prefix-map
+  :doc "Helix-style window keymap."
+  "w" #'other-window
+  "v" #'split-window-right
+  "s" #'split-window-below
+  "t" #'window-layout-transpose
+  "h" #'windmove-left
+  "j" #'windmove-down
+  "k" #'windmove-up
+  "l" #'windmove-right
+  "q" #'delete-window
+  "o" #'+delete-other-windows
+  "H" #'windmove-swap-states-left
+  "J" #'windmove-swap-states-down
+  "K" #'windmove-swap-states-up
+  "L" #'windmove-swap-states-right)
 
 (keymap-set my/leader-map "o" my/org-prefix-map)
 (keymap-set my/leader-map "j" my/denote-prefix-map)
 (keymap-set my/leader-map "," my/pmd-prefix-map)
-(keymap-set my/leader-map "i" my/ai-prefix-map)
+(keymap-set my/leader-map "w" my/window-prefix-map)
 
 (defvar-keymap mymacs-mode-map
   :doc "mymacs global keys"
@@ -69,7 +84,6 @@
 (defcustom my/org-tag-alist nil "The tag quick keys" :type '(alist :key-type string :value-type character))
 (defcustom my/pmd-enabled nil "Enable consult-pmd" :type 'boolean :group 'mymacs)
 (defcustom my/pmd-base-url nil "The pmd url" :type 'string :group 'mymacs)
-(defcustom my/agent-shell-enabled nil "Enable agent-shell." :type 'boolean :group 'mymacs)
 (defcustom my/denote-directory "" "The path to my notes" :type 'string :group 'mymacs)
 (defcustom my/denote-keywords nil "List of keywords for denote" :type '(repeat string) :group 'mymacs)
 
@@ -298,7 +312,7 @@
 (use-package outline
   :hook ((prog-mode . outline-minor-mode)
          (org-mode . outline-minor-mode)
-         (markdown-mode . outline-minor-mode))
+         (markdown-ts-mode . outline-minor-mode))
   :bind
   (:map outline-minor-mode-map
         ("C-<tab>" . outline-cycle)))
@@ -329,7 +343,7 @@
   :commands (+delete-other-windows)
   :bind
   (:map mymacs-mode-map
-        ("C-q" . bury-buffer)
+        ("C-q" . quit-window)
         ("C-Q" . kill-current-buffer)
         ([remap delete-other-windows] . +delete-other-windows)
         ("C-x w t"   . window-layout-transpose) 
@@ -350,8 +364,8 @@
   (split-width-threshold 80)
   (even-window-sizes nil)
   (window-combination-resize t)
-  (window-divider-default-right-width 7)
-  (window-divider-default-bottom-width 7)
+  (window-divider-default-right-width 1)
+  (window-divider-default-bottom-width 1)
   
   ;;;;; buffer arrangement
   (display-buffer-alist
@@ -363,13 +377,9 @@
      ("^\\*vc-git.*\\*$" . ,(my/bottom-window-config 'special-mode))
      ("^\\*vc-dir\\*" . ,(my/side-window-config 'special-mode))
      ("\\*xref\\*" . ,(my/bottom-window-config 'special-mode))
+     ("\\*\\(compilation\\|Occur\\|grep\\).*\\*" . ,(my/bottom-window-config 'special-mode))
      ("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\)\\*" . ,(my/side-window-config 'special-mode))
-     ((derived-mode . agent-shell-mode) . ,(my/side-window-config 'agent-shell-mode))
-     (".*"
-      (display-buffer-same-window
-       display-buffer-reuse-window
-       display-buffer-use-some-window
-       display-buffer-pop-up-window))))
+     (".*" (display-buffer-same-window))))
 
   :preface
   (defun +delete-other-windows (&optional window)
@@ -395,6 +405,10 @@
   :init
   (window-divider-mode))
 
+(use-package winner
+  :init
+  (winner-mode 1))
+
 (use-package ace-window
   :ensure t
   :commands (ace-window)
@@ -407,6 +421,12 @@
   :config
   (add-to-list 'aw-dispatch-alist
                '(?q ace-delete-window "Delete Window")))
+
+(use-package avy
+  :ensure t
+  :commands (avy-goto-word-0)
+  :custom
+  (avy-all-windows nil))
 
 (use-package popper
   :ensure t
@@ -421,12 +441,7 @@
   (setq popper-reference-buffers
         '("\\*Messages\\*"
           "Output\\*$"
-          "\\*Async Shell Command\\*"
-          "\\*vc-.*\\*"
-          "\\*eat\\*"
-          occur-mode
-          help-mode
-          compilation-mode))
+          "\\*Async Shell Command\\*"))
   (popper-mode +1)
   (popper-echo-mode +1))
 
@@ -493,7 +508,7 @@
 (use-package completion-preview
   :hook ((prog-mode . completion-preview-mode)
          (org-mode . completion-preview-mode)
-         (markdown-mode . completion-preview-mode))
+         (markdown-ts-mode . completion-preview-mode))
   :bind
   (:map completion-preview-active-mode-map
         ("M-n" . completion-preview-next-candidate)
@@ -652,7 +667,7 @@
        (or
         (mode . org-agenda-mode)
         (mode . org-mode)
-        (mode . markdown-mode)
+        (mode . markdown-ts-mode)
         (mode . text-mode)))
       ("Directories" (mode . dired-mode))
       ("Shells"
@@ -785,7 +800,23 @@
   :ensure t
   :hook
   (prog-mode . turn-on-diff-hl-mode)
-  (vc-dir-mode . turn-on-diff-hl-mode))
+  (vc-dir-mode . turn-on-diff-hl-mode)
+  :config
+  (unless (display-graphic-p)
+    (require 'diff-hl-margin)
+    (setq diff-hl-margin-symbols-alist
+          '((insert . " ") (delete . " ") (change . " ")
+            (unknown . " ") (ignored . " ")))
+    (diff-hl-margin-mode 1)))
+
+;;;; magit
+(use-package magit
+  :ensure t
+  :pin "nongnu"
+  :commands (magit-status)
+  :custom
+  (magit-display-buffer-function
+   #'magit-display-buffer-same-window-except-diff-v1))
 
 ;;;; terminal
 (use-package eat
@@ -983,6 +1014,14 @@
   (add-hook 'emacs-startup-hook #'org-clock-persistence-insinuate))
 
 ;;; Writing
+(use-package markdown-ts-mode
+  :mode
+  ("\\.md\\'" . markdown-ts-mode)
+  ("\\.markdown\\'" . markdown-ts-mode)
+  ("\\.mdown\\'" . markdown-ts-mode)
+  ("\\.mkdn\\'" . markdown-ts-mode)
+  ("\\.mdwn\\'" . markdown-ts-mode))
+
 (use-package flyspell
   :hook (text-mode . flyspell-mode)
   :commands (flyspell-mode flyspell-prog-mode)
@@ -1089,6 +1128,9 @@
   (eglot-code-action-indications nil)
   (read-process-output-max (* 1024 1024))
   :config
+  (add-to-list 'eglot-server-programs
+               '((markdown-ts-mode org-mode)
+                 "zk" "lsp"))
   (add-to-list 'eglot-server-programs
                '((ruby-mode ruby-ts-mode)
                  "ruby-lsp"))
@@ -1278,21 +1320,6 @@
   :custom
   (pmd-base-url my/pmd-base-url)))
 
-;;;; agent-shell
-(use-package my-agent-shell
-  :if my/agent-shell-enabled
-  :demand t
-  :load-path "optional"
-  :commands (+agent-shell +agent-shell-command +agent-shell-check)
-  :bind
-  (:map my/ai-prefix-map
-        ("a" . +agent-shell)
-        ("c" . +agent-shell-command)
-        ("v" . +agent-shell-check))
-  :custom
-  (my-agent-shell-codex-model "gpt-5.4")
-  (my-agent-shell-codex-session-mode "agent"))
-
 ;;;; modal editing
 (use-package embrace
   :ensure t
@@ -1318,6 +1345,7 @@
      (?l . line)
      (?v . visual-line)
      (?d . defun)
+     (?g . git-change)
      (?. . sentence)))
   (meow-expand-hint-counts
    '((word . 0)
@@ -1400,6 +1428,8 @@
      '("." . meow-bounds-of-thing)
      '("[" . meow-beginning-of-thing)
      '("]" . meow-end-of-thing)
+     '("{" . backward-paragraph)
+     '("}" . forward-paragraph)
      '("a" . meow-append)
      '("A" . my/meow-append-at-eol)
      '("b" . meow-back-word)
@@ -1461,7 +1491,27 @@
   (keymap-set my/leader-map "D" #'flymake-show-project-diagnostics)
   (keymap-set my/leader-map "a" #'eglot-code-actions)
   (keymap-set my/leader-map "r" #'eglot-rename)
+  (keymap-set my/leader-map "=" #'eglot-format-buffer)
   (keymap-set my/leader-map "k" #'eldoc)
   (keymap-set my/leader-map "h" #'xref-find-references)
+  (keymap-set my/leader-map "v" #'magit-status)
+  (meow-thing-register 'git-change
+                       #'my/diff-hl-current-hunk-bounds
+                       #'my/diff-hl-current-hunk-bounds)
   (my/meow-setup)
   (meow-global-mode 1))
+
+(use-package meow-tree-sitter
+  :ensure t
+  :demand t
+  :pin "melpa"
+  :config
+  (dolist (binding '((?f . "function")
+                     (?a . "parameter")
+                     (?t . "test")
+                     (?c . "comment")
+                     (?d . "entry")
+                     (?k . "class")))
+    (setq meow-char-thing-table
+          (assoc-delete-all (car binding) meow-char-thing-table))
+    (meow-tree-sitter-register-thing (car binding) (cdr binding))))
