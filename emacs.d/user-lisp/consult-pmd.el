@@ -9,6 +9,7 @@
 (require 'cl-lib)
 (require 'bookmark)
 (require 'consult)
+(require 'browse-url)
 (require 'subr-x)
 (require 'url-parse)
 
@@ -154,9 +155,20 @@ When nil, resolve the value from `auth-source'."
           (when (buffer-live-p buffer)
             (kill-buffer buffer)))))))
 
+(defun pmd--open-url (url)
+  "Open URL with the platform URL handler."
+  (let ((browse-url-generic-program
+         (pcase system-type
+           ('gnu/linux "xdg-open")
+           ('darwin "open"))))
+    (if browse-url-generic-program
+        (let ((browse-url-browser-function #'browse-url-generic))
+          (browse-url url))
+      (browse-url url))))
+
 (defun pmd--browse-url (path &rest params)
   "Open PATH with PARAMS in the browser."
-  (browse-url (apply #'pmd--make-url path params)))
+  (pmd--open-url (apply #'pmd--make-url path params)))
 
 (defvar pmd--entities-data (make-hash-table)
   "Store PMD entities by type.
@@ -465,7 +477,7 @@ When INCLUDE-FORGE is non-nil, clone under a forge-specific subdirectory."
   "Open the repository URL for PROJECT in the browser."
   (interactive "sProject ID: ")
   (when-let* ((repo-url (pmd--projects-repository-url project)))
-    (browse-url repo-url)))
+    (pmd--open-url repo-url)))
 
 (defun +pmd-copy-repo-slug (project)
   "Copy the repository slug for PROJECT to the clipboard."
@@ -479,14 +491,14 @@ When INCLUDE-FORGE is non-nil, clone under a forge-specific subdirectory."
   (interactive "sProject ID: ")
   (when-let* ((data (pmd--recover-entity pmd--project-type project))
               (teams-channel (pmd--dig data "msteams" "channel_url")))
-    (browse-url teams-channel)))
+    (pmd--open-url teams-channel)))
 
 (defun +pmd-open-teams-alerting-channel (project)
   "Open the MS Teams alerting channel for PROJECT in the browser."
   (interactive "sProject ID: ")
   (when-let* ((data (pmd--recover-entity pmd--project-type project))
               (alerting-channel (pmd--dig data "alerting" "msteams_channel_url")))
-    (browse-url alerting-channel)))
+    (pmd--open-url alerting-channel)))
 
 (defun +pmd-open-project-documentation (project)
   "Open the project documentation URL for PROJECT in the browser."
@@ -494,7 +506,7 @@ When INCLUDE-FORGE is non-nil, clone under a forge-specific subdirectory."
   (when-let* ((data (pmd--recover-entity pmd--project-type project))
               (doc-url (pmd--dig data "documentation")))
     (if doc-url
-        (browse-url doc-url)
+        (pmd--open-url doc-url)
       (message "No documentation URL found for project %s" project))))
 
 (defun +pmd-search-github-repo (project-id)
@@ -587,7 +599,7 @@ When INCLUDE-FORGE is non-nil, clone under a forge-specific subdirectory."
   "Open the PMD team channel in the browser."
   (interactive)
   (when-let* ((url (pmd--team-channel-url team-id)))
-    (browse-url url)))
+    (pmd--open-url url)))
 
 (defun +pmd-copy-team-channel-url (team-id)
   "Copy the PMD team channel URL to the clipboard."
@@ -600,7 +612,7 @@ When INCLUDE-FORGE is non-nil, clone under a forge-specific subdirectory."
   "Open the PMD team alerting channel in the browser."
   (when-let* ((data (pmd--recover-entity pmd--team-type team-id))
               (alerting-url (pmd--string (pmd--dig data "alerting" "msteams_channel_url"))))
-    (browse-url alerting-url)))
+    (pmd--open-url alerting-url)))
 
 (defun +pmd-copy-team-email (team-id)
   "Copy the email address of TEAM-ID to the clipboard."
@@ -620,8 +632,8 @@ When INCLUDE-FORGE is non-nil, clone under a forge-specific subdirectory."
   "Open the Confluence page of TEAM-ID in the browser."
   (when-let* ((data (pmd--recover-entity pmd--team-type team-id))
               (confluence-key (pmd--string (pmd--dig data "confluence" "key"))))
-    (browse-url (format "https://new-work.atlassian.net/wiki/spaces/%s"
-                        confluence-key))))
+    (pmd--open-url (format "https://new-work.atlassian.net/wiki/spaces/%s"
+                           confluence-key))))
 
 (with-eval-after-load 'embark
   (defvar-keymap pmd-teams-embark-map
@@ -736,7 +748,7 @@ When INCLUDE-FORGE is non-nil, clone under a forge-specific subdirectory."
                   :require-match t
                   :sort nil)))
       (let ((data (pmd--recover-entity pmd--people-type person-id)))
-        (browse-url
+        (pmd--open-url
          (format "https://github.com/%s"
                  (pmd--string (gethash "github_com" data))))))))
 
