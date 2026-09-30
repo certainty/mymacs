@@ -3,7 +3,4 @@ auto-save-list
 \#.*\#
 .projects.eld
 /eln-cache/
-/vendor/*
-!/vendor/README.md
-!/vendor/agent-shell-tramp.el
 /transient/

@@ -1,4 +1,4 @@
-;; -*- lexical-binding: t; -*-
+;;; my-dev-ruby.el --- Ruby workflow configuration -*- lexical-binding: t; -*-
 
 ;; Commentary:
 ;;
@@ -94,7 +94,6 @@ the buffer does not look like a Ruby test file."
                (concat " -n "
                        (shell-quote-argument (format "/%s/" test-name))))))))
 
-;;;###autoload
 (defun +ruby-rspec-dwim ()
   "Run the current Ruby location explicitly with RSpec."
   (interactive)
@@ -102,7 +101,6 @@ the buffer does not look like a Ruby test file."
    (or (my/ruby--rspec-target (line-number-at-pos))
        (read-string "RSpec target: "))))
 
-;;;###autoload
 (defun +ruby-rspec-file ()
   "Run the current Ruby file explicitly with RSpec."
   (interactive)
@@ -110,7 +108,6 @@ the buffer does not look like a Ruby test file."
    (or (my/ruby--rspec-target)
        (read-string "RSpec target: "))))
 
-;;;###autoload
 (defun +ruby-minitest-dwim ()
   "Run the current Ruby location explicitly with Minitest."
   (interactive)
@@ -119,7 +116,6 @@ the buffer does not look like a Ruby test file."
                    (list (read-string "Minitest file: ") nil))))
     (my/ruby--run-minitest file test-name)))
 
-;;;###autoload
 (defun +ruby-minitest-file ()
   "Run the current Ruby file explicitly with Minitest."
   (interactive)
@@ -128,7 +124,6 @@ the buffer does not look like a Ruby test file."
                    (list (read-string "Minitest file: ") nil))))
     (my/ruby--run-minitest file test-name)))
 
-;;;###autoload
 (defun +ruby-test-dwim ()
   "Run the current Ruby test, dispatching between RSpec and Minitest."
   (interactive)
@@ -140,7 +135,6 @@ the buffer does not look like a Ruby test file."
     (_
      (user-error "Not visiting an RSpec or Minitest test file"))))
 
-;;;###autoload
 (defun +ruby-test-file ()
   "Run the current Ruby test file."
   (interactive)
@@ -152,5 +146,30 @@ the buffer does not look like a Ruby test file."
     (_
      (user-error "Not visiting an RSpec or Minitest test file"))))
 
- 
+;;;; ruby
+(use-package ruby-ts-mode
+  :mode ("\\.rb\\'" "Rakefile\\'" "Gemfile\\'" "\\.rake\\'" "\\.gemspec\\'" "\\.ru\\'")
+  :hook
+  (ruby-ts-mode . eglot-ensure)
+  (ruby-mode . ruby-ts-mode)
+  :bind
+  (:map ruby-ts-mode-map
+        ("C-c a" . +find-alternate-file)
+        ("C-c t t" . +ruby-test-dwim)
+        ("C-c t o" . +ruby-test-file)
+        ("C-c t r" . +ruby-rspec-dwim)
+        ("C-c t m" . +ruby-minitest-dwim))
+  :custom
+  (ruby-indent-level 2)
+  (ruby-insert-encoding-magic-comment nil)
+  :init
+  (setf (alist-get 'ruby-ts-mode my/alternate-file-mappings)
+        '((:source ("app" "")
+           :test ("spec" "test" "test/unit" "test/system")
+           :suffixes ("_spec" "_test"))
+          (:source ("lib")
+           :test ("spec/lib" "test/lib" "test/unit" "test/system")
+           :suffixes ("_spec" "_test")))))
+
 (provide 'my-dev-ruby)
+;;; my-dev-ruby.el ends here

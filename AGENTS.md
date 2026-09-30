@@ -21,12 +21,11 @@ You achieve that by:
 
 ## Config files
 
-You must keep all configuration in `init.el` and `early-init.el`.
-We do this intentionaly to create friction when the file gets too large.
-Custom code, that is not configuration goes into `user-lisp` directory.
-This is autoloaded with emacs-31.
+Keep early startup in `early-init.el`. Keep customization declarations, loading the untracked `custom.el`, package policy, and the ordered module entry points in `init.el`.
+Place all feature configuration in `emacs.d/modules/`. Add that directory to `load-path` once in `init.el` and explicitly `require` modules in dependency order; each module must `provide` its feature. Modules may use `use-package` and should not rely on automatic autoloading for startup configuration. Avoid creating a module for a few unrelated lines merely to make `init.el` shorter.
+Place self-contained code packages (such as PMD and Taskwarrior) in `emacs.d/user-lisp/`, even when they are personal to this configuration. Language-specific commands and helpers belong in their language modules; only put development helpers in `user-lisp/` when they are genuinely shared across modules. Emacs 31 generates autoloads for `user-lisp/`; autoload generation does not evaluate every file at startup. Keep third-party source copied into the repository in `emacs.d/vendor/`.
 
-Use outline headers to separate functionality.
+Keep user settings in the untracked `custom.el`; load it before modules that use those settings. Use outline headers to separate functionality.
 
 ## Packages
 

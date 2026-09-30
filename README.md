@@ -10,12 +10,12 @@ Supply chain risk is crazy nowadays.
 Emacs is a beast to configure the options are endless. That's why it's important to lock down some basal decisions, that keep me on track.
 These basic rules have to be applied consistently.
 
-- the config is kept in plain emacs lisp 
-- the config is separated into modules, each bundling up functionality that is coherent within that module
+- the config is kept in plain Emacs Lisp
+- `init.el` requires coherent configuration modules explicitly, in dependency order
 - each module uses lexical scoping and uses `use-package` consistently
 * the configuration aims to provide top-notch coding support + tools required to manage my work including writing docs, managing tasks, interacting with SaaS
 (this is not an e-mail client, this is not a multimedia system, this is not a game environment)
-- dependencies are managed through `package.el` for ELPA packages and in-repo code under `emacs.d/user-lisp/`
+- dependencies are managed through `package.el` for ELPA packages; self-contained in-repo packages live under `emacs.d/user-lisp/`
 * keybindings are the main interface to the system, and they have to be consistent and mnemonic
 * stability, simplicity and minimalism are driving most decisions. we only configure what we actually use.
 
@@ -25,6 +25,10 @@ These basic rules have to be applied consistently.
 - [doc](./doc) *in depth documentation for some aspects of the config, including package workflows*
 * [scripts](./scripts/) *contains `emacs-tools`, which tests config and interacts with Emacs. It uses `emacs.d` by default here, but still supports other config roots via `EMACS_CONFIG_ROOT`.*
 * [emacs.d](./emacs.d/) *live config. Link this into `~/.emacs.d` to activate.*
+
+Within `emacs.d`, `early-init.el` handles early startup. `init.el` declares custom settings, loads the untracked `custom.el`, sets package policy, and requires feature modules in order. `modules/` contains all feature configuration (including Meow and its Helix-style helpers); `init.el` adds it to `load-path` and explicitly requires each module. Modules provide their named feature and are not loaded automatically by directory name. `user-lisp/` contains self-contained packages such as PMD and the `user-lisp/taskwarrior/` package (UI entry point plus core); language-specific commands live in their language modules, while helpers shared across modules may live in `user-lisp/`. Emacs 31 byte-compiles `user-lisp` sources when needed and generates autoloads, but does not evaluate every file at startup. `user-lisp/taskwarrior/taskwarrior.el` is the lazy-loaded UI entry point and requires `taskwarrior-core.el` when first loaded; `use-package taskwarrior` and `use-package consult-pmd` configure the corresponding libraries without installing them from an archive. `vendor/` contains copied third-party source.
+
+The order of `require` calls in `init.el` is intentional: `my-windows` provides layout helpers used by `my-terminal`, `my-files` loads alternate-file mappings used by the Ruby and Scala modules, and `my-modal-editing` runs last so its Meow setup can use commands and keymaps configured earlier. `my-programming` requires the language modules at their respective language sections.
 
 ## Keybindings
 
@@ -41,6 +45,8 @@ Common leader bindings:
 - `C-j F` / `SPC F` - `find-file`
 - `C-j e` / `SPC e` - `project-dired`
 - `C-j b` / `SPC b` - `consult-project-buffer`
+- `C-j B` / `SPC B` - `consult-buffer`
+- `C-j o` / `SPC o` - `consult-recent-file`
 - `C-j /` / `SPC /` - `consult-ripgrep`
 - `C-j s` / `SPC s` - `consult-imenu`
 - `C-j S` / `SPC S` - `consult-imenu-multi`
@@ -53,10 +59,13 @@ Common leader bindings:
 - `C-j p` - `project-switch-project`
 - `C-j v` - `project-vc-dir`
 - `C-j c` - `project-compile`
-- `C-j t` - `eat`
-- `C-j j` - `denote`
-- `C-j o a` - `org-agenda`
-- `C-j o o` - `org-capture`
+- `C-j t` - toggle the dedicated Taskwarrior TUI
+- `C-j $` - `eat`
+- `C-j w a` - select any visible window, including transient side windows
+- `C-j j j` - open the zk notebook scratch note
+- `C-j j e` - open the zk notebook in Dired
+- `C-j j f` - find a file in the zk notebook with Consult
+- `C-j j /` - search the zk notebook with Consult ripgrep
 
 ### Meow normal state
 
@@ -111,7 +120,6 @@ Prefix maps:
 
 Meow is intentionally disabled in:
 
-- `org-agenda-mode`
 - `vc-dir-mode`
 
 Those modes already use unmodified keys for their own modal interfaces and should not be shadowed.

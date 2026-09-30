@@ -1,4 +1,4 @@
-;; -*- lexical-binding: t; -*-
+;;; my-dev-scala.el --- Scala workflow configuration -*- lexical-binding: t; -*-
 
 (declare-function project-root "project")
 (declare-function project-current "project")
@@ -53,7 +53,6 @@
                      (shell-quote-argument (format "testOnly %s" target) t)))))
 
 
-;;;###autoload
 (defun +scala-test-only ()
   "Run the current Scala test or prompt for a class name."
   (interactive)
@@ -61,5 +60,28 @@
                       (read-string "Test class: "))))
     (my/scala--run-test-target test-class)))
 
+;;;; scala
+(use-package scala-ts-mode
+  :ensure t
+  :pin "melpa"
+  :mode ("\\.scala\\'" "\\.sc\\'" "\\.sbt\\'")
+  :hook ((scala-ts-mode . my/scala-eglot-setup)
+         (scala-ts-mode . eglot-ensure))
+  :bind
+  (:map scala-ts-mode-map
+        ("C-c a" . +find-alternate-file)
+        ("C-c C-t" . +scala-test-only))
+  :preface
+  (defun my/scala-eglot-setup ()
+    "Disable Metals on-type formatting in Scala buffers."
+    (setq-local eglot-ignored-server-capabilities
+                (cons :documentOnTypeFormattingProvider
+                      eglot-ignored-server-capabilities)))
+  :init
+  (setf (alist-get 'scala-ts-mode my/alternate-file-mappings)
+        '((:source ("src/main/scala")
+           :test ("src/test/scala" "src/it/scala")
+           :suffixes ("Spec" "Suite" "Test")))))
 
 (provide 'my-dev-scala)
+;;; my-dev-scala.el ends here
