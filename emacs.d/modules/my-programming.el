@@ -27,13 +27,9 @@
    my/eglot-prefix-map
    :prefix "C-c l"
    ("a" . eglot-code-actions)
-   ("d" . xref-find-definitions)
    ("r" . eglot-rename)
-   ("h" . eldoc)
    ("f" . eglot-format-buffer)
-   ("F" . eglot-format)
-   ("C" . flymake-show-project-diagnostics)
-   ("c" . consult-flymake))
+   ("F" . eglot-format))
 
   :custom
   (eglot-documentation-renderer 'markdown-ts-view-mode)
@@ -74,6 +70,8 @@
 ;;;; diagnostics
 (use-package flymake
   :bind
+  (:map my/leader-map
+        ("D" . flymake-show-project-diagnostics))
   (:map goto-map
         ("n e" . flymake-goto-next-error)
         ("p e" . flymake-goto-prev-error))

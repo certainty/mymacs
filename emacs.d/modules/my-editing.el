@@ -13,8 +13,33 @@
   :init
   (electric-pair-mode))
 
+(defun my/match-pair ()
+  "Jump to the matching delimiter or string boundary."
+  (interactive)
+  (let ((after (char-after))
+        (before (char-before)))
+    (cond
+     ((and after (eq (char-syntax after) ?\())
+      (goto-char (1- (scan-sexps (point) 1))))
+     ((and after (eq (char-syntax after) ?\)))
+      (goto-char (scan-sexps (1+ (point)) -1)))
+     ((and before (eq (char-syntax before) ?\)))
+      (goto-char (scan-sexps (point) -1)))
+     ((nth 1 (syntax-ppss))
+      (goto-char (nth 1 (syntax-ppss))))
+     (t
+      (user-error "No matching delimiter at point")))))
+
+(use-package embrace
+  :ensure t
+  :pin "melpa"
+  :commands (embrace-add embrace-change embrace-delete embrace-commander)
+  :bind
+  (:map mymacs-mode-map
+        ("C-c e" . embrace-commander)))
+
 ;;;; core editing / structural
-;; TODO: do we still need it since we have easy-kill enabled?
+;; Expreg expands regions; Easy-kill selects and kills things at point.
 (use-package expreg
   :ensure t
   :bind
@@ -36,9 +61,13 @@
   :ensure t
   :bind
   (:map mymacs-mode-map
+        ("C-." . embark-act)
+        ("C-," . embark-dwim)
         ("C-c ." . embark-act)
         ("C-c ," . embark-dwim))
   (:map icomplete-minibuffer-map
+        ("C-." . embark-act)
+        ("C-," . embark-dwim)
         ("C-c ." . embark-act)
         ("C-c ," . embark-dwim)
         ("C-c C-c" . embark-collect)

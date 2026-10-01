@@ -30,7 +30,7 @@
   :group 'emacs)
 
 (defcustom my/user-name "john doe" "Full name" :type 'string :group 'mymacs)
-(defcustom my/theme 'kanagawa-dragon "The theme to use" :type 'symbol :group 'mymacs)
+(defcustom my/theme 'modus-vivendi "The theme to use" :type 'symbol :group 'mymacs)
 (defcustom my/font "Maple Mono NF" "The font to use" :type 'string :group 'mymacs)
 (defcustom my/font-height 110 "The font height" :type 'number :group 'mymacs)
 (defcustom my/font-weight 'light "The font weigh" :type 'symbol :group 'mymacs)
@@ -128,6 +128,3 @@ Each entry is a cons cell of the form (DESCRIPTION . URL)."
 
 ;;;; Work tools
 (require 'my-work-tools)
-
-;;;; Modal editing
-(require 'my-modal-editing)

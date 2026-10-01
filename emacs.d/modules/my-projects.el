@@ -2,12 +2,10 @@
 
 ;;; Projects
 (use-package project
-  :custom
-  (project-vc-extra-root-markers '(".project.el"))
-
   :bind
   (:map my/leader-map
-        ("v" . project-vc-dir)
+        ("f" . project-find-file)
+        ("e" . project-dired)
         (";" . project-compile))
   (:map my/project-prefix-map
         ("p" . project-switch-project))
@@ -16,6 +14,8 @@
         ("P" . project-switch-project))
   (:map search-map
         ("*" . +project-find-symbol))
+  :custom
+  (project-vc-extra-root-markers '(".project.el"))
   :preface
   (defun +project-find-symbol ()
     "Search for symbol under point in whole project"
@@ -24,8 +24,6 @@
 
 ;;;; vc
 (use-package vc
-  :hook
-  (vc-dir-mode . my/disable-meow-locally)
   :custom
   (vc-auto-revert-mode t)
   (vc-allow-rewriting-published-history t)
@@ -50,6 +48,9 @@
   :ensure t
   :pin "nongnu"
   :commands (magit-status)
+  :bind
+  (:map my/leader-map
+        ("v" . magit-status))
   :custom
   (magit-display-buffer-function
    #'magit-display-buffer-same-window-except-diff-v1))

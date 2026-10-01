@@ -10,14 +10,7 @@
 (use-package vterm
   :ensure t
   :pin "melpa"
-  :commands (vterm vterm-send-string vterm-send-return)
-  :hook
-  (vterm-mode . my/vterm-setup-meow)
-  :preface
-  (defun my/vterm-setup-meow ()
-    "Keep Meow disabled in VTerm buffers."
-    (add-hook 'meow-mode-hook #'my/disable-meow-locally nil t)
-    (my/disable-meow-locally)))
+  :commands (vterm vterm-send-string vterm-send-return))
 
 (use-package vterm-toggle
   :ensure t

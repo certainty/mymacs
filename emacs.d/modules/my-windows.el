@@ -36,18 +36,23 @@
         ("C-q" . quit-window)
         ("C-Q" . kill-current-buffer)
         ([remap delete-other-windows] . +delete-other-windows)
+        ("C-x {" . +resize-window-shrink)
+        ("C-x }" . +resize-window-enlarge)
         ("C-x w t"   . window-layout-transpose)
         ("C-x w r"   . window-layout-rotate-clockwise)
         ("C-x w f h" . window-layout-flip-leftright)
         ("C-x w f v" . window-layout-flip-topdown))
   (:map my/leader-map
         ("|" . split-window-right))
+  (:map my/window-prefix-map
+        ("n" . +scroll-up-half-page)
+        ("p" . +scroll-down-half-page))
   (:map goto-map
         ("n b" . next-buffer)
         ("p b" . previous-buffer))
   (:repeat-map my/window-resize-repeat-map
-               ("{" . shrink-window-horizontally)
-               ("}" . enlarge-window-horizontally))
+               ("{" . +resize-window-shrink)
+               ("}" . +resize-window-enlarge))
   :custom
   ;; prefer splitting to the side
   (split-height-threshold nil)
@@ -75,6 +80,35 @@
     (let ((ignore-window-parameters t))
       (delete-other-windows window)))
 
+  (defun my--resize-window (delta)
+    "Resize the selected window by DELTA along its immediate split."
+    (let ((horizontal (window-combined-p nil t)))
+      (unless (or horizontal (window-combined-p))
+        (user-error "Selected window is not split"))
+      (window-resize nil delta horizontal)))
+
+  (defun +resize-window-shrink (&optional count)
+    "Shrink the selected window by five units, or prefix COUNT units."
+    (interactive "P")
+    (my--resize-window (- (if count (prefix-numeric-value count) 5))))
+
+  (defun +resize-window-enlarge (&optional count)
+    "Enlarge the selected window by five units, or prefix COUNT units."
+    (interactive "P")
+    (my--resize-window (if count (prefix-numeric-value count) 5)))
+
+  (defun +scroll-up-half-page ()
+    "Scroll down through the buffer by half a window."
+    (interactive)
+    (scroll-up-command (max 1 (/ (window-body-height) 2))))
+
+  (defun +scroll-down-half-page ()
+    "Scroll up through the buffer by half a window."
+    (interactive)
+    (scroll-down-command (max 1 (/ (window-body-height) 2))))
+
+  :init
+  (window-divider-mode)
   :config
   (defun my/configure-window-dividers (&optional frame)
     "Configure window dividers for FRAME's display type."
@@ -88,11 +122,12 @@
         (set-face-attribute face frame :foreground "#4f5f73" :background "#4f5f73"))))
   (add-hook 'window-setup-hook #'my/configure-window-dividers)
   (add-hook 'after-make-frame-functions #'my/configure-window-dividers)
-  (my/configure-window-dividers)
-  :init
-  (window-divider-mode))
+  (my/configure-window-dividers))
 
 (use-package winner
+  :bind
+  (:map mymacs-mode-map
+        ("C-c [" . winner-undo))
   :init
   (winner-mode 1))
 

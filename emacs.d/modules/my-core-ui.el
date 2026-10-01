@@ -1,20 +1,29 @@
 ;;; my-core-ui.el --- Core UI and global defaults -*- lexical-binding: t; -*-
 
 ;;; Theme
-(use-package kanagawa-themes
-  :ensure t
-  :pin "melpa"
+(use-package modus-themes
+  :demand t
+  :custom
+  (modus-themes-disable-other-themes t)
+  (modus-themes-italic-constructs t)
+  (modus-themes-bold-constructs t)
+  (modus-themes-prompts '(extrabold italic))
+  (modus-themes-completions
+   '((matches . (extrabold underline))
+     (selection . (semibold italic))))
   :preface
-  (setq kanagawa-themes-custom-colors
-        '((bg "#000000")
-          (bg-gutter "#000000")
-          (diff-add "#1f3a2a")
-          (diff-delete "#4a252b")
-          (diff-change "#243d52")
-          (diff-text "#62502f")))
+  ;; Theme support files live on `custom-theme-load-path', not `load-path'.
+  (let ((custom-theme-load-path (cons t custom-theme-load-path)))
+    (require-theme 'modus-themes))
   :config
-  (add-to-list 'custom-theme-load-path
-               (expand-file-name "vendor" user-emacs-directory)))
+  (setq modus-vivendi-palette-overrides
+        '((bg-line-number-active bg-main)
+          (bg-line-number-inactive bg-main)
+          (bg-paren-match bg-magenta-intense)
+          (bg-fringe bg-main)
+          (fringe bg-main)
+          (bg-space bg-main)))
+  (load-theme my/theme t))
 
 (use-package emacs
   :bind
@@ -82,12 +91,6 @@
       (back-to-indentation)
       (delete-region (point) curr)))
 
-  (defun my/disable-meow-locally ()
-    "Disable Meow in the current buffer."
-    (when (and (fboundp 'meow-mode)
-               (bound-and-true-p meow-mode))
-      (meow-mode -1)))
-
   :init
 ;;; modes
   (menu-bar-mode -1)
@@ -107,9 +110,6 @@
   (setq-default indent-tabs-mode nil)
   (setq-default standard-indent 2)
   (setq-default tab-width 2)
-
-;;;; load theme
-  (load-theme my/theme)
 
 ;;; default font
   (set-face-attribute

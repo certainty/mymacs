@@ -24,6 +24,15 @@
 (use-package consult
   :ensure t
   :bind
+  (:map my/leader-map
+        ("b" . consult-project-buffer)
+        ("B" . consult-buffer)
+        ("s" . consult-imenu)
+        ("S" . consult-imenu-multi)
+        ("/" . consult-ripgrep)
+        ("d" . consult-flymake))
+  (:map my/open-prefix-map
+        ("o" . consult-recent-file))
   (:map goto-map
         ("b" . consult-project-buffer)
         ("o" . consult-recent-file)

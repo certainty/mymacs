@@ -2,6 +2,9 @@
 
 ;;; Files
 (use-package files
+  :bind
+  (:map my/leader-map
+        ("F" . find-file))
   :custom
   (make-backup-files nil)
   (auto-save-default nil)
@@ -16,6 +19,13 @@
   :commands (+links-bookmarks +links-project-repository
              +links-project-pull-requests
              +links-current-branch-pull-request)
+  :bind
+  (:map my/open-prefix-map
+        ("l" . +links-bookmarks))
+  (:map my/project-prefix-map
+        ("v" . +links-project-repository)
+        ("r" . +links-project-pull-requests)
+        ("R" . +links-current-branch-pull-request))
   :load-path "user-lisp")
 
 ;;;; recent
