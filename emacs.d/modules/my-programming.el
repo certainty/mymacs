@@ -14,7 +14,6 @@
 (use-package compile
   :custom
   (compilation-scroll-output t)
-  (compilation-auto-jump-to-first-error t)
   (compilation-max-output-line-length nil))
 
 (use-package ansi-color
@@ -52,7 +51,7 @@
                   :initializationOptions
                   (:isHttpEnabled t)))
    (add-to-list 'eglot-server-programs
-                '(ada-ts-mode "ada_language_server")))
+                '(ada-ts-mode "alr" "exec" "ada_language_server")))
 
 ;;; snippets
 ;; these also act as a provider for eglot
@@ -99,17 +98,6 @@
   :init
   (setq-default go-ts-mode-indent-offset 4))
 
-;;;; racket
-(use-package racket-mode
-  :ensure t
-  :pin "nongnu"
-  :mode (("\\.rkt\\'" . racket-mode)
-         ("\\.rktd\\'" . racket-mode)
-         ("\\.scrbl\\'" . racket-hash-lang-mode))
-  :hook
-  (racket-mode . racket-xp-mode)
-  (racket-xp-mode . paredit-mode))
-
 ;;;; templates
 (use-package mmm-mode
   :ensure t
@@ -135,7 +123,15 @@
 (use-package ada-ts-mode
   :ensure t
   :pin "melpa"
-  :hook (ada-ts-mode . eglot-ensure))
+  :preface
+  (defun my-project-compilation-search-path ()
+    (when-let* ((project (project-current))
+                (root (project-root project))
+                (src (expand-file-name "src" root)))
+      (setq-local compilation-search-extra-path (list src))))
+  :hook
+  (ada-ts-mode . eglot-ensure)
+  (ada-ts-mode . my-project-compilation-search-path))
 
 (use-package gpr-ts-mode
   :ensure t
@@ -163,11 +159,6 @@
   :hook (elixir-ts-mode . eglot-ensure)
   :custom
   (elixir-ts-indent-offset 2))
-
-;;;; ocaml
-(use-package neocaml
-  :ensure t
-  :pin "melpa")
 
 (use-package heex-ts-mode
   :mode "\\.[hl]?eex\\'"
