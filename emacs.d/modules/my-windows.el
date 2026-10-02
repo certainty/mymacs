@@ -146,12 +146,6 @@
   (add-to-list 'aw-dispatch-alist
                '(?q ace-delete-window "Delete Window")))
 
-(use-package avy
-  :ensure t
-  :commands (avy-goto-word-0)
-  :custom
-  (avy-all-windows nil))
-
 (use-package popper
   :ensure t
   :bind

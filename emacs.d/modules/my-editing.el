@@ -52,8 +52,10 @@
   (emacs-lisp-mode . paredit-mode)
   (lisp-mode . paredit-mode)
   :bind
+  
   (:map paredit-mode-map
-        ("C-j" . nil))
+        ("C-j" . nil)
+        ("M-s" . nil))
   :load-path "vendor")
 
 ;;;; embark
