@@ -28,7 +28,10 @@
                ((org-agenda-start-day "today")
                 (org-agenda-span 14)
                 (org-agenda-entry-types '(:deadline))
-                (org-agenda-overriding-header "Deadlines in the next 14 days"))))))))
+                (org-agenda-overriding-header "Deadlines in the next 14 days")))))))
+  :init
+  (push `("^\\*Org Agenda\\*$" . ,(my/side-window-config))
+        display-buffer-alist))
 
 (defun my/tasks--file ()
   "Return the path to the single task file, creating its directory if needed."
