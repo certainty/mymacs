@@ -8,8 +8,8 @@
 (defvar-keymap my/open-prefix-map :doc "Open resources leader submap.")
 (defvar-keymap my/project-prefix-map :doc "Project leader submap.")
 
-(defvar-keymap my/taskwarrior-prefix-map
-  :doc "Taskwarrior leader submap.")
+(defvar-keymap my/task-prefix-map
+  :doc "Task management leader submap.")
 
 (defvar-keymap my/window-prefix-map
   :doc "Helix-style window keymap."
@@ -36,8 +36,7 @@
 (keymap-set my/leader-map "o" my/open-prefix-map)
 (keymap-set my/leader-map "p" my/project-prefix-map)
 
-(keymap-set my/leader-map "t" my/taskwarrior-prefix-map)
-(keymap-set my/leader-map "T" #'my/taskwarrior-tui-toggle)
+(keymap-set my/leader-map "t" my/task-prefix-map)
 (keymap-set my/leader-map "w" my/window-prefix-map)
 
 (defvar-keymap mymacs-mode-map

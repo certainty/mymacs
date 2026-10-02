@@ -1,4 +1,4 @@
-;;; my-work-tools.el --- Taskwarrior and PMD package integration -*- lexical-binding: t; -*-
+;;; my-work-tools.el --- PMD package integration -*- lexical-binding: t; -*-
 
 ;;;; PMD
 (use-package consult-pmd

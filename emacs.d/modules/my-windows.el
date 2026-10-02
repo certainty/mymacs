@@ -164,8 +164,7 @@
   (popper-reference-buffers
    '("\\*Messages\\*"
      "Output\\*$"
-     "\\*Async Shell Command\\*"
-     "\\*Taskwarrior\\(?: Report\\| Task\\)?\\*"))
+     "\\*Async Shell Command\\*"))
   :init
   (popper-mode +1)
   (popper-echo-mode +1))

@@ -35,7 +35,11 @@
 (defcustom my/font-height 110 "The font height" :type 'number :group 'mymacs)
 (defcustom my/font-weight 'light "The font weigh" :type 'symbol :group 'mymacs)
 (defcustom my/org-directory "~/org"
-  "Directory for Org notes."
+  "Directory for Org task management."
+  :type 'directory
+  :group 'mymacs)
+(defcustom my/notes-directory "~/notes"
+  "Directory for personal notes."
   :type 'directory
   :group 'mymacs)
 (defcustom my/pmd-enabled nil "Enable consult-pmd" :type 'boolean :group 'mymacs)

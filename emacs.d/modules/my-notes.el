@@ -5,8 +5,11 @@
   :custom
   (org-directory (file-name-as-directory (expand-file-name my/org-directory)))
   (org-capture-templates
-   '(("n" "Note" entry (file "scratch.org")
-      "* %<%H:%M> %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:")))
+   `(("n" "Note" entry
+      (file ,(expand-file-name "scratch.org" my/notes-directory))
+      "* %<%H:%M> %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:")
+     ("t" "Task" entry (file "todo.org")
+      "* TODO %?\n")))
   (org-pretty-entities t)
   (org-startup-folded t)
   (org-hide-leading-stars t)
@@ -33,19 +36,22 @@
   :ensure t
   :commands (denote)
   :custom
-  (denote-directory (file-name-as-directory (expand-file-name my/org-directory)))
+  (denote-directory (file-name-as-directory (expand-file-name my/notes-directory)))
   (denote-file-type 'org))
+
+(defun my/notes--ensure-directory ()
+  "Create and return `my/notes-directory'."
+  (let ((directory (expand-file-name my/notes-directory)))
+    (make-directory directory t)
+    directory))
 
 (defun my/notes-denote-new ()
   "Create a Denote note in `denote-directory'."
   (interactive)
+  (my/notes--ensure-directory)
   (call-interactively #'denote))
 
 ;;; Notes navigation
-(defun my/notes--ensure-directory ()
-  "Create `org-directory' if it does not already exist."
-  (make-directory org-directory t))
-
 (defun my/notes-capture ()
   "Capture an Org note to the default scratch file."
   (interactive)
@@ -55,23 +61,22 @@
 (defun my/notes-open-scratch ()
   "Open the default Org scratch file."
   (interactive)
-  (my/notes--ensure-directory)
-  (find-file (expand-file-name "scratch.org" org-directory)))
+  (find-file (expand-file-name "scratch.org" (my/notes--ensure-directory))))
 
 (defun my/notes-dired ()
   "Open the Org notes directory in Dired."
   (interactive)
-  (dired org-directory))
+  (dired (my/notes--ensure-directory)))
 
 (defun my/notes-find-file ()
   "Find a file in the Org notes directory with Consult."
   (interactive)
-  (consult-find org-directory))
+  (consult-find (my/notes--ensure-directory)))
 
 (defun my/notes-ripgrep ()
   "Search the Org notes directory with Consult ripgrep."
   (interactive)
-  (consult-ripgrep org-directory))
+  (consult-ripgrep (my/notes--ensure-directory)))
 
 (keymap-set my/notes-prefix-map "j" #'my/notes-capture)
 (keymap-set my/notes-prefix-map "n" #'my/notes-denote-new)
