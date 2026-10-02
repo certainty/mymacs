@@ -41,6 +41,11 @@ Other graph and metadata reports are also read-only by default.")
   "Face for tasks carrying one of `taskwarrior-list-highlight-tags'."
   :group 'taskwarrior-list)
 
+(defface taskwarrior-list-date-alert-face
+  '((t :inherit warning :weight bold))
+  "Face for tasks scheduled or due today or earlier."
+  :group 'taskwarrior-list)
+
 (defcustom taskwarrior-list-highlight-tags '("next")
   "Tags whose tasks should use `taskwarrior-list-highlight-face'.
 Tag names may optionally include Taskwarrior's leading plus sign."
@@ -52,6 +57,7 @@ Tag names may optionally include Taskwarrior's leading plus sign."
     ("Urg" "urgency" 6 t)
     ("Project" "project" 16 t)
     ("Due" "due" 12 t)
+    ("Scheduled" "scheduled" 12 t)
     ("Tags" "tags" 18 t)
     ("Description" "description" 0 t))
   "Columns displayed in Taskwarrior list buffers.
@@ -209,6 +215,24 @@ Taskwarrior JSON export.  WIDTH zero means use the remaining space."
                     (member (string-remove-prefix "+" configured-tag) tags))
                   taskwarrior-list-highlight-tags))))
 
+(defun taskwarrior-list--date-on-or-before-p (value today)
+  "Return non-nil when date VALUE is on or before compact date TODAY.
+VALUE may be Taskwarrior's compact timestamp or an ISO date string."
+  (when (stringp value)
+    (let ((date (cond
+                 ((string-match "\\`\\([0-9]\\{8\\}\\)T" value)
+                  (match-string 1 value))
+                 ((string-match "\\`\\([0-9]\\{4\\}-[0-9]\\{2\\}-[0-9]\\{2\\}\\)" value)
+                  (replace-regexp-in-string "-" "" (match-string 1 value))))))
+      (and date (not (string-lessp today date))))))
+
+(defun taskwarrior-list--date-alert-p (task &optional today)
+  "Return non-nil when TASK is scheduled or due today or earlier.
+TODAY, when non-nil, is a YYYYMMDD string; otherwise use the current date."
+  (let ((today (or today (format-time-string "%Y%m%d"))))
+    (or (taskwarrior-list--date-on-or-before-p (gethash "scheduled" task) today)
+        (taskwarrior-list--date-on-or-before-p (gethash "due" task) today))))
+
 (defun taskwarrior-list--entry (task)
   "Build a tabulated list entry for TASK."
   (let ((uuid (gethash "uuid" task)))
@@ -220,13 +244,17 @@ Taskwarrior JSON export.  WIDTH zero means use the remaining space."
             (mapcar (lambda (column)
                       (taskwarrior-list--field-display task (nth 1 column)))
                     taskwarrior-list-columns))))
-      (when (taskwarrior-list--highlighted-p task)
-        (setq columns
-              (vconcat
-               (mapcar (lambda (column)
-                         (propertize column 'face
-                                     'taskwarrior-list-highlight-face))
-                       columns))))
+      (let ((face (cond
+                   ((taskwarrior-list--date-alert-p task)
+                    'taskwarrior-list-date-alert-face)
+                   ((taskwarrior-list--highlighted-p task)
+                    'taskwarrior-list-highlight-face))))
+        (when face
+          (setq columns
+                (vconcat
+                 (mapcar (lambda (column)
+                           (propertize column 'face face))
+                         columns)))))
       (list uuid columns))))
 
 (defun taskwarrior-list--reload ()

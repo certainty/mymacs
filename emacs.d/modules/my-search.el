@@ -3,6 +3,14 @@
 (defvar outline-minor-mode-map)
 
 ;;; Search
+(defun my/consult-ripgrep ()
+  "Search with ripgrep, using the active region as the initial query."
+  (interactive)
+  (consult-ripgrep nil
+                   (when (use-region-p)
+                     (buffer-substring-no-properties
+                      (region-beginning) (region-end)))))
+
 (use-package isearch
   :hook (occur-mode . hl-line-mode)
   :bind
@@ -29,7 +37,7 @@
         ("B" . consult-buffer)
         ("s" . consult-imenu)
         ("S" . consult-imenu-multi)
-        ("/" . consult-ripgrep)
+        ("/" . my/consult-ripgrep)
         ("d" . consult-flymake))
   (:map my/open-prefix-map
         ("o" . consult-recent-file))
@@ -41,7 +49,7 @@
         ("M" . consult-mark)
         ("d" . consult-flymake))
   (:map search-map
-        ("/" . consult-ripgrep)
+        ("/" . my/consult-ripgrep)
         ("v" . consult-git-grep))
   :config
   (with-eval-after-load 'outline

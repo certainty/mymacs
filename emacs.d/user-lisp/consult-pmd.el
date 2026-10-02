@@ -313,6 +313,11 @@ Each value is an alist with `data' and `timestamp' keys.")
                 columns))
          "  ")))
 
+(defun pmd--consult-annotator (annotator)
+  "Return ANNOTATOR unless Marginalia mode is active."
+  (unless (bound-and-true-p marginalia-mode)
+    annotator))
+
 (defun +pmd-cache-clear ()
   "Clear the PMD cache for all entity types."
   (interactive)
@@ -388,7 +393,7 @@ Each value is an alist with `data' and `timestamp' keys.")
                     :history 'pmd--projects-history
                     :require-match t
                     :lookup #'consult--lookup-candidate
-                    :annotate #'pmd--projects-annotate
+                    :annotate (pmd--consult-annotator #'pmd--projects-annotate)
                     :group (pmd--grouping-fn "service_group")
                     :sort nil)))
         (pmd--browse-url (format "projects/%s" project-id))))))
@@ -584,7 +589,7 @@ When INCLUDE-FORGE is non-nil, clone under a forge-specific subdirectory."
                   :category pmd--team-type
                   :history 'pmd--teams-history
                   :require-match t
-                  :annotate #'pmd--teams-annotate
+                  :annotate (pmd--consult-annotator #'pmd--teams-annotate)
                   :group (pmd--grouping-fn "org_unit")
                   :lookup #'consult--lookup-candidate
                   :sort nil)))
@@ -692,7 +697,7 @@ When INCLUDE-FORGE is non-nil, clone under a forge-specific subdirectory."
                   :prompt "PMD ServiceGroup: "
                   :category pmd--servicegroup-type
                   :history 'pmd--servicegroups-history
-                  :annotate #'pmd--servicegroups-annotate
+                  :annotate (pmd--consult-annotator #'pmd--servicegroups-annotate)
                   :lookup #'consult--lookup-candidate
                   :require-match t
                   :sort nil)))
@@ -744,7 +749,7 @@ When INCLUDE-FORGE is non-nil, clone under a forge-specific subdirectory."
                   :category pmd--people-type
                   :history 'pmd--people-history
                   :lookup #'consult--lookup-candidate
-                  :annotate #'pmd--people-annotate
+                  :annotate (pmd--consult-annotator #'pmd--people-annotate)
                   :require-match t
                   :sort nil)))
       (let ((data (pmd--recover-entity pmd--people-type person-id)))
@@ -765,4 +770,8 @@ When INCLUDE-FORGE is non-nil, clone under a forge-specific subdirectory."
   (add-to-list 'embark-keymap-alist `(,pmd--people-type . pmd-people-embark-map)))
 
 (provide 'consult-pmd)
+
+(with-eval-after-load 'marginalia
+  (require 'consult-pmd-marginalia))
+
 ;;; consult-pmd.el ends here

@@ -35,6 +35,8 @@
   (prog-mode . turn-on-diff-hl-mode)
   (text-mode . turn-on-diff-hl-mode)
   (vc-dir-mode . turn-on-diff-hl-mode)
+  :custom
+  (diff-hl-draw-borders nil)
   :config
   (unless (display-graphic-p)
     (require 'diff-hl-margin)

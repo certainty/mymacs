@@ -34,9 +34,9 @@
 (defcustom my/font "Maple Mono NF" "The font to use" :type 'string :group 'mymacs)
 (defcustom my/font-height 110 "The font height" :type 'number :group 'mymacs)
 (defcustom my/font-weight 'light "The font weigh" :type 'symbol :group 'mymacs)
-(defcustom my/notes-directory nil
-  "The zk notebook directory, or nil to use ZK_NOTEBOOK_DIR."
-  :type '(choice (const :tag "Use ZK_NOTEBOOK_DIR" nil) directory)
+(defcustom my/org-directory "~/org"
+  "Directory for Org notes."
+  :type 'directory
   :group 'mymacs)
 (defcustom my/pmd-enabled nil "Enable consult-pmd" :type 'boolean :group 'mymacs)
 (defcustom my/pmd-base-url nil "The pmd url" :type 'string :group 'mymacs)

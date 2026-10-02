@@ -2,8 +2,11 @@
 
 (use-package pulsar
   :ensure t
-  :init
-  (pulsar-global-mode 1)
+  :hook
+  (after-init . (lambda () (pulsar-global-mode 1)))
+  :custom
+  (pulsar-delay 0.055)
+  (pulsar-iterations 5)
   :config
   ;; `pulsar-pulse-functions' covers `next-error' and `previous-error';
   ;; include Flymake's direct navigation commands as well.
@@ -37,12 +40,12 @@
     (require-theme 'modus-themes))
   :config
   (setq modus-vivendi-palette-overrides
-        '((bg-line-number-active bg-main)
-          (bg-line-number-inactive bg-main)
-          (bg-mode-line-active "#424242")
-          (bg-mode-line-inactive "#252525")
+        '((bg-line-number-active "#121212")
+          (bg-line-number-inactive "#121212")
+          (bg-mode-line-active "#2b2b2b")
+          (bg-mode-line-inactive "#151515")
           (bg-paren-match bg-magenta-intense)
-          (bg-fringe bg-main)
+          (bg-fringe "#121212")
           (fringe bg-main)
           (bg-space bg-main)))
   (load-theme my/theme t))
@@ -133,6 +136,10 @@
   (setq-default standard-indent 2)
   (setq-default tab-width 2)
 
+;;; text display
+  (setq-default line-prefix " "
+                wrap-prefix " ")
+
 ;;; default font
   (set-face-attribute
    'default nil
@@ -142,8 +149,13 @@
 
 
 ;;;; modeline
-  (dolist (m '(mode-line mode-line-active mode-line-inactive))
-    (set-face-attribute m nil :background 'unspecified :box nil :overline "gray50" :underline nil))
+  (dolist (face-and-border '((mode-line . "#404040")
+                              (mode-line-active . "#404040")
+                              (mode-line-inactive . "#2a2a2a")))
+    (set-face-attribute (car face-and-border) nil
+                        :box (list :line-width -1 :color (cdr face-and-border))
+                        :overline "#606060"
+                        :underline nil))
 
   (setopt mode-line-compact nil
           mode-line-right-align-edge 'right-margin)
@@ -169,7 +181,8 @@
                             '(flymake-mode-line-format
                               "  "))
                         mode-line-misc-info))))
-                  mode-line-end-spaces)))
+                  mode-line-end-spaces))
+  )
 
 (use-package easy-kill
   :ensure t

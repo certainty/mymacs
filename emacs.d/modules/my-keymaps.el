@@ -2,7 +2,7 @@
 
 ;;; Customization
 (defvar-keymap my/leader-map :doc "Shared leader keymap.")
-(defvar-keymap my/notes-prefix-map :doc "Markdown notes leader submap.")
+(defvar-keymap my/notes-prefix-map :doc "Org notes leader submap.")
 (defvar-keymap my/pmd-prefix-map :doc "PMD leader submap.")
 
 (defvar-keymap my/open-prefix-map :doc "Open resources leader submap.")
@@ -30,6 +30,7 @@
   "L" #'windmove-swap-states-right)
 
 (keymap-set my/leader-map "j" my/notes-prefix-map)
+(keymap-set my/leader-map "X" #'my/notes-capture)
 (keymap-set my/leader-map "," my/pmd-prefix-map)
 
 (keymap-set my/leader-map "o" my/open-prefix-map)

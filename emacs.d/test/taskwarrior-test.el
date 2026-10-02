@@ -182,7 +182,8 @@
     (taskwarrior-list-mode)
     (let* ((task (json-parse-string
                   (concat "{\"uuid\":\"abc\",\"id\":7,\"urgency\":3.25,"
-                          "\"project\":\"work\",\"due\":\"20260330T120000Z\","
+                          "\"project\":\"work\",\"due\":\"20991231T120000Z\","
+                          "\"scheduled\":\"20991230T120000Z\","
                           "\"tags\":[\"next\",\"review\"],"
                           "\"description\":\"Test task\"}")
                   :object-type 'hash-table :array-type 'list))
@@ -190,8 +191,8 @@
            (columns (cadr entry)))
       (should (equal (car entry) "abc"))
       (should (equal (mapcar #'substring-no-properties (append columns nil))
-                     '("" "7" "3.2" "work" "2026-03-30"
-                       "next,review" "Test task")))
+                     '("" "7" "3.2" "work" "2099-12-31"
+                       "2099-12-30" "next,review" "Test task")))
       (should (eq (get-text-property 0 'face (aref columns 6))
                   'taskwarrior-list-highlight-face)))))
 
@@ -201,6 +202,29 @@
                "{\"uuid\":\"abc\",\"tags\":[\"review\"]}"
                :object-type 'hash-table :array-type 'list)))
     (should (taskwarrior-list--highlighted-p task))))
+
+(ert-deftest taskwarrior-list-date-alert-detects-today-and-past-dates ()
+  (let ((task (make-hash-table :test 'equal)))
+    (puthash "scheduled" "20260101T120000Z" task)
+    (should (taskwarrior-list--date-alert-p task "20260102"))
+    (puthash "scheduled" "20260103T120000Z" task)
+    (puthash "due" "2026-01-02" task)
+    (should (taskwarrior-list--date-alert-p task "20260102"))
+    (puthash "due" "20260103T120000Z" task)
+    (should-not (taskwarrior-list--date-alert-p task "20260102"))))
+
+(ert-deftest taskwarrior-list-date-alert-face-highlights-entry ()
+  (with-temp-buffer
+    (taskwarrior-list-mode)
+    (let* ((today (format-time-string "%Y%m%d"))
+           (task (make-hash-table :test 'equal)))
+      (puthash "uuid" "date-alert" task)
+      (puthash "due" (concat today "T120000Z") task)
+      (puthash "description" "Today's task" task)
+      (let* ((entry (taskwarrior-list--entry task))
+             (columns (cadr entry)))
+        (should (eq (get-text-property 0 'face (aref columns 7))
+                    'taskwarrior-list-date-alert-face))))))
 
 (provide 'taskwarrior-test)
 ;;; taskwarrior-test.el ends here

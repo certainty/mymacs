@@ -63,6 +63,7 @@
   (window-divider-default-bottom-width 1)
 
   ;;;;; buffer arrangement
+  ;; Keep the catch-all last; feature-specific rules should be prepended.
   (display-buffer-alist
    `(("\\*vc-log\\*" . ,(my/bottom-window-config nil 'display-buffer-reuse-window 0))
      ("\\*log-edit-files\\*" . ,(my/bottom-window-config 'special-mode 'display-buffer-reuse-window 1))

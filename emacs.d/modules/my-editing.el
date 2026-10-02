@@ -65,7 +65,7 @@
         ("C-," . embark-dwim)
         ("C-c ." . embark-act)
         ("C-c ," . embark-dwim))
-  (:map icomplete-minibuffer-map
+  (:map vertico-map
         ("C-." . embark-act)
         ("C-," . embark-dwim)
         ("C-c ." . embark-act)
