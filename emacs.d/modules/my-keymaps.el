@@ -44,6 +44,9 @@
   :doc "mymacs global keys"
   "C-j" my/leader-map)
 
+(keymap-set mymacs-mode-map "C-<" #'previous-buffer)
+(keymap-set mymacs-mode-map "C->" #'next-buffer)
+
 (defvar mymacs-emulation-mode-map-alist
   `((mymacs-mode . ,mymacs-mode-map))
   "Keymap alist giving `mymacs-mode-map' precedence.")

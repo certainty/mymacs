@@ -13,7 +13,9 @@
 ;;;; compilation mode colors
 (use-package compile
   :custom
-  (compilation-scroll-output t))
+  (compilation-scroll-output t)
+  (compilation-auto-jump-to-first-error t)
+  (compilation-max-output-line-length nil))
 
 (use-package ansi-color
   :hook (compilation-filter . ansi-color-compilation-filter))
@@ -54,9 +56,13 @@
 
 ;;; snippets
 ;; these also act as a provider for eglot
+(declare-function yas-reload-all "yasnippet")
+
 (use-package yasnippet
   :ensure t
-  :hook (prog-mode . yas-minor-mode))
+  :hook (prog-mode . yas-minor-mode)
+  :config
+  (yas-reload-all))
 
 (use-package treesit
   :custom
