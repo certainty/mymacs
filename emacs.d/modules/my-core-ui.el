@@ -1,5 +1,25 @@
 ;;; my-core-ui.el --- Core UI and global defaults -*- lexical-binding: t; -*-
 
+(use-package pulsar
+  :ensure t
+  :init
+  (pulsar-global-mode 1)
+  :config
+  ;; `pulsar-pulse-functions' covers `next-error' and `previous-error';
+  ;; include Flymake's direct navigation commands as well.
+  (dolist (function '(flymake-goto-next-error flymake-goto-prev-error))
+    (add-to-list 'pulsar-pulse-functions function))
+  ;; Compilation buffers use `next-error-hook' rather than the ordinary
+  ;; command mechanism to mark the selected diagnostic.
+  (add-hook 'next-error-hook #'pulsar-pulse-line)
+  ;; Imenu and Consult jumps can land inside hidden Outline/Org entries.
+  (add-hook 'imenu-after-jump-hook #'pulsar-recenter-top)
+  (add-hook 'imenu-after-jump-hook #'pulsar-reveal-entry)
+  (add-hook 'consult-after-jump-hook #'pulsar-recenter-top)
+  (add-hook 'consult-after-jump-hook #'pulsar-reveal-entry)
+  ;; Pulsar documents this hook for minibuffer feedback.
+  (add-hook 'minibuffer-setup-hook #'pulsar-pulse-line))
+
 ;;; Theme
 (use-package modus-themes
   :demand t
@@ -19,6 +39,8 @@
   (setq modus-vivendi-palette-overrides
         '((bg-line-number-active bg-main)
           (bg-line-number-inactive bg-main)
+          (bg-mode-line-active "#424242")
+          (bg-mode-line-inactive "#252525")
           (bg-paren-match bg-magenta-intense)
           (bg-fringe bg-main)
           (fringe bg-main)
