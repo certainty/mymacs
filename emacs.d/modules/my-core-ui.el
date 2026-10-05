@@ -167,6 +167,8 @@
                   mode-line-remote
                   " "
                   mode-line-buffer-identification
+                  " "
+                  "%l:%c"
                   (:eval
                    (when (mode-line-window-selected-p)
                      (format-mode-line
