@@ -178,7 +178,7 @@
                      (format-mode-line
                       `("  "
                         ,@(when (bound-and-true-p flymake-mode)
-                            '(flymake-mode-line-format
+                            '(flymake-mode-line-format  
                               "  "))
                         mode-line-misc-info))))
                   mode-line-end-spaces))

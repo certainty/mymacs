@@ -56,6 +56,14 @@
         ("C-j" . nil))
   :load-path "vendor")
 
+(use-package substitute
+  :ensure t
+  :bind ("C-;" . substitute-target-in-buffer)
+  :config
+  (setq substitute-fixed-letter-case t)
+  (add-hook 'substitute-post-replace-functions #'substitute-report-operation)
+  (add-hook 'substitute-post-replace-functions #'sacha-substitute-save-common-edits))
+
 ;;;; embark
 (use-package embark
   :ensure t
@@ -65,15 +73,7 @@
         ("C-," . embark-dwim)
         ("C-c ." . embark-act)
         ("C-c ," . embark-dwim))
-  (:map vertico-map
-        ("C-." . embark-act)
-        ("C-," . embark-dwim)
-        ("C-c ." . embark-act)
-        ("C-c ," . embark-dwim)
-        ("C-c C-c" . embark-collect)
-        ("C-c C-e" . embark-export)
-        ("C-c C-m" . embark-select)
-        ("C-c C-a" . embark-act-all))
+  ;;       ("C-c C-a" . embark-act-all))
   (:map minibuffer-mode-map
         ("C-c C-c" . embark-collect)
         ("C-c C-e" . embark-export)

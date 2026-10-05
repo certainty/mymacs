@@ -5,11 +5,6 @@
 ;; matching style, and annotations.  In-buffer completion remains built in.
 
 ;;;; Minibuffer
-(use-package vertico
-  :ensure t
-  :init
-  (vertico-mode))
-
 (use-package orderless
   :ensure t
   :custom
@@ -27,38 +22,22 @@
   (marginalia-mode))
 
 ;; Previous built-in minibuffer and Icomplete configuration, kept for reference.
-;; (use-package minibuffer
-;;   :custom
-;;   (completion-sort 'historical)
-;;   (completion-eager-update t)
-;;   (completion-eager-display 'auto)
-;;   (completion-auto-select t)
-;;   (completions-auto-help 'visible)
-;;   (completions-max-height 20)
-;;   (completion-ignore-case t)
-;;   (read-buffer-completion-ignore-case t)
-;;   (read-file-name-completion-ignore-case t)
-;;   (completions-format 'vertical)
-;;   (completion-styles '(substring partial-completion flex basic)))
-;;
-;; (use-package icomplete
-;;   :bind
-;;   (:map icomplete-minibuffer-map
-;;         ("C-n" . icomplete-forward-completions)
-;;         ("C-p" . icomplete-backward-completions)
-;;         ("C-y" . icomplete-force-complete-and-exit)
-;;         ("C-<return>" . icomplete-force-complete))
-;;   :custom
-;;   (icomplete-delay-completions-threshold 0)
-;;   (icomplete-in-buffer t)
-;;   (icomplete-max-delay-chars 0)
-;;   (icomplete-scroll t)
-;;   (icomplete-prospects-height 10)
-;;   (icomplete-show-matches-on-no-input t)
-;;   :init
-;;   (icomplete-vertical-mode))
+(use-package minibuffer
+  :custom
+  (completion-sort 'historical)
+  (completion-eager-update t)
+  (completion-eager-display 'auto)
+  (completion-auto-select t)
+  (completions-auto-help 'visible)
+  (completions-max-height 20)
+  (completion-ignore-case t)
+  (read-buffer-completion-ignore-case t)
+  (read-file-name-completion-ignore-case t)
+  (completions-format 'vertical)
+  :init
+  (fido-vertical-mode))
 
-;;;; In-buffer
+;;;; In-buffer completion with completion preview mode. I like this alot better than popups
 (use-package completion-preview
   :hook ((prog-mode . completion-preview-mode)
          (markdown-ts-mode . completion-preview-mode))
