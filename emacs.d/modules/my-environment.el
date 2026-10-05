@@ -2,7 +2,6 @@
 
 ;;; Environment setup (to start emacs from launcher)
 (use-package exec-path-from-shell
-  ;; :if (memq window-system '(mac ns))
   :ensure t
   :pin "nongnu"
   :custom
@@ -15,5 +14,6 @@
     "Environment variables imported from the shell on macOS.")
   :config
   (exec-path-from-shell-initialize))
+
 (provide 'my-environment)
 ;;; my-environment.el ends here

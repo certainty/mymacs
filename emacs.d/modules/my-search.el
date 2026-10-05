@@ -46,7 +46,7 @@
         ("o" . consult-recent-file)
         ("r" . consult-bookmark)
         ("i".  consult-imenu)
-        ("M" . consult-mark)
+        ("m" . consult-mark)
         ("d" . consult-flymake))
   (:map search-map
         ("/" . my/consult-ripgrep)

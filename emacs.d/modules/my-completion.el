@@ -1,7 +1,7 @@
 ;;; my-completion.el --- Minibuffer and in-buffer completion -*- lexical-binding: t; -*-
 
 ;;; Completion
-;; Vertico, Orderless, and Marginalia provide the minibuffer completion UI,
+;; Fido-vertical-mode, Orderless, and Marginalia provide the minibuffer completion UI,
 ;; matching style, and annotations.  In-buffer completion remains built in.
 
 ;;;; Minibuffer

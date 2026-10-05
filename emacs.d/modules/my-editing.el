@@ -54,6 +54,9 @@
   :bind
   (:map paredit-mode-map
         ("C-j" . nil))
+  (:repeat-map my/paredit-slurp-repeat-map
+               (")" . paredit-forward-slurp-sexp)
+               ("(" . paredit-backward-slurp-sexp))
   :load-path "vendor")
 
 (use-package substitute

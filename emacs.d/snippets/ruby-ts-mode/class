@@ -1,0 +1,8 @@
+# name: Class
+# key: ;cls
+# --
+
+class $0
+  def initialize
+  end
+end

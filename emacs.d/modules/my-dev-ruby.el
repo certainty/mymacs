@@ -7,6 +7,16 @@
 (declare-function project-current "project")
 (declare-function project-root "project")
 
+(defvar-local my/ruby-project-test-runner nil
+  "Project-specific Ruby test runner, or nil to infer it from the file.")
+
+(defun my/ruby--valid-test-runner-p (value)
+  "Return non-nil when VALUE is a supported Ruby test runner."
+  (memq value '(rspec minitest)))
+
+(put 'my/ruby-project-test-runner 'safe-local-variable
+     #'my/ruby--valid-test-runner-p)
+
 (defun my/ruby--project-root ()
   "Return the current project root for Ruby commands."
   (when-let* ((project (project-current nil)))
@@ -33,12 +43,38 @@
 
 (defun my/ruby--test-framework (&optional file)
   "Return the Ruby test framework for FILE or the current buffer.
-Return `rspec' for RSpec specs, `minitest' for Minitest tests, or nil when
-the buffer does not look like a Ruby test file."
-  (cond
-   ((my/ruby--spec-file-p file) 'rspec)
-   ((my/ruby--minitest-file-p file) 'minitest)
-   (t nil)))
+Use the project-specific runner when set; otherwise infer it from FILE.
+Return `rspec', `minitest', or nil when no runner can be determined."
+  (or my/ruby-project-test-runner
+      (cond
+       ((my/ruby--spec-file-p file) 'rspec)
+       ((my/ruby--minitest-file-p file) 'minitest)
+       (t nil))))
+
+(defun my/ruby-set-project-test-runner (runner)
+  "Set the current project's Ruby test RUNNER in its .dir-locals.el."
+  (interactive
+   (list (intern (completing-read "Ruby test runner: " '("minitest" "rspec")
+                                  nil t))))
+  (unless (my/ruby--valid-test-runner-p runner)
+    (user-error "Unsupported Ruby test runner: %S" runner))
+  (let ((root (my/ruby--project-root)))
+    (unless root
+      (user-error "The current buffer is not in a project"))
+    (add-dir-local-variable 'ruby-ts-mode 'my/ruby-project-test-runner runner
+                            (expand-file-name ".dir-locals.el" root))
+    ;; Directory locals are normally applied when buffers are visited.  Update
+    ;; already-open Ruby buffers too, so the choice takes effect immediately.
+    (dolist (buffer (buffer-list))
+      (with-current-buffer buffer
+        (when (and buffer-file-name
+                   (file-in-directory-p buffer-file-name
+                                        (file-name-as-directory root))
+                   (derived-mode-p 'ruby-ts-mode 'ruby-mode))
+          (setq-local my/ruby-project-test-runner runner))))
+    (setq-local my/ruby-project-test-runner runner)
+    (message "Ruby test runner for %s set to %s"
+             (abbreviate-file-name root) runner)))
 
 (defun my/ruby--rspec-target (&optional line)
   "Return the RSpec target for the current buffer and optional LINE."

@@ -66,15 +66,13 @@
         (">" . indent-rigidly-right-to-tab-stop))
   (:map goto-map
         ("n" . nil)
-        ("p" . nil)
-        ("<" . pop-to-mark-command)
-        ("m" . pop-global-mark))
+        ("p" . nil))
   (:repeat-map my/navigation-repeat-map
                ("n" . forward-line)
                ("p" . previous-line))
   (:repeat-map my/mark-repeat-map
-               ("<" . pop-to-mark-command)
-               ("m" . pop-global-mark))
+               ("@" . pop-global-mark)
+               ("SPC" . pop-mark))
 
   :custom
 ;;; ui
@@ -185,6 +183,8 @@
                         mode-line-misc-info))))
                   mode-line-end-spaces))
   )
+
+(put 'set-mark-command 'repeat-map 'my/mark-repeat-map)
 
 (use-package easy-kill
   :ensure t
