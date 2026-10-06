@@ -34,6 +34,7 @@
 ;;; Denote
 (use-package denote
   :ensure t
+  :hook (dired-mode . denote-dired-mode)
   :commands (denote)
   :custom
   (denote-directory (file-name-as-directory (expand-file-name my/notes-directory)))
@@ -71,7 +72,7 @@
 (defun my/notes-find-file ()
   "Find a file in the Org notes directory with Consult."
   (interactive)
-  (consult-find (my/notes--ensure-directory)))
+  (find-file (my/notes--ensure-directory)))
 
 (defun my/notes-ripgrep ()
   "Search the Org notes directory with Consult ripgrep."

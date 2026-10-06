@@ -27,7 +27,24 @@
   :custom
   (vc-auto-revert-mode t)
   (vc-allow-rewriting-published-history t)
-  (vc-dir-hide-up-to-date-on-revert t))
+  (vc-dir-hide-up-to-date-on-revert t)
+  :preface
+  (defun my/vc-git-close-successful-pushpull (original command &rest args)
+    "Close the VC Git output window after a successful push or pull."
+    (let ((process (apply original command args)))
+      (when (member command '("push" "pull"))
+        (let ((buffer (process-buffer process)))
+          (vc-exec-after
+           (lambda ()
+             (when (buffer-live-p buffer)
+               (dolist (window (get-buffer-window-list buffer nil t))
+                 (quit-window nil window))))
+           0 process)))
+      process))
+  :config
+  (with-eval-after-load 'vc-git
+    (advice-add 'vc-git--pushpull :around
+                #'my/vc-git-close-successful-pushpull)))
 
 (use-package diff-hl
   :ensure t

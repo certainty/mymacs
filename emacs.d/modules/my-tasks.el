@@ -11,7 +11,7 @@
   (org-log-done 'time)
   (org-log-into-drawer "LOGBOOK")
   (org-agenda-custom-commands
-   '(("t" "Task overview"
+   '(("v" "Task overview"
       ((tags-todo "+PRIORITY=\"A\""
                   ((org-agenda-overriding-header "Important, unscheduled")
                    (org-agenda-skip-function
@@ -42,7 +42,7 @@
   "Open the custom task overview agenda."
   (interactive)
   (my/tasks--file)
-  (org-agenda nil "t"))
+  (org-agenda nil "v"))
 
 (defun my/tasks-capture ()
   "Capture a task in the single task file."

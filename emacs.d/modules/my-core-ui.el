@@ -40,8 +40,8 @@
     (require-theme 'modus-themes))
   :config
   (setq modus-vivendi-palette-overrides
-        '((bg-line-number-active "#121212")
-          (bg-line-number-inactive "#121212")
+        '((bg-line-number-active "#000000")
+          (bg-line-number-inactive "#000000")
           (bg-mode-line-active "#2b2b2b")
           (bg-mode-line-inactive "#151515")
           (bg-paren-match bg-magenta-intense)
@@ -70,10 +70,6 @@
   (:repeat-map my/navigation-repeat-map
                ("n" . forward-line)
                ("p" . previous-line))
-  (:repeat-map my/mark-repeat-map
-               ("@" . pop-global-mark)
-               ("SPC" . pop-mark))
-
   :custom
 ;;; ui
   (use-short-answers t)
@@ -134,10 +130,6 @@
   (setq-default standard-indent 2)
   (setq-default tab-width 2)
 
-;;; text display
-  (setq-default line-prefix " "
-                wrap-prefix " ")
-
 ;;; default font
   (set-face-attribute
    'default nil
@@ -183,8 +175,6 @@
                         mode-line-misc-info))))
                   mode-line-end-spaces))
   )
-
-(put 'set-mark-command 'repeat-map 'my/mark-repeat-map)
 
 (use-package easy-kill
   :ensure t
