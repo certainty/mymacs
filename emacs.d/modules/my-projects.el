@@ -22,11 +22,36 @@
     (interactive)
     (consult-ripgrep (project-root (project-current t)) (thing-at-point 'symbol))))
 
+;;;; auto-revert
+(use-package autorevert
+  :custom
+  (auto-revert-verbose nil)
+  :init
+  (global-auto-revert-mode 1))
+
+;;;; minibuffer
+(use-package minibuffer
+  :custom
+  (enable-recursive-minibuffers t)
+  :init
+  (minibuffer-depth-indicate-mode))
+
+(use-package savehist
+  :custom
+  (history-length 200)
+  (savehist-save-minibuffer-history t)
+  (savehist-autosave-interval 100)
+  :init
+  (add-hook 'emacs-startup-hook #'savehist-mode))
+
+
 ;;;; vc
 (use-package vc
+  :bind
+  (:map my/leader-map
+        ("v" . project-vc-dir))
   :custom
-  (vc-auto-revert-mode t)
-  (vc-allow-rewriting-published-history t)
+  (vc-allow-rewriting-published-history 'ask)
   (vc-dir-hide-up-to-date-on-revert t)
   :preface
   (defun my/vc-git-close-successful-pushpull (original command &rest args)
@@ -41,6 +66,8 @@
                  (quit-window nil window))))
            0 process)))
       process))
+  :init
+  (vc-auto-revert-mode 1)
   :config
   (with-eval-after-load 'vc-git
     (advice-add 'vc-git--pushpull :around
@@ -69,10 +96,51 @@
   :commands (magit-status)
   :bind
   (:map my/leader-map
-        ("v" . magit-status))
+        ("V" . magit-status))
   :custom
   (magit-display-buffer-function
    #'magit-display-buffer-same-window-except-diff-v1))
+
+;;;; vc log
+(use-package log-view
+  :bind
+  (:map log-view-mode-map
+        ("H" . log-view-delete-revisions-from-end)))
+
+;;;; ediff
+(use-package ediff
+  :preface
+  (defun my/ediff-store-layout ()
+    "Store the current frame's window configuration for Ediff."
+    (set-frame-parameter
+     (selected-frame) 'my/ediff-window-configuration
+     (current-window-configuration)))
+
+  (defun my/ediff-restore-layout ()
+    "Restore the frame's window configuration saved before Ediff."
+    (when-let* ((configuration
+                 (frame-parameter (selected-frame)
+                                  'my/ediff-window-configuration)))
+      (set-window-configuration configuration)))
+
+  (defun my/ediff-visible-buffers-2 ()
+    "Run Ediff on the buffers displayed in the current frame's two windows."
+    (interactive)
+    (if (= (length (window-list)) 2)
+        (let ((buffers (mapcar #'window-buffer (window-list))))
+          (ediff-buffers (car buffers) (cadr buffers)))
+      (user-error "Can only operate on two windows")))
+
+  (defun my/ediff-visible-buffers-3 ()
+    "Run three-way Ediff on buffers in the current frame's three windows."
+    (interactive)
+    (if (= (length (window-list)) 3)
+        (let ((buffers (mapcar #'window-buffer (window-list))))
+          (ediff-buffers3 (nth 0 buffers) (nth 1 buffers) (nth 2 buffers)))
+      (user-error "Can only operate on three windows")))
+  :init
+  (add-hook 'ediff-before-setup-hook #'my/ediff-store-layout)
+  (add-hook 'ediff-quit-hook #'my/ediff-restore-layout))
 
 (provide 'my-projects)
 ;;; my-projects.el ends here

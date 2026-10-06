@@ -1,6 +1,5 @@
 ;;; my-search.el --- Interactive search and Consult -*- lexical-binding: t; -*-
 
-(defvar outline-minor-mode-map)
 
 ;;; Search
 (defun my/consult-ripgrep ()
@@ -55,7 +54,16 @@
   (with-eval-after-load 'outline
     (keymap-set outline-minor-mode-map "C-c O" #'consult-outline)))
 
-;; wgrep no longer needed, since emacs 31 has grep-edit-mode
+(use-package avy
+  :ensure t
+  :commands (avy-goto-word-0)
+  :bind
+  (:map search-map
+        ("w" . avy-goto-word)
+        ("C" . avy-goto-char-timer))
+  :custom
+  (avy-all-windows nil))
+
 
 (provide 'my-search)
 ;;; my-search.el ends here

@@ -2,6 +2,12 @@
 
 ;;; Org task workflow
 (use-package org
+  :bind
+  (:map my/task-prefix-map
+        ("t" . my/tasks-agenda)
+        ("T" . org-agenda)
+        ("x" . my/tasks-caputure)
+        ("e" . my/tasks-open-file))
   :custom
   (org-agenda-files
    (list (expand-file-name "todo.org" org-directory)))
@@ -31,34 +37,32 @@
                 (org-agenda-overriding-header "Deadlines in the next 14 days")))))))
   :init
   (push `("^\\*Org Agenda\\*$" . ,(my/side-window-config))
-        display-buffer-alist))
+        display-buffer-alist)
 
-(defun my/tasks--file ()
-  "Return the path to the single task file, creating its directory if needed."
-  (make-directory org-directory t)
-  (expand-file-name "todo.org" org-directory))
+  :config
+  
+  (defun my/tasks--file ()
+    "Return the path to the single task file, creating its directory if needed."
+    (make-directory org-directory t)
+    (expand-file-name "todo.org" org-directory))
 
-(defun my/tasks-agenda ()
-  "Open the custom task overview agenda."
-  (interactive)
-  (my/tasks--file)
-  (org-agenda nil "v"))
+  (defun my/tasks-agenda ()
+    "Open the custom task overview agenda."
+    (interactive)
+    (my/tasks--file)
+    (org-agenda nil "v"))
 
-(defun my/tasks-capture ()
-  "Capture a task in the single task file."
-  (interactive)
-  (my/tasks--file)
-  (org-capture nil "t"))
+  (defun my/tasks-capture ()
+    "Capture a task in the single task file."
+    (interactive)
+    (my/tasks--file)
+    (org-capture nil "t"))
 
-(defun my/tasks-open-file ()
-  "Open the single task file."
-  (interactive)
-  (find-file (my/tasks--file)))
+  (defun my/tasks-open-file ()
+    "Open the single task file."
+    (interactive)
+    (find-file (my/tasks--file))))
 
-(keymap-set my/task-prefix-map "t" #'my/tasks-agenda)
-(keymap-set my/task-prefix-map "T" #'org-agenda)
-(keymap-set my/task-prefix-map "a" #'my/tasks-capture)
-(keymap-set my/task-prefix-map "e" #'my/tasks-open-file)
 
 (provide 'my-tasks)
 ;;; my-tasks.el ends here

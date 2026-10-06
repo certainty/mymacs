@@ -53,7 +53,11 @@
   (lisp-mode . paredit-mode)
   :bind
   (:map paredit-mode-map
-        ("C-j" . nil))
+        ("C-)" . paredit-forward-slurp-sexp)
+        ("C-(" . paredit-backward-slurp-sexp)
+        ("C-j" . nil)
+        ("M-s" . nil) ;; free the search map
+        ) 
   (:repeat-map my/paredit-slurp-repeat-map
                (")" . paredit-forward-slurp-sexp)
                ("(" . paredit-backward-slurp-sexp))
@@ -76,7 +80,6 @@
         ("C-," . embark-dwim)
         ("C-c ." . embark-act)
         ("C-c ," . embark-dwim))
-  ;;       ("C-c C-a" . embark-act-all))
   (:map minibuffer-mode-map
         ("C-c C-c" . embark-collect)
         ("C-c C-e" . embark-export)
@@ -102,6 +105,7 @@
   :after consult
   :ensure t
   :hook (embark-collect-mode . consult-preview-at-point-mode))
+
 
 (provide 'my-editing)
 ;;; my-editing.el ends here

@@ -88,47 +88,31 @@ Each entry is a cons cell of the form (DESCRIPTION . URL)."
 ;;;; Shared maps and notebook
 (require 'my-keymaps)
 
+(defvar mymacs-emulation-mode-map-alist
+  `((mymacs-mode . ,mymacs-mode-map))
+  "Keymap alist giving `mymacs-mode-map' precedence.")
+
+(define-minor-mode mymacs-mode
+  "My personal minor mode"
+  :init-value t
+  :global t
+  :group 'mymacs
+  :lighter " MyM"
+  :keymap mymacs-mode-map)
+
+(add-to-list 'emulation-mode-map-alists 'mymacs-emulation-mode-map-alist)
+(mymacs-mode 1)
+
 ;;;; Environment setup (to start Emacs from a launcher)
 (require 'my-environment)
-
-;;;; Core UI
 (require 'my-core-ui)
-
-;;;; Completion
 (require 'my-completion)
-
-;;;; windows and buffers
 (require 'my-windows)
-
-;;;; auto-revert
-(require 'my-session)
-
-;;;; Editing
 (require 'my-editing)
-
-;;;; Files
 (require 'my-files)
-
-;;;; Search
 (require 'my-search)
-
-;;;; Projects
 (require 'my-projects)
-
-;;;; terminal
-(require 'my-terminal)
-
-;;;; Text
-(require 'my-text)
-
-;;;; Note taking
+(require 'my-tools)
 (require 'my-notes)
-
-;;;; Task management
 (require 'my-tasks)
-
-;;;; Programming
 (require 'my-programming)
-
-;;;; Work tools
-(require 'my-work-tools)

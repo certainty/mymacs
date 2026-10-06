@@ -37,6 +37,13 @@
   :init
   (fido-vertical-mode))
 
+(use-package icomplete
+  :bind
+  (:map icomplete-fido-mode-map
+        ("M-p" . icomplete-fido-exit))
+  :init
+  (fido-vertical-mode))
+
 ;;;; In-buffer completion with completion preview mode. I like this alot better than popups
 (use-package completion-preview
   :hook ((prog-mode . completion-preview-mode)
