@@ -77,9 +77,6 @@
   :bind
   (:map my/leader-map
         ("D" . flymake-show-project-diagnostics))
-  (:map goto-map
-        ("n e" . flymake-goto-next-error)
-        ("p e" . flymake-goto-prev-error))
   (:map flymake-mode-map
         ("M-n" . flymake-goto-next-error)
         ("M-p" . flymake-goto-prev-error))
