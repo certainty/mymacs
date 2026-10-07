@@ -53,14 +53,20 @@
   (lisp-mode . paredit-mode)
   :bind
   (:map paredit-mode-map
-        ("C-)" . paredit-forward-slurp-sexp)
-        ("C-(" . paredit-backward-slurp-sexp)
+        ("C-c f" . paredit-forward)
+        ("C-c b" . paredit-backward)
+        ("C-c d" . paredit-forward-down)
+        ("C-c D" . paredit-backward-down)
+        ("C-c (" . paredit-wrap-sexp)
+        ("C-c C-)" . paredit-forward-slurp-sexp)
+        ("C-c C-(" . paredit-backward-slurp-sexp)
+        ("C-c C-l" . paredit-recenter-on-defun)
         ("C-j" . nil)
         ("M-s" . nil) ;; free the search map
         ) 
   (:repeat-map my/paredit-slurp-repeat-map
-               (")" . paredit-forward-slurp-sexp)
-               ("(" . paredit-backward-slurp-sexp))
+               ("C-)" . paredit-forward-slurp-sexp)
+               ("C-(" . paredit-backward-slurp-sexp))
   :load-path "vendor")
 
 (use-package substitute

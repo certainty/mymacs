@@ -40,9 +40,9 @@
 (use-package icomplete
   :bind
   (:map icomplete-fido-mode-map
-        ("M-p" . icomplete-fido-exit))
-  :init
-  (fido-vertical-mode))
+        ("M-i" . icomplete-fido-exit))
+  :custom
+  (icomplete-vertical-mode t))
 
 ;;;; In-buffer completion with completion preview mode. I like this alot better than popups
 (use-package completion-preview
@@ -64,25 +64,30 @@
 (use-package cape
   :ensure t
   :hook
+  (prog-mode . my/cape-prog-completion)
   (emacs-lisp-mode . my/cape-elisp-completion)
   (text-mode . my/cape-text-completion)
   :preface
-  (defun my/cape-set-local-capfs (&rest capfs)
-    (let ((locals (when (local-variable-p 'completion-at-point-functions)
-                    (seq-remove (lambda (capf)
-                                  (or (eq capf t)
-                                      (memq capf capfs)))
-                                completion-at-point-functions))))
+  (defun my/cape-super-set-local (capfs &optional individual-capfs)
+    "Combine current CAPFs with CAPFS, then append INDIVIDUAL-CAPFS."
+    (let* ((all-for-super (append completion-at-point-functions capfs))
+           (all-minus-global (seq-uniq (delq t all-for-super)))
+           (cape-super (apply #'cape-capf-super all-minus-global)))
       (setq-local completion-at-point-functions
-                  (append capfs locals (list t)))))
+                  (append (list cape-super) individual-capfs (list t)))))
+
+  (defun my/cape-prog-completion ()
+    "Combine programming-mode CAPFs with dabbrev candidates."
+    (unless (derived-mode-p 'emacs-lisp-mode)
+      (my/cape-super-set-local '(cape-dabbrev) '(cape-file))))
 
   (defun my/cape-text-completion ()
-    (my/cape-set-local-capfs #'cape-dict))
+    (my/cape-super-set-local '(cape-dict cape-dabbrev) '(cape-file)))
 
   (defun my/cape-elisp-completion ()
-    (my/cape-set-local-capfs
-     (cape-wrap-nonexclusive
-      (cape-capf-super #'cape-elisp-block #'cape-elisp-symbol))))
+    (my/cape-super-set-local
+     '(cape-elisp-block cape-elisp-symbol cape-dabbrev)
+     '(cape-file)))
   :init
   (setq-default completion-at-point-functions
                 (seq-uniq (append (default-value 'completion-at-point-functions)

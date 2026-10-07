@@ -6,7 +6,7 @@
   (:map my/task-prefix-map
         ("t" . my/tasks-agenda)
         ("T" . org-agenda)
-        ("x" . my/tasks-caputure)
+        ("x" . my/tasks-capture)
         ("e" . my/tasks-open-file))
   :custom
   (org-agenda-files
