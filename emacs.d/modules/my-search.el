@@ -1,8 +1,15 @@
 ;;; my-search.el --- Interactive search and Consult -*- lexical-binding: t; -*-
 
-(defvar outline-minor-mode-map)
 
 ;;; Search
+(defun my/consult-ripgrep ()
+  "Search with ripgrep, using the active region as the initial query."
+  (interactive)
+  (consult-ripgrep nil
+                   (when (use-region-p)
+                     (buffer-substring-no-properties
+                      (region-beginning) (region-end)))))
+
 (use-package isearch
   :hook (occur-mode . hl-line-mode)
   :bind
@@ -24,21 +31,39 @@
 (use-package consult
   :ensure t
   :bind
+  (:map my/leader-map
+        ("b" . consult-project-buffer)
+        ("B" . consult-buffer)
+        ("s" . consult-imenu)
+        ("S" . consult-imenu-multi)
+        ("/" . my/consult-ripgrep)
+        ("d" . consult-flymake))
+  (:map my/open-prefix-map
+        ("o" . consult-recent-file))
   (:map goto-map
         ("b" . consult-project-buffer)
         ("o" . consult-recent-file)
         ("r" . consult-bookmark)
         ("i".  consult-imenu)
-        ("M" . consult-mark)
+        ("m" . consult-mark)
         ("d" . consult-flymake))
   (:map search-map
-        ("/" . consult-ripgrep)
+        ("/" . my/consult-ripgrep)
         ("v" . consult-git-grep))
   :config
   (with-eval-after-load 'outline
     (keymap-set outline-minor-mode-map "C-c O" #'consult-outline)))
 
-;; wgrep no longer needed, since emacs 31 has grep-edit-mode
+(use-package avy
+  :ensure t
+  :commands (avy-goto-word-0)
+  :bind
+  (:map search-map
+        ("w" . avy-goto-word)
+        ("C" . avy-goto-char-timer))
+  :custom
+  (avy-all-windows nil))
+
 
 (provide 'my-search)
 ;;; my-search.el ends here

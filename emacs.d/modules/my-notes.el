@@ -1,36 +1,124 @@
-;;; my-notes.el --- Notebook navigation -*- lexical-binding: t; -*-
+;;; my-notes.el --- Org note capture and navigation -*- lexical-binding: t; -*-
 
-(defun my/notes-root ()
-  "Return the configured zk notebook directory."
-  (let ((directory (or my/notes-directory (getenv "ZK_NOTEBOOK_DIR"))))
-    (unless (and (stringp directory) (file-directory-p directory))
-      (user-error "Set my/notes-directory or ZK_NOTEBOOK_DIR to an existing zk notebook"))
-    (file-name-as-directory (expand-file-name directory))))
+;;; Org setup
+(use-package org
+  :custom
+  (org-directory (file-name-as-directory (expand-file-name my/org-directory)))
+  (org-capture-templates
+   `(("n" "Note" entry
+      (file ,(expand-file-name "scratch.org" my/notes-directory))
+      "* %<%H:%M> %?\n:PROPERTIES:\n:CAPTURED: %U\n:END:")
+     ("t" "Task" entry (file "todo.org")
+      "* TODO %?\n")))
+  (org-pretty-entities t)
+  (org-startup-folded t)
+  (org-hide-leading-stars t)
+  (org-hide-emphasis-marker nil)
+  (org-M-RET-may-split-lines nil)
+  (org-insert-heading-respect-content t)
+  (org-fontify-quote-and-verse-blocks t)
+  (org-auto-align-tags t)
+  (org-adapt-indentation nil)
+  (org-startup-indented t)
+  (org-src-preserve-indentation t)
+  :config
+  (set-face-attribute 'org-block nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+  ;; Prepend this specific rule so it wins before the windows catch-all.
+  (add-to-list 'display-buffer-alist
+               (cons "^CAPTURE-" (my/bottom-window-config 'org-capture-mode))))
 
-(defun my/notes-open-scratch ()
-  "Open the notebook scratch note."
-  (interactive)
-  (find-file (expand-file-name "scratch.md" (my/notes-root))))
+;;; Denote
+(use-package denote
+  :ensure t
+  :hook (dired-mode . denote-dired-mode)
+  :commands (denote)
+  :custom
+  (denote-directory (file-name-as-directory (expand-file-name my/notes-directory)))
+  (denote-file-type 'org)
 
-(defun my/notes-dired ()
-  "Open the zk notebook in Dired."
-  (interactive)
-  (dired (my/notes-root)))
+  :bind
+  (:map my/notes-prefix-map
+        ("j" . my/notes-capture)
+        ("n" . my/notes-denote-new)
+        ("J" . my/notes-open-scratch)
+        ("e" . my/notes-dired)
+        ("f" . my/notes-find-file)
+        ("/" . my/notes-ripgrep))
 
-(defun my/notes-find-file ()
-  "Find a file in the zk notebook with Consult."
-  (interactive)
-  (consult-find (my/notes-root)))
+  :config
 
-(defun my/notes-ripgrep ()
-  "Search the zk notebook with Consult ripgrep."
-  (interactive)
-  (consult-ripgrep (my/notes-root)))
+  (defun my/notes--ensure-directory ()
+    "Create and return `my/notes-directory'."
+    (let ((directory (expand-file-name my/notes-directory)))
+      (make-directory directory t)
+      directory))
 
-(keymap-set my/notes-prefix-map "j" #'my/notes-open-scratch)
-(keymap-set my/notes-prefix-map "e" #'my/notes-dired)
-(keymap-set my/notes-prefix-map "f" #'my/notes-find-file)
-(keymap-set my/notes-prefix-map "/" #'my/notes-ripgrep)
+  (defun my/notes-denote-new ()
+    "Create a Denote note in `denote-directory'."
+    (interactive)
+    (my/notes--ensure-directory)
+    (call-interactively #'denote))
+
+;;; Notes navigation
+  (defun my/notes-capture ()
+    "Capture an Org note to the default scratch file."
+    (interactive)
+    (my/notes--ensure-directory)
+    (org-capture nil "n"))
+
+  (defun my/notes-open-scratch ()
+    "Open the default Org scratch file."
+    (interactive)
+    (find-file (expand-file-name "scratch.org" (my/notes--ensure-directory))))
+
+  (defun my/notes-dired ()
+    "Open the Org notes directory in Dired."
+    (interactive)
+    (dired (my/notes--ensure-directory)))
+
+  (defun my/notes-find-file ()
+    "Find a file in the Org notes directory with Consult."
+    (interactive)
+    (find-file (my/notes--ensure-directory)))
+
+  (defun my/notes-ripgrep ()
+    "Search the Org notes directory with Consult ripgrep."
+    (interactive)
+    (consult-ripgrep (my/notes--ensure-directory))))
+
+
+(use-package markdown-ts-mode
+  :mode
+  ("\\.md\\'" . markdown-ts-mode)
+  ("\\.markdown\\'" . markdown-ts-mode)
+  ("\\.mdown\\'" . markdown-ts-mode)
+  ("\\.mkdn\\'" . markdown-ts-mode)
+  ("\\.mdwn\\'" . markdown-ts-mode))
+
+(use-package flyspell
+  :hook (text-mode . flyspell-mode)
+  :commands (flyspell-mode flyspell-prog-mode)
+  :custom
+  (ispell-program-name "aspell")
+  (ispell-dictionary "en_US")
+  :config
+  (keymap-set flyspell-mode-map "C-," nil))
+
+(use-package eldoc
+  :custom
+  (eldoc-idle-delay 1000000)
+  (eldoc-echo-area-use-multiline-p nil)
+  :config
+  (defun my/eldoc-display-manually-only (docs interactive)
+    (when interactive
+      (or (eldoc-display-in-echo-area docs interactive)
+          (eldoc-display-in-buffer docs interactive))))
+  (setq eldoc-display-functions '(my/eldoc-display-manually-only)))
+
 
 (provide 'my-notes)
 ;;; my-notes.el ends here

@@ -1,0 +1,4 @@
+# name: Frozen string literal pragma
+# key: ;fs
+# --
+# frozen_string_literal: true

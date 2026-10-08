@@ -1,0 +1,5 @@
+# name: Debugger
+# key: ;dbg
+# ---
+
+require "debugger"; binding.debug;

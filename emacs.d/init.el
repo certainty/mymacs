@@ -30,13 +30,17 @@
   :group 'emacs)
 
 (defcustom my/user-name "john doe" "Full name" :type 'string :group 'mymacs)
-(defcustom my/theme 'kanagawa-dragon "The theme to use" :type 'symbol :group 'mymacs)
+(defcustom my/theme 'modus-vivendi "The theme to use" :type 'symbol :group 'mymacs)
 (defcustom my/font "Maple Mono NF" "The font to use" :type 'string :group 'mymacs)
 (defcustom my/font-height 110 "The font height" :type 'number :group 'mymacs)
 (defcustom my/font-weight 'light "The font weigh" :type 'symbol :group 'mymacs)
-(defcustom my/notes-directory nil
-  "The zk notebook directory, or nil to use ZK_NOTEBOOK_DIR."
-  :type '(choice (const :tag "Use ZK_NOTEBOOK_DIR" nil) directory)
+(defcustom my/org-directory "~/org"
+  "Directory for Org task management."
+  :type 'directory
+  :group 'mymacs)
+(defcustom my/notes-directory "~/notes"
+  "Directory for personal notes."
+  :type 'directory
   :group 'mymacs)
 (defcustom my/pmd-enabled nil "Enable consult-pmd" :type 'boolean :group 'mymacs)
 (defcustom my/pmd-base-url nil "The pmd url" :type 'string :group 'mymacs)
@@ -84,50 +88,31 @@ Each entry is a cons cell of the form (DESCRIPTION . URL)."
 ;;;; Shared maps and notebook
 (require 'my-keymaps)
 
+(defvar mymacs-emulation-mode-map-alist
+  `((mymacs-mode . ,mymacs-mode-map))
+  "Keymap alist giving `mymacs-mode-map' precedence.")
+
+(define-minor-mode mymacs-mode
+  "My personal minor mode"
+  :init-value t
+  :global t
+  :group 'mymacs
+  :lighter " MyM"
+  :keymap mymacs-mode-map)
+
+(add-to-list 'emulation-mode-map-alists 'mymacs-emulation-mode-map-alist)
+(mymacs-mode 1)
+
 ;;;; Environment setup (to start Emacs from a launcher)
 (require 'my-environment)
-
-;;;; Core UI
 (require 'my-core-ui)
-
-;;;; Completion
 (require 'my-completion)
-
-;;;; windows and buffers
 (require 'my-windows)
-
-;;;; auto-revert
-(require 'my-session)
-
-;;;; Editing
 (require 'my-editing)
-
-;;;; Files
 (require 'my-files)
-
-;;;; Search
 (require 'my-search)
-
-;;;; Projects
 (require 'my-projects)
-
-;;;; terminal
-(require 'my-terminal)
-
-;;;; Text
-(require 'my-text)
-
-;;;; Note taking
+(require 'my-tools)
 (require 'my-notes)
-
-;;;; Task management
 (require 'my-tasks)
-
-;;;; Programming
 (require 'my-programming)
-
-;;;; Work tools
-(require 'my-work-tools)
-
-;;;; Modal editing
-(require 'my-modal-editing)
