@@ -28,6 +28,16 @@
   (isearch-wrap-pause t)
   (isearch-repeat-on-direction-change t))
 
+(use-package avy
+  :ensure t
+  :commands (avy-goto-word-0)
+  :bind
+  (:map goto-map
+        ("c" . avy-goto-char)
+        ("w" . avy-goto-word-1))
+  :custom
+  (avy-all-windows nil))
+
 (use-package consult
   :ensure t
   :bind

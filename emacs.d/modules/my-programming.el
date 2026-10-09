@@ -51,7 +51,9 @@
                   :initializationOptions
                   (:isHttpEnabled t)))
    (add-to-list 'eglot-server-programs
-                '(ada-ts-mode "alr" "exec" "ada_language_server")))
+                '(ada-ts-mode "alr" "exec" "ada_language_server"))
+   (add-to-list 'eglot-server-programs
+                '(swift-ts-mode "sourcekit-lsp")))
 
 ;;; snippets
 ;; these also act as a provider for eglot
@@ -70,7 +72,9 @@
   (treesit-font-lock-level 4)
   :config
   (add-to-list 'treesit-language-source-alist
-               '(scala "https://github.com/tree-sitter/tree-sitter-scala" "v0.22.5")))
+               '(scala  "https://github.com/tree-sitter/tree-sitter-scala" "v0.22.5"))
+  (add-to-list 'treesit-language-source-alist
+               '(swift  "https://github.com/alex-pinkus/tree-sitter-swift" "0.7.3-with-generated-files")))
 
 ;;;; diagnostics
 (use-package flymake
@@ -84,6 +88,14 @@
   (flymake-indicator-type 'margins)
   (flymake-margin-indicator-position 'left-margin)
   (flymake-mode-line-lighter ""))
+
+(use-package apheleia
+  :ensure t
+  :pin "melpa"
+  :config
+  (setf (alist-get 'swift-format apheleia-formatters)
+        '("swift-format" "--assume-filename" filepath "-"))
+  (setf (alist-get 'swift-ts-mode apheleia-mode-alist) '(swift-format)))
 
 ;;;; ruby
 (use-package ruby-ts-mode
@@ -101,7 +113,7 @@
   :custom
   (ruby-indent-level 2)
   (ruby-insert-encoding-magic-comment nil)
-  
+
   :init
   (setf (alist-get 'ruby-ts-mode my/alternate-file-mappings)
         '((:source ("app" "")
@@ -404,9 +416,15 @@ Return `rspec', `minitest', or nil when no runner can be determined."
                 (root (project-root project))
                 (src (expand-file-name "src" root)))
       (setq-local compilation-search-extra-path (list src))))
+
+  (defun my-setup-ada ()
+    (my-project-compilation-search-path)
+    (setq-local ada-ts-mode-indent-offset 3)
+    (setq-local indent-tabs-mode nil))
+
   :hook
   (ada-ts-mode . eglot-ensure)
-  (ada-ts-mode . my-project-compilation-search-path))
+  (ada-ts-mode . my-setup-ada))
 
 (use-package gpr-ts-mode
   :ensure t
@@ -434,6 +452,33 @@ Return `rspec', `minitest', or nil when no runner can be determined."
   :hook (elixir-ts-mode . eglot-ensure)
   :custom
   (elixir-ts-indent-offset 2))
+
+;;;; swift
+(use-package swift-ts-mode
+  :ensure t
+  :pin "melpa"
+  :mode "\\.swift\\'"
+  :interpreter "swift"
+
+  :hook
+  (swift-ts-mode . eglot-ensure)
+  (swift-ts-mode . apheleia-mode)
+  :bind
+  (:map swift-ts-mode-map
+        ("C-c b" . my/swift-build)
+        ("C-c t" . my/swift-test)
+        ("C-c x" . my/swift-run)
+        ("C-c f" . my/swift-format-buffer))
+  :config
+  (defun my/swift-build () "Run Swift Package Manager build." (interactive) (compile "swift build"))
+  (defun my/swift-test () "Run Swift Package Manager tests." (interactive) (compile "swift test"))
+  (defun my/swift-run () "Run the Swift Package Manager executable." (interactive) (compile "swift run"))
+  (defun my/swift-format-buffer ()
+    "Format the current Swift buffer with swift-format."
+    (interactive)
+    (when (derived-mode-p 'swift-ts-mode)
+      (call-process-region (point-min) (point-max) "swift-format" t t nil "--assume-filename" (or buffer-file-name "main.swift"))
+      (indent-region (point-min) (point-max)))))
 
 (use-package heex-ts-mode
   :mode "\\.[hl]?eex\\'"
