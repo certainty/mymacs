@@ -11,6 +11,11 @@
   (create-lockfiles nil)
   (find-file-visit-truename t))
 
+(use-package ffap
+  :bind
+  (:map my/open-prefix-map
+        ("." . ffap)))
+
 (use-package alternate-file
   :demand t
   :load-path "user-lisp")

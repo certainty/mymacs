@@ -72,8 +72,11 @@
   (delete-selection-mode)
   (global-subword-mode)
   (save-place-mode)
+
+  ;; mouse
   (unless (display-graphic-p)
     (xterm-mouse-mode 1))
+  (setopt mouse-avoidance-mode 'exile) ;; the mouse goes away on typing
 
 ;;; tab settings
   (setq-default indent-tabs-mode nil)
@@ -87,16 +90,7 @@
    :height my/font-height
    :weight my/font-weight)
 
-
 ;;;; modeline
-  (dolist (face-and-border '((mode-line . "#404040")
-                              (mode-line-active . "#404040")
-                              (mode-line-inactive . "#2a2a2a")))
-    (set-face-attribute (car face-and-border) nil
-                        :box (list :line-width -1 :color (cdr face-and-border))
-                        :overline "#606060"
-                        :underline nil))
-
   (setopt mode-line-compact nil
           mode-line-right-align-edge 'right-margin)
 
@@ -145,13 +139,22 @@
   (setq modus-vivendi-palette-overrides
         '((bg-line-number-active "#000000")
           (bg-line-number-inactive "#000000")
-          (bg-mode-line-active "#2b2b2b")
-          (bg-mode-line-inactive "#151515")
+          ;; (bg-mode-line-active "#2b2b2")
+          (bg-mode-line-active "#000000")
+          (bg-mode-line-inactive "#000000")
+          
+          ;; (bg-mode-line-inactive "#151515")
           (bg-paren-match bg-magenta-intense)
           (bg-fringe "#121212")
           (fringe bg-main)
           (bg-space bg-main)))
-  (load-theme my/theme t))
+  (load-theme my/theme t)
+  (dolist (face '(mode-line mode-line-active mode-line-inactive))
+    (set-face-attribute face nil
+                        :background "#000000"
+                        :box nil
+                        :overline "#606060"
+                        :underline nil)))
 
 (use-package pulsar
   :ensure t
