@@ -1,0 +1,4 @@
+# name: Debug print
+# key: ;dp
+# ---
+puts "DEBUG: $0  #{__FILE__}:#{__LINE__}"

@@ -1,0 +1,6 @@
+# name: Insert SRC block
+# key: ;s
+# --
+#+begin_src
+$0    
+#+end_src

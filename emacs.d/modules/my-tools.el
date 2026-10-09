@@ -1,4 +1,4 @@
-;;; my-terminal.el --- Terminal integration -*- lexical-binding: t; -*-
+;;; my-tools.el --- various tools -*- lexical-binding: t; -*-
 
 ;;;; terminal
 (use-package clipetty
@@ -24,5 +24,22 @@
   :init
   (push `("\\*vterm.*\\*" . ,(my/side-window-config)) display-buffer-alist))
 
-(provide 'my-terminal)
-;;; my-terminal.el ends here
+
+;;;; PMD
+(use-package consult-pmd
+  :if my/pmd-enabled
+  :commands +pmd-cache-clear
+  :bind
+  (:map my/pmd-prefix-map
+        ("," . +pmd-projects)
+        ("t" . +pmd-teams)
+        ("p" . +pmd-people)
+        ("s" . +pmd-servicegroups)
+        ("c" . +pmd-cache-clear))
+  :custom
+  (pmd-base-url my/pmd-base-url)
+  :load-path "user-lisp")
+
+
+(provide 'my-tools)
+;;; my-tools.el ends here

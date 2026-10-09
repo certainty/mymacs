@@ -52,11 +52,33 @@
   (emacs-lisp-mode . paredit-mode)
   (lisp-mode . paredit-mode)
   :bind
-  
+
   (:map paredit-mode-map
         ("C-j" . nil)
         ("M-s" . nil))
+        ("C-c f" . paredit-forward)
+        ("C-c b" . paredit-backward)
+        ("C-c d" . paredit-forward-down)
+        ("C-c D" . paredit-backward-down)
+        ("C-c (" . paredit-wrap-sexp)
+        ("C-c C-)" . paredit-forward-slurp-sexp)
+        ("C-c C-(" . paredit-backward-slurp-sexp)
+        ("C-c C-l" . paredit-recenter-on-defun)
+        ("C-j" . nil)
+        ("M-s" . nil) ;; free the search map
+        )
+  (:repeat-map my/paredit-slurp-repeat-map
+               ("C-)" . paredit-forward-slurp-sexp)
+               ("C-(" . paredit-backward-slurp-sexp))
   :load-path "vendor")
+
+(use-package substitute
+  :ensure t
+  :bind ("C-;" . substitute-target-in-buffer)
+  :config
+  (setq substitute-fixed-letter-case t)
+  (add-hook 'substitute-post-replace-functions #'substitute-report-operation)
+  (add-hook 'substitute-post-replace-functions #'sacha-substitute-save-common-edits))
 
 ;;;; embark
 (use-package embark
@@ -67,15 +89,6 @@
         ("C-," . embark-dwim)
         ("C-c ." . embark-act)
         ("C-c ," . embark-dwim))
-  (:map vertico-map
-        ("C-." . embark-act)
-        ("C-," . embark-dwim)
-        ("C-c ." . embark-act)
-        ("C-c ," . embark-dwim)
-        ("C-c C-c" . embark-collect)
-        ("C-c C-e" . embark-export)
-        ("C-c C-m" . embark-select)
-        ("C-c C-a" . embark-act-all))
   (:map minibuffer-mode-map
         ("C-c C-c" . embark-collect)
         ("C-c C-e" . embark-export)
@@ -101,6 +114,7 @@
   :after consult
   :ensure t
   :hook (embark-collect-mode . consult-preview-at-point-mode))
+
 
 (provide 'my-editing)
 ;;; my-editing.el ends here

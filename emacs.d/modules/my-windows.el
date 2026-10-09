@@ -29,6 +29,7 @@
                     mode
                     slot))
 
+
 (use-package window
   :commands (+delete-other-windows)
   :bind
@@ -38,18 +39,16 @@
         ([remap delete-other-windows] . +delete-other-windows)
         ("C-x {" . +resize-window-shrink)
         ("C-x }" . +resize-window-enlarge)
+        ("C-x w u" . winner-undo)
+        ("C-x w U" . winner-redo)
         ("C-x w t"   . window-layout-transpose)
         ("C-x w r"   . window-layout-rotate-clockwise)
         ("C-x w f h" . window-layout-flip-leftright)
-        ("C-x w f v" . window-layout-flip-topdown))
+        ("C-x w f v" . window-layout-flip-topdown)
+        ("C-<" . previous-buffer)
+        ("C->" . next-buffer))
   (:map my/leader-map
         ("|" . split-window-right))
-  (:map my/window-prefix-map
-        ("n" . +scroll-up-half-page)
-        ("p" . +scroll-down-half-page))
-  (:map goto-map
-        ("n b" . next-buffer)
-        ("p b" . previous-buffer))
   (:repeat-map my/window-resize-repeat-map
                ("{" . +resize-window-shrink)
                ("}" . +resize-window-enlarge))
@@ -62,7 +61,7 @@
   (window-divider-default-right-width 1)
   (window-divider-default-bottom-width 1)
 
-  ;;;;; buffer arrangement
+;;;;; buffer arrangement
   ;; Keep the catch-all last; feature-specific rules should be prepended.
   (display-buffer-alist
    `(("\\*vc-log\\*" . ,(my/bottom-window-config nil 'display-buffer-reuse-window 0))
@@ -98,15 +97,6 @@
     (interactive "P")
     (my--resize-window (if count (prefix-numeric-value count) 5)))
 
-  (defun +scroll-up-half-page ()
-    "Scroll down through the buffer by half a window."
-    (interactive)
-    (scroll-up-command (max 1 (/ (window-body-height) 2))))
-
-  (defun +scroll-down-half-page ()
-    "Scroll up through the buffer by half a window."
-    (interactive)
-    (scroll-down-command (max 1 (/ (window-body-height) 2))))
 
   :init
   (window-divider-mode)
@@ -162,6 +152,55 @@
   :init
   (popper-mode +1)
   (popper-echo-mode +1))
+
+;;;; ibuffer
+(use-package ibuffer
+  :hook (ibuffer-mode . my/ibuffer-setup)
+  :commands (ibuffer)
+  :custom
+  (ibuffer-show-empty-filter-groups nil)
+  (ibuffer-saved-filter-groups
+   '(("default"
+      ("Emacs"
+       (or
+        (name . "^\\*scratch\\*$")
+        (name . "^\\*Messages\\*$")
+        (name . "^\\*Warnings\\*$")
+        (name . "^\\*Backtrace\\*$")
+        (name . "^\\*Completions\\*$")
+        (name . "^\\*Embark Collect.*\\*$")))
+      ("Text"
+       (or
+        (mode . markdown-ts-mode)
+        (mode . text-mode)))
+      ("Directories" (mode . dired-mode))
+      ("Shells"
+       (or
+        (mode . shell-mode)
+        (mode . eshell-mode)
+        (mode . eat-mode)
+        (mode . term-mode)
+        (name . "^\\*eat.*\\*$")))
+      ("Code" (predicate . (derived-mode-p 'prog-mode)))
+      ("Version control"
+       (or
+        (mode . vc-dir-mode)
+        (mode . diff-mode)
+        (mode . log-view-mode)))
+      ("Help and diagnostics"
+       (or
+        (mode . help-mode)
+        (mode . compilation-mode)
+        (mode . grep-mode)
+        (mode . occur-mode)
+        (mode . flymake-diagnostics-buffer-mode)
+        (mode . xref--xref-buffer-mode))))))
+  :preface
+  (defun my/ibuffer-setup ()
+    "Apply stable defaults to Ibuffer buffers."
+    (require 'ibuf-ext)
+    (ibuffer-switch-to-saved-filter-groups "default")
+    (ibuffer-auto-mode 1)))
 
 (provide 'my-windows)
 ;;; my-windows.el ends here
