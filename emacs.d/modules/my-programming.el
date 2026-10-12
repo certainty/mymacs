@@ -71,6 +71,7 @@
   (treesit-enabled-modes t)
   (treesit-font-lock-level 4)
   :config
+  
   (add-to-list 'treesit-language-source-alist
                '(scala  "https://github.com/tree-sitter/tree-sitter-scala" "v0.22.5"))
   (add-to-list 'treesit-language-source-alist
@@ -435,16 +436,19 @@ Return `rspec', `minitest', or nil when no runner can be determined."
   (require 'gpr-ts-lspclient-eglot))
 
 ;;;; erlang
-(use-package erlang-ts
-  :ensure t
-  :pin "melpa"
-  :mode (("\\.erl\\'" . erlang-ts-mode)
-         ("\\.app\\.src\\'" . erlang-ts-mode)
-         ("\\.escript\\'" . erlang-ts-mode)
-         ("\\.hrl\\'" . erlang-ts-mode)
-         ("\\.xrl\\'" . erlang-ts-mode)
-         ("\\.yrl\\'" . erlang-ts-mode))
-  :hook (erlang-ts-mode . eglot-ensure))
+;; (use-package erlang-ts
+;;   :ensure t
+;;   :pin "melpa"
+;;   :mode (("\\.erl\\'" . erlang-ts-mode)
+;;          ("\\.app\\.src\\'" . erlang-ts-mode)
+;;          ("\\.escript\\'" . erlang-ts-mode)
+;;          ("\\.hrl\\'" . erlang-ts-mode)
+;;          ("\\.xrl\\'" . erlang-ts-mode)
+;;          ("\\.yrl\\'" . erlang-ts-mode))
+;;   :hook (erlang-ts-mode . eglot-ensure))
+
+(use-package emacs
+  :hook (erlang-mode .  eglot-ensure))
 
 ;;;; elixir
 (use-package elixir-ts-mode

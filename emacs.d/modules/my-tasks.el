@@ -8,9 +8,20 @@
         ("T" . org-agenda)
         ("x" . my/tasks-capture)
         ("e" . my/tasks-open-file))
+  (:map org-read-date-minibuffer-local-map
+        ("C-f" . (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-day 1))))
+        ("C-b" . (lambda () (interactive) (org-eval-in-calendar '(calendar-backward-day 1))))
+        ("M-f" . (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-week 1))))
+        ("M-b" . (lambda () (interactive) (org-eval-in-calendar '(calendar-backward-week 1))))
+        ("M-a" . (lambda () (interactive) (org-eval-in-calendar '(calendar-beginning-of-week))))
+        ("M-e" . (lambda () (interactive) (org-eval-in-calendar '(calendar-end-of-week))))
+        ("C-M-f" . (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-month 1))))
+        ("C-M-b" . (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-month 1))))
+        ("C-M-a" . (lambda () (interactive) (org-eval-in-calendar '(calendar-begining-of-month))))
+        ("C-M-e" . (lambda () (interactive) (org-eval-in-calendar '(calendar-end-of-month)))))
   :custom
   (org-agenda-files
-   (list (expand-file-name "todo.org" org-directory)))
+   (list (expand-file-name "Tasks.org" org-directory)))
   (org-todo-keywords
    '((sequence "TODO(t!)" "DOING(g!)" "BLOCKED(b!)" "|"
                "DONE(d!)" "CANCELLED(c!)")))
@@ -44,7 +55,7 @@
   (defun my/tasks--file ()
     "Return the path to the single task file, creating its directory if needed."
     (make-directory org-directory t)
-    (expand-file-name "todo.org" org-directory))
+    (expand-file-name "Tasks.org" org-directory))
 
   (defun my/tasks-agenda ()
     "Open the custom task overview agenda."
