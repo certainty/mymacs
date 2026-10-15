@@ -4,3 +4,4 @@ auto-save-list
 .projects.eld
 /eln-cache/
 /transient/
+.cache/

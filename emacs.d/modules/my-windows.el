@@ -22,12 +22,13 @@
     config))
 
 (defun my/bottom-window-config (&optional mode reuse-action slot)
-  (my/window-config (or reuse-action 'display-buffer-reuse-mode-window)
-                    'bottom
-                    'window-height
-                    0.25
-                    mode
-                    slot))
+  (my/window-config
+   (or reuse-action 'display-buffer-reuse-mode-window)
+   'bottom
+   'window-height
+   0.25
+   mode
+   slot))
 
 
 (use-package window
@@ -69,6 +70,7 @@
      ("^\\*vc-git.*\\*$" . ,(my/bottom-window-config 'special-mode))
      ("^\\*vc-dir\\*" . ,(my/side-window-config 'special-mode))
      ("\\*xref\\*" . ,(my/bottom-window-config 'special-mode))
+     ("\\*eldoc.*\\'" . ,(my/bottom-window-config 'special-mode 'display-buffer-reuse-window -1))
      ("\\*\\(compilation\\|Occur\\|grep\\).*\\*" . ,(my/bottom-window-config 'special-mode))
      ("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\)\\*" . ,(my/side-window-config 'special-mode))
      (".*" (display-buffer-same-window))))
@@ -148,7 +150,8 @@
   (popper-reference-buffers
    '("\\*Messages\\*"
      "Output\\*$"
-     "\\*Async Shell Command\\*"))
+     "\\*Async Shell Command\\*"
+     "\\*eldoc.*\\'"))
   :init
   (popper-mode +1)
   (popper-echo-mode +1))

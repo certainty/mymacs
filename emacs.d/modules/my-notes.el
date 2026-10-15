@@ -108,16 +108,7 @@
   :config
   (keymap-set flyspell-mode-map "C-," nil))
 
-(use-package eldoc
-  :custom
-  (eldoc-idle-delay 1000000)
-  (eldoc-echo-area-use-multiline-p nil)
-  :config
-  (defun my/eldoc-display-manually-only (docs interactive)
-    (when interactive
-      (or (eldoc-display-in-echo-area docs interactive)
-          (eldoc-display-in-buffer docs interactive))))
-  (setq eldoc-display-functions '(my/eldoc-display-manually-only)))
+
 
 
 (provide 'my-notes)

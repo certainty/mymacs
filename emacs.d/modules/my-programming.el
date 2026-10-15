@@ -19,6 +19,21 @@
 (use-package ansi-color
   :hook (compilation-filter . ansi-color-compilation-filter))
 
+(use-package eldoc
+  :custom
+  (eldoc-idle-delay 1000000)
+  (eldoc-echo-area-use-multiline-p t)
+  :bind
+  (:map prog-mode-map
+        ("C-c l h" . eldoc))
+  :config
+  (defun my/eldoc-display-manually-only (docs interactive)
+    (when interactive
+      (or (eldoc-display-in-echo-area docs interactive)
+          (eldoc-display-in-buffer docs interactive))))
+  ;(setq eldoc-display-functions '(my/eldoc-display-manually-only))
+  )
+
 (use-package eglot
   :hook (markdown-ts-mode . eglot-ensure)
   :bind
@@ -42,18 +57,29 @@
   (add-to-list 'eglot-server-programs
                '((ruby-mode ruby-ts-mode)
                  "ruby-lsp"))
-   (add-to-list 'eglot-server-programs
-                '((elixir-mode elixir-ts-mode heex-ts-mode)
-                  "expert" "--stdio"))
-   (add-to-list 'eglot-server-programs
-                '(scala-ts-mode
-                  "metals"
-                  :initializationOptions
-                  (:isHttpEnabled t)))
-   (add-to-list 'eglot-server-programs
-                '(ada-ts-mode "alr" "exec" "ada_language_server"))
-   (add-to-list 'eglot-server-programs
-                '(swift-ts-mode "sourcekit-lsp")))
+  (add-to-list 'eglot-server-programs
+               '((elixir-mode elixir-ts-mode heex-ts-mode)
+                 "expert" "--stdio"))
+  (add-to-list 'eglot-server-programs
+               '(scala-ts-mode
+                 "metals"
+                 :initializationOptions
+                 (:isHttpEnabled t)))
+  (add-to-list 'eglot-server-programs
+               '(ada-ts-mode "alr" "exec" "ada_language_server"))
+  (add-to-list 'eglot-server-programs
+               '(swift-ts-mode "sourcekit-lsp")))
+
+;;; copilot / ai
+(use-package copilot
+  :ensure t
+  :pin "melpa"
+  :bind
+  (:map copilot-completion-map
+        ("M-y" . copilot-accept-completion)
+        ("C-M-y" . copilot-accept-completion-by-word)
+        ("M-n" . copilot-next-completion)
+        ("M-p" . copilot-previous-completion)))
 
 ;;; snippets
 ;; these also act as a provider for eglot
@@ -448,7 +474,15 @@ Return `rspec', `minitest', or nil when no runner can be determined."
 ;;   :hook (erlang-ts-mode . eglot-ensure))
 
 (use-package emacs
+  :mode (("rebar\\.conf" . erlang-mode)
+         ("\\.erl\\'" . erlang-mode)
+         ("\\.app\\.src\\'" . erlang-mode)
+         ("\\.hrl\\'" . erlang-mode)
+         ("\\.xrl\\'" . erlang-mode)
+         ("\\.yrl\\'" . erlang-mode))
   :hook (erlang-mode .  eglot-ensure))
+
+
 
 ;;;; elixir
 (use-package elixir-ts-mode
