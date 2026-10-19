@@ -34,10 +34,7 @@
 (defcustom my/font "Maple Mono NF" "The font to use" :type 'string :group 'mymacs)
 (defcustom my/font-height 110 "The font height" :type 'number :group 'mymacs)
 (defcustom my/font-weight 'light "The font weigh" :type 'symbol :group 'mymacs)
-(defcustom my/org-directory "~/org"
-  "Directory for Org task management."
-  :type 'directory
-  :group 'mymacs)
+
 (defcustom my/notes-directory "~/notes"
   "Directory for personal notes."
   :type 'directory
@@ -49,6 +46,15 @@
 Each entry is a cons cell of the form (DESCRIPTION . URL)."
   :type '(alist :key-type string :value-type string)
   :group 'mymacs)
+
+(defcustom my/org-directory "~/org"
+  "Directory for Org task management."
+  :type 'directory
+  :group 'mymacs)
+
+(defcustom my/org-tasks-file  "todo.org" "Path to the tasks file relative to the org-directory" :type 'string :group 'mymacs)
+
+
 
 ;;;; load custom file
 (setopt custom-file (locate-user-emacs-file "custom.el"))

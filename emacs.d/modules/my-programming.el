@@ -70,17 +70,6 @@
   (add-to-list 'eglot-server-programs
                '(swift-ts-mode "sourcekit-lsp")))
 
-;;; copilot / ai
-(use-package copilot
-  :ensure t
-  :pin "melpa"
-  :bind
-  (:map copilot-completion-map
-        ("M-y" . copilot-accept-completion)
-        ("C-M-y" . copilot-accept-completion-by-word)
-        ("M-n" . copilot-next-completion)
-        ("M-p" . copilot-previous-completion)))
-
 ;;; snippets
 ;; these also act as a provider for eglot
 (declare-function yas-reload-all "yasnippet")
@@ -97,7 +86,7 @@
   (treesit-enabled-modes t)
   (treesit-font-lock-level 4)
   :config
-  
+
   (add-to-list 'treesit-language-source-alist
                '(scala  "https://github.com/tree-sitter/tree-sitter-scala" "v0.22.5"))
   (add-to-list 'treesit-language-source-alist
@@ -556,7 +545,7 @@ Return `rspec', `minitest', or nil when no runner can be determined."
      (ros ("ros" "-Q" "run") :coding-system utf-8-unix)))
   (sly-contribs '(sly-fancy sly-stickers sly-scratch sly-mrepl sly-autodoc sly-trace-dialog))
   (sly-common-lisp-set-syle 'modern)
-  
+
   :init
   (add-to-list 'auto-mode-alist '("\\.ros\\'" . lisp-mode)))
 

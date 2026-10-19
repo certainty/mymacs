@@ -1,8 +1,33 @@
 ;;; my-notes.el --- Org note capture and navigation -*- lexical-binding: t; -*-
 
 ;;; Org setup
+(defun my/org-prettify-heading-bullet-p (start end symbol)
+  "Compose bullet replacements only at Org heading starts."
+  (if (and (> (length symbol) 0) (eq (aref symbol 0) ?*))
+      (and (> (length symbol) 1)
+           (string= (make-string (1- (length symbol)) ?*)
+                    (substring symbol 0 -1))
+           (eq (aref symbol (1- (length symbol))) ?\s)
+           (save-excursion (goto-char start) (bolp)))
+    (prettify-symbols-default-compose-p start end symbol)))
+
+(defun my/org-prettify-heading-bullets ()
+  "Use built-in symbol composition for Org heading bullets."
+  (setq-local prettify-symbols-alist
+              (append '(("****** " . "✳ ")
+                        ("***** " . "✳ ")
+                        ("**** " . "◇ ")
+                        ("*** " . "◈ ")
+                        ("** " . "○ ")
+                        ("* " . "● "))
+                      prettify-symbols-alist)
+              prettify-symbols-compose-predicate
+              #'my/org-prettify-heading-bullet-p)
+  (prettify-symbols-mode 1))
 (use-package org
+  :hook (org-mode . my/org-prettify-heading-bullets)
   :custom
+  (org-hide-leading-stars nil)
   (org-directory (file-name-as-directory (expand-file-name my/org-directory)))
   (org-capture-templates
    `(("n" "Note" entry
@@ -12,7 +37,6 @@
       "* TODO %?\n")))
   (org-pretty-entities t)
   (org-startup-folded t)
-  (org-hide-leading-stars t)
   (org-hide-emphasis-marker nil)
   (org-M-RET-may-split-lines nil)
   (org-insert-heading-respect-content t)
@@ -27,6 +51,11 @@
   (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
   (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
   (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch)
+  (dolist (face-and-height '((org-level-1 . 1.25)
+                           (org-level-2 . 1.15)
+                           (org-level-3 . 1.08)
+                           (org-level-4 . 1.03)))
+    (set-face-attribute (car face-and-height) nil :height (cdr face-and-height)))
   ;; Prepend this specific rule so it wins before the windows catch-all.
   (add-to-list 'display-buffer-alist
                (cons "^CAPTURE-" (my/bottom-window-config 'org-capture-mode))))
