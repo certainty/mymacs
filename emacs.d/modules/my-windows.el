@@ -73,6 +73,8 @@
      ("\\*eldoc.*\\'" . ,(my/bottom-window-config 'special-mode 'display-buffer-reuse-window -1))
      ("\\*\\(compilation\\|Occur\\|grep\\).*\\*" . ,(my/bottom-window-config 'special-mode))
      ("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\)\\*" . ,(my/side-window-config 'special-mode))
+     ("^\\*sly-compilation" . ,(my/side-window-config-allow-other-window))
+     ("^\\*sly-mrepl" . ,(my/side-window-config-allow-other-window))
      (".*" (display-buffer-same-window))))
 
   :preface
@@ -151,6 +153,8 @@
    '("\\*Messages\\*"
      "Output\\*$"
      "\\*Async Shell Command\\*"
+     "^\\*sly-compilation"
+     "^\\*sly-mrepl"
      "\\*eldoc.*\\'"))
   :init
   (popper-mode +1)

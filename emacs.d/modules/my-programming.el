@@ -542,6 +542,51 @@ Return `rspec', `minitest', or nil when no runner can be determined."
   :pin "nongnu"
   :hook (adoc-mode . flymake-mode))
 
+;;; Common Lisp
+(use-package sly
+  :ensure t
+  :pin "melpa"
+  :hook (sly-mrepl-mode . completion-preview-mode)
+  :custom
+  (inferior-lisp-program "sbcl")
+  (sly-complete-symbol-function #'sly-flex-completions)
+  (sly-lisp-implementation 'sbcl)
+  (sly-lisp-implementations
+   '((sbcl ("sbcl") :coding-system utf-8-unix)
+     (ros ("ros" "-Q" "run") :coding-system utf-8-unix)))
+  (sly-contribs '(sly-fancy sly-stickers sly-scratch sly-mrepl sly-autodoc sly-trace-dialog))
+  (sly-common-lisp-set-syle 'modern)
+  
+  :init
+  (add-to-list 'auto-mode-alist '("\\.ros\\'" . lisp-mode)))
+
+(use-package sly-asdf
+  :ensure t
+  :pin "melpa"
+  :after sly
+  :bind
+  (:map sly-mode-map
+        (""))
+  :init
+  (add-to-list 'sly-contribs 'sly-asdf 'append))
+
+(use-package sly-quicklisp
+  :ensure t
+  :pin "melpa"
+  :hook sly-mode)
+
+(use-package sly-macrostep
+  :ensure t
+  :pin "melpa")
+
+(use-package sly-repl-ansi-color
+  :after sly
+  (add-to-list 'sly-contribs 'sly-repl-ansi-color))
+
+(use-package sly-overlay
+  :ensure t
+  :pin "melpa")
+
 
 (provide 'my-programming)
 ;;; my-programming.el ends here

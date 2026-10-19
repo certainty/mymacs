@@ -2,6 +2,11 @@
 
 ;;; Editing
 
+(use-package emacs
+  :bind
+  (:map mymacs-mode-map
+        ("C-M-^" . join-line)))
+
 ;;;; handling pairs (quotes, parens, etc.)
 (use-package elec-pair
   :bind
