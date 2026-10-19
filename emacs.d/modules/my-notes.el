@@ -1,33 +1,10 @@
 ;;; my-notes.el --- Org note capture and navigation -*- lexical-binding: t; -*-
 
 ;;; Org setup
-(defun my/org-prettify-heading-bullet-p (start end symbol)
-  "Compose bullet replacements only at Org heading starts."
-  (if (and (> (length symbol) 0) (eq (aref symbol 0) ?*))
-      (and (> (length symbol) 1)
-           (string= (make-string (1- (length symbol)) ?*)
-                    (substring symbol 0 -1))
-           (eq (aref symbol (1- (length symbol))) ?\s)
-           (save-excursion (goto-char start) (bolp)))
-    (prettify-symbols-default-compose-p start end symbol)))
-
-(defun my/org-prettify-heading-bullets ()
-  "Use built-in symbol composition for Org heading bullets."
-  (setq-local prettify-symbols-alist
-              (append '(("****** " . "✳ ")
-                        ("***** " . "✳ ")
-                        ("**** " . "◇ ")
-                        ("*** " . "◈ ")
-                        ("** " . "○ ")
-                        ("* " . "● "))
-                      prettify-symbols-alist)
-              prettify-symbols-compose-predicate
-              #'my/org-prettify-heading-bullet-p)
-  (prettify-symbols-mode 1))
 (use-package org
-  :hook (org-mode . my/org-prettify-heading-bullets)
   :custom
   (org-hide-leading-stars nil)
+  (org-indent-mode-turns-on-hiding-stars nil)
   (org-directory (file-name-as-directory (expand-file-name my/org-directory)))
   (org-capture-templates
    `(("n" "Note" entry
@@ -59,6 +36,16 @@
   ;; Prepend this specific rule so it wins before the windows catch-all.
   (add-to-list 'display-buffer-alist
                (cons "^CAPTURE-" (my/bottom-window-config 'org-capture-mode))))
+
+;;; Org bullets
+(use-package org-superstar
+  :ensure t
+  :pin nongnu
+  :hook (org-mode . org-superstar-mode)
+  :custom
+  (org-superstar-headline-bullets-list '("◉" "○" "◈" "◇" "✳"))
+  (org-superstar-prettify-item-bullets nil)
+  (org-superstar-leading-bullet ?\s))
 
 ;;; Denote
 (use-package denote
