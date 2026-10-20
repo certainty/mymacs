@@ -27,8 +27,8 @@
    (list (expand-file-name my/org-tasks-file org-directory)))
   
   (org-todo-keywords
-   '((sequence "TODO(t!)" "DOING(g!)" "BLOCKED(b!)" "|"
-               "DONE(d!)" "CANCELLED(c!)")))
+   '((sequence "TODO(t!)" "DOING(g!)" "BLOCKED(b@)" "|"
+               "DONE(d!)" "CANCELLED(c@)")))
   (org-log-done 'time)
   (org-log-into-drawer "LOGBOOK")
   (org-agenda-custom-commands
