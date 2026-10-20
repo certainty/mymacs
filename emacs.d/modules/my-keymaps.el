@@ -27,6 +27,8 @@
   "C-j" my/leader-map)
 
 (keymap-set my/leader-map "j" my/notes-prefix-map)
+(keymap-set my/notes-prefix-map "." (function org-store-link))
+(keymap-set my/notes-prefix-map "p" my/project-prefix-map)
 (keymap-set my/leader-map "X" #'my/notes-capture)
 (keymap-set my/leader-map "o" my/open-prefix-map)
 (keymap-set my/leader-map "p" my/project-prefix-map)

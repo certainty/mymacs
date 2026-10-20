@@ -33,23 +33,33 @@
   (org-log-into-drawer "LOGBOOK")
   (org-agenda-custom-commands
    '(("v" "Task overview"
-      ((tags-todo "+PRIORITY=\"A\""
+      ((tags-todo "+next"
+                  ((org-agenda-overriding-header "Next")
+                   (org-agenda-sorting-strategy '(priority-down scheduled-up))))
+       (tags-todo "+PRIORITY=\"A\""
                   ((org-agenda-overriding-header "Important, unscheduled")
                    (org-agenda-skip-function
                     '(org-agenda-skip-entry-if 'scheduled 'deadline))))
        (tags-todo "DEADLINE<\"<today>\"|SCHEDULED<\"<today>\""
                   ((org-agenda-overriding-header "Overdue")))
        (agenda ""
-               ((org-agenda-span 1)))
+               ((org-agenda-span 1)
+                (org-deadline-warning-days 0)))
        (agenda ""
                ((org-agenda-start-day "+1d")
                 (org-agenda-span 2)
+                (org-deadline-warning-days 0)
                 (org-agenda-overriding-header "Next two days")))
        (agenda ""
                ((org-agenda-start-day "today")
                 (org-agenda-span 14)
                 (org-agenda-entry-types '(:deadline))
-                (org-agenda-overriding-header "Deadlines in the next 14 days")))))))
+                (org-agenda-overriding-header "Deadlines in the next 14 days")))))
+     ("D" "Doing tasks with hierarchy" todo "DOING"
+      ((org-agenda-overriding-header "Doing")
+       (org-agenda-prefix-format '((todo . " %i %-12:c%b")))
+       (org-agenda-todo-list-sublevels t)))))
+
   :init
   (push `("^\\*Org Agenda\\*$" . ,(my/side-window-config))
         display-buffer-alist)

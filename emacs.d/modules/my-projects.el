@@ -8,7 +8,10 @@
         ("e" . project-dired)
         (";" . project-compile))
   (:map my/project-prefix-map
-        ("p" . project-switch-project))
+        ("p" . project-switch-project)
+        ("j" . my/notes-capture-project)
+        ("J" . my/notes-project-open)
+        ("C-j" . my/notes-project-select))
   (:map goto-map
         ("f" . project-find-file)
         ("P" . project-switch-project))
