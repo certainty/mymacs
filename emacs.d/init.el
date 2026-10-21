@@ -53,8 +53,8 @@ Each entry is a cons cell of the form (DESCRIPTION . URL)."
   :group 'mymacs)
 
 (defcustom my/org-tasks-file  "todo.org" "Path to the tasks file relative to the org-directory" :type 'string :group 'mymacs)
-
-
+(defcustom my/gptel-enabled nil "Use gptel with mistral" :type 'boolean :group 'mymacs)
+(defcustom my/gpt-shell-enabled nil "Use gpt-shell with acp" :type 'boolean :group 'mymacs)
 
 ;;;; load custom file
 (setopt custom-file (locate-user-emacs-file "custom.el"))
@@ -122,3 +122,4 @@ Each entry is a cons cell of the form (DESCRIPTION . URL)."
 (require 'my-notes)
 (require 'my-tasks)
 (require 'my-programming)
+(require 'my-ai)

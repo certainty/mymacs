@@ -40,6 +40,16 @@
   (pmd-base-url my/pmd-base-url)
   :load-path "user-lisp")
 
+(use-package pass
+  :after epa
+  :ensure t
+  :pin "melpa"
+  :init
+  (auth-source-pass-enable))
+
+(use-package epa
+  :custom
+  (epg-pinentry-mode 'loopback))
 
 (provide 'my-tools)
 ;;; my-tools.el ends here
