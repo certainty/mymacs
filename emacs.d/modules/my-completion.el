@@ -21,15 +21,15 @@
   :init
   (marginalia-mode))
 
-;; Previous built-in minibuffer and Icomplete configuration, kept for reference.
+;; Minibuffer completion with Icomplete.
 (use-package minibuffer
   :custom
   (completion-sort 'historical)
   (completion-eager-update t)
-  (completion-eager-display 'auto)
+  (completion-eager-display nil)
   (completion-auto-select t)
-  (completions-auto-help 'visible)
-  (completions-max-height 20)
+  (completion-auto-help nil)
+  (completions-max-height 8)
   (completion-ignore-case t)
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)

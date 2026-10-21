@@ -40,6 +40,7 @@
 
 (use-package consult
   :ensure t
+  :commands (consult-completion-in-region)
   :bind
   (:map my/leader-map
         ("b" . consult-project-buffer)

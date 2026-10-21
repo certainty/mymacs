@@ -564,10 +564,6 @@ Return `rspec', `minitest', or nil when no runner can be determined."
   :pin "melpa"
   :hook sly-mode)
 
-(use-package sly-macrostep
-  :ensure t
-  :pin "melpa")
-
 (use-package sly-repl-ansi-color
   :after sly
   (add-to-list 'sly-contribs 'sly-repl-ansi-color))
