@@ -121,7 +121,10 @@
         (set-face-attribute face frame :foreground "#4f5f73" :background "#4f5f73"))))
   (add-hook 'window-setup-hook #'my/configure-window-dividers)
   (add-hook 'after-make-frame-functions #'my/configure-window-dividers)
-  (my/configure-window-dividers))
+  (my/configure-window-dividers)
+  (my/push-display-buffer-rule
+   "^\\*Current PR\\*$"
+   (my/side-window-config 'special-mode)))
 
 (use-package winner
   :bind

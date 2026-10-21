@@ -126,6 +126,119 @@ Return its trimmed standard output or signal its error output as a user error."
       (file-missing
        (user-error "gh executable is not available")))))
 
+(defun my--project-command-result (program &rest arguments)
+  "Run PROGRAM with ARGUMENTS from the project root.
+Return a cons of exit status and trimmed standard output."
+  (let ((default-directory (my--project-root)))
+    (with-temp-buffer
+      (let ((status (apply #'process-file program nil t nil arguments)))
+        (cons status (string-trim (buffer-string)))))))
+
+(defun my--current-branch-pull-request ()
+  "Return metadata for the current branch pull request, or nil if absent."
+  (let ((branch (my--project-command "git" "branch" "--show-current")))
+    (when (string-empty-p branch)
+      (user-error "Current directory is not on a branch"))
+    (car (json-parse-string
+          (my--project-command "gh" "pr" "list"
+                               "--head" branch "--state" "all"
+                               "--limit" "1"
+                               "--json"
+                               "number,title,state,headRefName,reviewDecision,url")
+          :object-type 'alist
+          :array-type 'list))))
+
+(defun my--pull-request-checks (number)
+  "Return check details for pull request NUMBER, or :unavailable."
+  (let* ((result (my--project-command-result
+                  "gh" "pr" "checks" number
+                  "--json" "name,bucket"))
+         (checks (condition-case nil
+                     (json-parse-string (cdr result)
+                                        :object-type 'alist
+                                        :array-type 'list)
+                   (json-parse-error :invalid)))
+         (status (car result)))
+    (if (or (eq checks :invalid)
+            (and (null checks) (not (zerop status))))
+        :unavailable
+      checks)))
+
+(defun my--pull-request-check-summary (checks)
+  "Return a concise summary for pull request CHECKS."
+  (if (eq checks :unavailable)
+      "unavailable"
+    (let ((buckets (mapcar (lambda (check)
+                             (alist-get "bucket" check nil nil #'string=))
+                           checks)))
+      (cond
+       ((null checks) "no checks")
+       ((member "fail" buckets) "failing")
+       ((member "pending" buckets) "pending")
+       ((member "cancel" buckets) "cancelled")
+       ((equal buckets (make-list (length buckets) "pass")) "passing")
+       ((member "skipping" buckets) "skipped")
+       (t "mixed")))))
+
+(defun my--display-pull-request-info (pull-request checks)
+  "Display PULL-REQUEST and CHECKS in a read-only buffer."
+  (let ((buffer (get-buffer-create "*Current PR*")))
+    (with-current-buffer buffer
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (special-mode)
+        (insert "Pull request status\n"
+                "===================\n\n")
+        (if pull-request
+            (let ((number (alist-get "number" pull-request nil nil #'string=))
+                  (title (alist-get "title" pull-request nil nil #'string=))
+                  (state (alist-get "state" pull-request nil nil #'string=))
+                  (branch (alist-get "headRefName" pull-request nil nil #'string=))
+                  (review (alist-get "reviewDecision" pull-request nil nil #'string=))
+                  (url (alist-get "url" pull-request nil nil #'string=)))
+              (insert (format "#%s %s\n" number title)
+                      (format "State:   %s\n" (downcase (or state "unknown")))
+                      (format "Branch:  %s\n" (or branch "unknown"))
+                      (format "Review:  %s\n"
+                              (pcase review
+                                ("APPROVED" "approved")
+                                ("CHANGES_REQUESTED" "changes requested")
+                                ("REVIEW_REQUIRED" "review required")
+                                (_ "not yet approved")))
+                      (format "Checks:  %s\n" (my--pull-request-check-summary checks))
+                      (format "URL:     %s\n\n" (or url "unavailable"))
+                      "Checks:\n")
+              (cond
+               ((eq checks :unavailable)
+                (insert "  Check details unavailable.\n"))
+               ((null checks)
+                (insert "  No checks reported.\n"))
+               (t
+                (dolist (check checks)
+                  (insert (format "  %s: %s\n"
+                                  (upcase (or (alist-get "bucket" check nil nil #'string=)
+                                              "unknown"))
+                                  (or (alist-get "name" check nil nil #'string=)
+                                      "Unnamed check")))))))
+          (insert "No pull request found for the current branch.\n"))
+        (goto-char (point-min))))
+    (pop-to-buffer buffer)))
+
+;;;###autoload
+(defun +links-current-branch-pull-request-info ()
+  "Show details and CI status for the current branch pull request."
+  (interactive)
+  (message "Gathering PR information...")
+  (redisplay t)
+  (condition-case nil
+      (let* ((pull-request (my--current-branch-pull-request))
+             (checks (when pull-request
+                       (my--pull-request-checks
+                        (number-to-string
+                         (alist-get "number" pull-request nil nil #'string=))))))
+        (my--display-pull-request-info pull-request checks))
+    (file-missing (user-error "gh executable is not available"))))
+
 ;;;###autoload
 (defun +links-bookmarks ()
   "Select a frequently used web bookmark and open it."

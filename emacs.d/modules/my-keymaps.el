@@ -7,6 +7,7 @@
 
 (defvar-keymap my/open-prefix-map :doc "Open resources leader submap.")
 (defvar-keymap my/project-prefix-map :doc "Project leader submap.")
+(defvar-keymap my/repository-prefix-map :doc "Repository commands submap.")
 (defvar-keymap my/mise-prefix-map :doc "Mise task leader submap.")
 
 (defvar-keymap my/task-prefix-map
@@ -32,6 +33,7 @@
 (keymap-set my/leader-map "X" #'my/notes-capture)
 (keymap-set my/leader-map "o" my/open-prefix-map)
 (keymap-set my/leader-map "p" my/project-prefix-map)
+(keymap-set my/project-prefix-map "r" my/repository-prefix-map)
 (keymap-set my/leader-map "m" my/mise-prefix-map)
 
 (keymap-set my/leader-map "t" my/task-prefix-map)

@@ -23,14 +23,16 @@
 (use-package links
   :commands (+links-bookmarks +links-project-repository
              +links-project-pull-requests
-             +links-current-branch-pull-request)
+             +links-current-branch-pull-request
+             +links-current-branch-pull-request-info)
   :bind
   (:map my/open-prefix-map
         ("l" . +links-bookmarks))
-  (:map my/project-prefix-map
-        ("v" . +links-project-repository)
-        ("r" . +links-current-branch-pull-request)
-        ("R" . +links-project-pull-requests))
+  (:map my/repository-prefix-map
+        ("r" . +links-project-repository)
+        ("p" . +links-current-branch-pull-request)
+        ("P" . +links-project-pull-requests)
+        ("i" . +links-current-branch-pull-request-info))
   :load-path "user-lisp")
 
 ;;;; recent
