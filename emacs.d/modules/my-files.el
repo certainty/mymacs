@@ -29,8 +29,8 @@
         ("l" . +links-bookmarks))
   (:map my/project-prefix-map
         ("v" . +links-project-repository)
-        ("r" . +links-project-pull-requests)
-        ("R" . +links-current-branch-pull-request))
+        ("r" . +links-current-branch-pull-request)
+        ("R" . +links-project-pull-requests))
   :load-path "user-lisp")
 
 ;;;; recent

@@ -114,10 +114,17 @@ Return its trimmed standard output or signal its error output as a user error."
 
 ;;;###autoload
 (defun +links-current-branch-pull-request ()
-  "Open the GitHub pull request associated with the current branch."
+  "Open the current branch PR or its GitHub creation page."
   (interactive)
-  (my--open-url
-   (my--project-command "gh" "pr" "view" "--json" "url" "--jq" ".url")))
+  (let ((default-directory (my--project-root)))
+    (condition-case nil
+        (with-temp-buffer
+          (if (zerop (process-file "gh" nil t nil
+                                  "pr" "view" "--json" "url" "--jq" ".url"))
+              (my--open-url (string-trim (buffer-string)))
+            (my--project-command "gh" "pr" "create" "--web")))
+      (file-missing
+       (user-error "gh executable is not available")))))
 
 ;;;###autoload
 (defun +links-bookmarks ()
