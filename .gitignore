@@ -25,3 +25,5 @@ emacs.d/tree-sitter/libtree-sitter-scala.dylib
 emacs.d/tramp
 emacs.d/org-persist/
 emacs.d/org-clock-save.el
+/emacs.d/agent-shell
+emacs.d/agent-shell/

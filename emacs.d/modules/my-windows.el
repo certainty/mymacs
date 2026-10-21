@@ -30,6 +30,10 @@
    mode
    slot))
 
+(defun my/push-display-buffer-rule (condition action)
+  "Add a display rule for CONDITION and ACTION at the front of the rules."
+  (push (cons condition action) display-buffer-alist))
+
 
 (use-package window
   :commands (+delete-other-windows)
