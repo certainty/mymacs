@@ -333,7 +333,7 @@ Each value is an alist with `data' and `timestamp' keys.")
 
 (defconst pmd--project-type 'pmd-project)
 
-(defcustom pmd-code-path "~/code"
+(defcustom pmd-code-path "~/code/xing"
   "Base directory used for permanent project clones."
   :type 'directory
   :group 'consult-pmd)
@@ -341,6 +341,13 @@ Each value is an alist with `data' and `timestamp' keys.")
 (defcustom pmd-code-temp-path temporary-file-directory
   "Base directory used for temporary project clones."
   :type 'directory
+  :group 'consult-pmd)
+
+(defcustom pmd-project-local-target-path-function
+  #'pmd--projects-default-local-target-path
+  "Function that resolves a local target path for a PMD project and base path.
+The function receives the PMD project item and the selected clone base path."
+  :type 'function
   :group 'consult-pmd)
 
 (defvar pmd--projects-history nil
@@ -413,15 +420,46 @@ Each value is an alist with `data' and `timestamp' keys.")
            (repo (pmd--dig data "git" "repo")))
       (format "%s/%s" account repo))))
 
-(defun pmd--projects-forge-name (repo-url)
-  "Return a local forge name derived from REPO-URL."
-  (when-let* ((parsed-url (url-generic-parse-url repo-url))
-              (host (url-host parsed-url)))
-    (pcase host
-      ("github.com" "github")
-      ("codeberg.org" "codeberg")
-      ("gitlab.com" "gitlab")
-      (_ host))))
+(defun pmd--projects-path-component (value)
+  "Return VALUE as a safe path component."
+  (when-let* ((component (pmd--string value)))
+    (setq component (string-trim component))
+    (unless (or (string-empty-p component)
+                (member component '("." ".."))
+                (string-match-p "[/\\\\]" component))
+      component)))
+
+(defun pmd--projects-default-local-target-path (project base-path)
+  "Resolve PMD PROJECT to its default local path under BASE-PATH.
+Use `backend-foundations' as the first directory when PROJECT's team is
+`backend-foundations'; use `others' for every other team. The next directory
+is PROJECT's service group when present. Otherwise, map service types as
+follows: `service' to `services', `library' to `libraries',
+`infrastructure' to `infra', `documentation' to `docs', `mono-repo' to
+`service-groups', `third-party' to `third-party', and `tool' to `tools'.
+Use PROJECT's `git.repo' as the final directory."
+  (let* ((team (downcase (or (pmd--string (gethash "team" project)) "")))
+         (org-dir (if (string-equal team "backend-foundations")
+                      "backend-foundations"
+                    "others"))
+         (service-group (pmd--projects-path-component
+                         (gethash "service_group" project)))
+         (service-type (pmd--string (gethash "service_type" project)))
+         (type-dir (cdr (assoc service-type
+                               '(("documentation" . "docs")
+                                 ("infrastructure" . "infra")
+                                 ("library" . "libraries")
+                                 ("mono-repo" . "service-groups")
+                                 ("service" . "services")
+                                 ("third-party" . "third-party")
+                                 ("tool" . "tools")))))
+         (category (or service-group type-dir))
+         (repo (pmd--projects-path-component (pmd--dig project "git" "repo"))))
+    (unless (and category repo)
+      (user-error "PMD project lacks a usable service group or service type, or git.repo"))
+    (expand-file-name
+     (mapconcat #'identity (list org-dir category repo) "/")
+     (expand-file-name base-path))))
 
 (defun pmd--projects-preferred-clone-url (repo-url)
   "Return clone URL for REPO-URL, preferring SSH when URL uses HTTPS."
@@ -432,21 +470,19 @@ Each value is an alist with `data' and `timestamp' keys.")
         (format "git@%s:%s" host path))
     repo-url))
 
-(defun pmd--projects-clone-repository (project base-path &optional include-forge)
+(defun pmd--projects-clone-repository (project base-path)
   "Clone PROJECT to BASE-PATH.
-When INCLUDE-FORGE is non-nil, clone under a forge-specific subdirectory."
+Resolve the local clone path with `pmd-project-local-target-path-function'."
   (unless (and (stringp base-path) (not (string-empty-p base-path)))
     (user-error "Clone base path is not configured"))
-  (when-let* ((repo-url (pmd--projects-repository-url project))
-              (repo-slug (pmd--projects-repository-slug project)))
-    (let* ((target-root
-            (if include-forge
-                (let ((forge (or (pmd--projects-forge-name repo-url)
-                                 (user-error "Could not derive forge from %s" repo-url))))
-                  (expand-file-name forge (file-name-as-directory base-path)))
-              (file-name-as-directory base-path)))
-           (target-dir (expand-file-name repo-slug target-root))
+  (when-let* ((data (pmd--recover-entity pmd--project-type project))
+              (repo-url (pmd--projects-repository-url project)))
+    (let* ((target-dir
+            (funcall pmd-project-local-target-path-function data base-path))
+           (repo-slug (pmd--projects-repository-slug project))
            (clone-url (pmd--projects-preferred-clone-url repo-url)))
+      (unless (and (stringp target-dir) (not (string-empty-p target-dir)))
+        (user-error "PMD local target path function returned no path"))
       (if (file-directory-p target-dir)
           (message "Repository already exists: %s" target-dir)
         (make-directory (file-name-directory target-dir) t)
@@ -464,7 +500,7 @@ When INCLUDE-FORGE is non-nil, clone under a forge-specific subdirectory."
 (defun +pmd-clone-repository-permanent (project)
   "Clone PROJECT to `pmd-code-path'."
   (interactive "sProject ID: ")
-  (pmd--projects-clone-repository project pmd-code-path t))
+  (pmd--projects-clone-repository project pmd-code-path))
 
 (defun +pmd-clone-repository-temporary (project)
   "Clone PROJECT to `pmd-code-temp-path'."
