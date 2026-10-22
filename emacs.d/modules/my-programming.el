@@ -544,7 +544,7 @@ Return `rspec', `minitest', or nil when no runner can be determined."
    '((sbcl ("sbcl") :coding-system utf-8-unix)
      (ros ("ros" "-Q" "run") :coding-system utf-8-unix)))
   (sly-contribs '(sly-fancy sly-stickers sly-scratch sly-mrepl sly-autodoc sly-trace-dialog))
-  (sly-common-lisp-set-syle 'modern)
+  (sly-common-lisp-style 'modern)
 
   :init
   (add-to-list 'auto-mode-alist '("\\.ros\\'" . lisp-mode)))
@@ -553,9 +553,6 @@ Return `rspec', `minitest', or nil when no runner can be determined."
   :ensure t
   :pin "melpa"
   :after sly
-  :bind
-  (:map sly-mode-map
-        (""))
   :init
   (add-to-list 'sly-contribs 'sly-asdf 'append))
 
@@ -565,7 +562,10 @@ Return `rspec', `minitest', or nil when no runner can be determined."
   :hook sly-mode)
 
 (use-package sly-repl-ansi-color
+  :ensure t
   :after sly
+  :pin "melpa"
+  :config
   (add-to-list 'sly-contribs 'sly-repl-ansi-color))
 
 (use-package sly-overlay

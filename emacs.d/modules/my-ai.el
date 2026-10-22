@@ -29,8 +29,8 @@
           "zai-glm-5-3"
           )))
     
-    (setq gptel-model my/gptel-backend-mistral)
-    (setq gptel-model 'mistral-medium-latest)))
+    (setopt gptel-backend my/gptel-backend-mistral)
+    (setopt gptel-model 'mistral-medium-latest)))
 
 
 (when my/agent-shell-enabled

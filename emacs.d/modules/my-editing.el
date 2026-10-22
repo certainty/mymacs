@@ -2,22 +2,7 @@
 
 ;;; Editing
 
-(use-package emacs
-  :bind
-  (:map mymacs-mode-map
-        ("C-M-^" . join-line)))
-
-;;;; handling pairs (quotes, parens, etc.)
-(use-package elec-pair
-  :bind
-  (:map mymacs-mode-map
-        ("C-z" . delete-pair))
-  :custom
-  (delete-pair-blink-delay 0.0)
-  (delete-pair-push-mark t)
-  :init
-  (electric-pair-mode))
-
+(use-package emacs)
 (defun my/match-pair ()
   "Jump to the matching delimiter or string boundary."
   (interactive)
@@ -34,6 +19,26 @@
       (goto-char (nth 1 (syntax-ppss))))
      (t
       (user-error "No matching delimiter at point")))))
+
+(use-package emacs
+  :bind
+  (:map goto-map
+        ("%" . my/match-pair))
+  (:map mymacs-mode-map
+        ("C-%" . my/match-pair)
+        ("C-M-^" . join-line)))
+
+;;;; handling pairs (quotes, parens, etc.)
+(use-package elec-pair
+  :bind
+  (:map mymacs-mode-map
+        ("C-z" . delete-pair))
+  :custom
+  (delete-pair-blink-delay 0.0)
+  (delete-pair-push-mark t)
+  :init
+  (electric-pair-mode))
+
 
 (use-package embrace
   :ensure t
@@ -77,11 +82,14 @@
 
 (use-package substitute
   :ensure t
-  :bind ("C-;" . substitute-target-in-buffer)
+  :bind
+  (:map my/leader-map
+        ("C-s" . substitute-target-in-defun)
+        ("s" . substitute-target-in-buffer))
+  :custom
+  (substitute-fixed-letter-case t)
   :config
-  (setq substitute-fixed-letter-case t)
-  (add-hook 'substitute-post-replace-functions #'substitute-report-operation)
-  (add-hook 'substitute-post-replace-functions #'sacha-substitute-save-common-edits))
+  (add-hook 'substitute-post-replace-functions #'substitute-report-operation))
 
 ;;;; embark
 (use-package embark

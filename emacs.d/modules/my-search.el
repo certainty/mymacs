@@ -28,16 +28,6 @@
   (isearch-wrap-pause t)
   (isearch-repeat-on-direction-change t))
 
-(use-package avy
-  :ensure t
-  :commands (avy-goto-word-0)
-  :bind
-  (:map goto-map
-        ("c" . avy-goto-char)
-        ("w" . avy-goto-word-1))
-  :custom
-  (avy-all-windows nil))
-
 (use-package consult
   :ensure t
   :commands (consult-completion-in-region)
@@ -45,8 +35,8 @@
   (:map my/leader-map
         ("b" . consult-project-buffer)
         ("B" . consult-buffer)
-        ("s" . consult-imenu)
-        ("S" . consult-imenu-multi)
+        ("i" . consult-imenu)
+        ("I" . consult-imenu-multi)
         ("/" . my/consult-ripgrep)
         ("d" . consult-flymake))
   (:map my/open-prefix-map
@@ -71,7 +61,7 @@
   :bind
   (:map search-map
         ("w" . avy-goto-word)
-        ("C" . avy-goto-char-timer))
+        ("c" . avy-goto-char-timer))
   :custom
   (avy-all-windows nil))
 

@@ -85,7 +85,7 @@ Each entry is a cons cell of the form (DESCRIPTION . URL)."
         network-security-level 'high
         gnutls-verify-error t
         package-install-upgrade-built-in nil
-        package-check-signature nil
+        package-check-signature 'allow-unsigned
         package-review-policy '((archive . "melpa"))
         package-native-compile t
         package-quickstart t)

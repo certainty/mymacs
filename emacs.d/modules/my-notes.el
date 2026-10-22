@@ -81,7 +81,7 @@
       "* TODO %?\n")))
   (org-pretty-entities t)
   (org-startup-folded t)
-  (org-hide-emphasis-marker nil)
+  (org-hide-emphasis-markers nil)
   (org-M-RET-may-split-lines nil)
   (org-insert-heading-respect-content t)
   (org-fontify-quote-and-verse-blocks t)

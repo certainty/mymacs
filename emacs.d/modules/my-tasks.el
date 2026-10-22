@@ -2,9 +2,13 @@
  
 ;;; Org task workflow
 
-()
+(defun my/org-mode-autosave-hook ()
+  (add-hook 'auto-save-hook 'org-save-all-org-buffers nil nil)
+  (auto-save-mode 1))
 
 (use-package org
+  :hook
+  (org-mode . my/org-mode-autosave-hook)
   :bind
   (:map my/task-prefix-map
         ("t" . my/tasks-agenda)
@@ -19,8 +23,8 @@
         ("M-a" . (lambda () (interactive) (org-eval-in-calendar '(calendar-beginning-of-week))))
         ("M-e" . (lambda () (interactive) (org-eval-in-calendar '(calendar-end-of-week))))
         ("C-M-f" . (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-month 1))))
-        ("C-M-b" . (lambda () (interactive) (org-eval-in-calendar '(calendar-forward-month 1))))
-        ("C-M-a" . (lambda () (interactive) (org-eval-in-calendar '(calendar-begining-of-month))))
+        ("C-M-b" . (lambda () (interactive) (org-eval-in-calendar '(calendar-backward-month 1))))
+        ("C-M-a" . (lambda () (interactive) (org-eval-in-calendar '(calendar-beginning-of-month))))
         ("C-M-e" . (lambda () (interactive) (org-eval-in-calendar '(calendar-end-of-month)))))
   :custom
   (org-agenda-files

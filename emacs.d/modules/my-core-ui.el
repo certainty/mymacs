@@ -26,7 +26,7 @@
   (ring-bell-function 'ignore)
   (inhibit-startup-screen t)
   (inhibit-startup-message t)
-  (initial-scratch-message ";; Hack the planet!\n\n")
+  
 
 ;;; editing
   (kill-whole-line t)
