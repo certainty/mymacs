@@ -74,7 +74,7 @@
 ;;;;; buffer arrangement
   ;; Keep the catch-all last; feature-specific rules should be prepended.
   (display-buffer-alist
-   `(("^\\*\\(vc-.*\\|log-edit-files\\)\\*$" . ,(my/tab-window-config "VC"))
+   `(("^\\*\\(vc-.*\\|log-edit-files\\)\\*\\(<[0-9]+>\\)?$" . ,(my/tab-window-config "VC"))
      ("\\*xref\\*" . ,(my/bottom-window-config 'special-mode))
      ("\\*eldoc.*\\'" . ,(my/bottom-window-config 'special-mode 'display-buffer-reuse-window -1))
      ("\\*\\(compilation\\|Occur\\|grep\\).*\\*" . ,(my/bottom-window-config 'special-mode))

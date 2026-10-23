@@ -57,6 +57,12 @@
   (vc-allow-rewriting-published-history 'ask)
   (vc-dir-hide-up-to-date-on-revert t)
   :preface
+  (defun my/vc-dir-in-tab (original &rest args)
+    "Run ORIGINAL in the named VC tab."
+    (require (quote tab-bar))
+    (tab-bar-switch-to-tab "VC")
+    (apply original args))
+
   (defun my/vc-git-close-successful-pushpull (original command &rest args)
     "Close the VC Git output window after a successful push or pull."
     (let ((process (apply original command args)))
@@ -72,6 +78,8 @@
   :init
   (vc-auto-revert-mode 1)
   :config
+  (with-eval-after-load "vc-dir"
+    (advice-add (quote vc-dir) :around (function my/vc-dir-in-tab)))
   (with-eval-after-load 'vc-git
     (advice-add 'vc-git--pushpull :around
                 #'my/vc-git-close-successful-pushpull)))
