@@ -35,14 +35,13 @@
   (read-file-name-completion-ignore-case t)
   (completions-format 'vertical)
   :init
-  (fido-vertical-mode))
+  (fido-vertical-mode)
+  )
 
 (use-package icomplete
   :bind
   (:map icomplete-fido-mode-map
-        ("M-i" . icomplete-fido-exit))
-  :custom
-  (icomplete-vertical-mode t))
+        ("M-i" . icomplete-fido-exit)))
 
 ;;;; In-buffer completion with completion preview mode. I like this alot better than popups
 (use-package completion-preview
