@@ -32,6 +32,12 @@
   (kill-whole-line t)
   (next-line-add-newlines t)
   (set-mark-command-repeat-pop t)
+  (editorconfig-mode t)
+  (imenu-auto-rescan t)
+  (view-read-only t)
+  (column-number-mode t)
+  (kill-do-not-save-duplicates t)
+  (scroll-error-top-bottom t)
 
   :preface
   (defun +escape-dwim ()

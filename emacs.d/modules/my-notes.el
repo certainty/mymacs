@@ -189,7 +189,8 @@
   ("\\.mdwn\\'" . markdown-ts-mode))
 
 (use-package flyspell
-  :hook (text-mode . flyspell-mode)
+  :hook ((text-mode . flyspell-mode)
+         (prog-mode . flyspell-prog-mode))
   :commands (flyspell-mode flyspell-prog-mode)
   :custom
   (ispell-program-name "aspell")

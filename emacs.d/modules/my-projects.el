@@ -56,6 +56,11 @@
   :custom
   (vc-allow-rewriting-published-history 'ask)
   (vc-dir-hide-up-to-date-on-revert t)
+  (vc-deduce-backend-nonvc-modes t)
+  (vc-find-revision-no-save t)
+  (vc-follow-symlinks t)
+  (vc-use-incoming-outgoing-prefixes t)
+  (vc-dir-simple-unmark-all-files t)
   :preface
   (defun my/vc-dir-in-tab (original &rest args)
     "Run ORIGINAL in the named VC tab."

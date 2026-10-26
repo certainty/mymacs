@@ -59,6 +59,7 @@
   (dired-recursive-copies 'always)
   (dired-recursive-deletes 'always)
   (dired-auto-revert-buffer #'dired-directory-changed-p)
+  (dired-mouse-drag-files t)
   (global-auto-revert-non-file-buffers t)
   (dired-dwim-target t)
   :init
@@ -68,6 +69,10 @@
   :bind
   (:map my/leader-map
         ("." . dired-jump)))
+
+(use-package shell
+  :custom
+  (shell-command-prompt-show-cwd t))
 
 (use-package wdired
   :commands wdired-change-to-wdired-mode

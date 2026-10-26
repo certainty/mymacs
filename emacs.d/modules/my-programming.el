@@ -13,7 +13,7 @@
 ;;;; compilation mode colors
 (use-package compile
   :custom
-  (compilation-scroll-output t)
+  (compilation-scroll-output 'first-error)
   (compilation-max-output-line-length nil))
 
 (use-package ansi-color
