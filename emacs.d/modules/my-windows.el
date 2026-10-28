@@ -40,6 +40,10 @@
   (push (cons condition action) display-buffer-alist))
 
 
+(use-package tab-bar
+  :custom
+  (tab-bar-show 0))
+
 (use-package window
   :commands (+delete-other-windows)
   :bind
@@ -68,6 +72,9 @@
   (split-width-threshold 80)
   (even-window-sizes nil)
   (window-combination-resize t)
+  (frame-resize-pixelwise t)
+  (window-resize-pixelwise t)
+  (frame-inhibit-implied-resize t)
   (window-divider-default-right-width 1)
   (window-divider-default-bottom-width 1)
 
