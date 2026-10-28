@@ -535,7 +535,9 @@ Return `rspec', `minitest', or nil when no runner can be determined."
 (use-package sly
   :ensure t
   :pin "melpa"
-  :hook (sly-mrepl-mode . completion-preview-mode)
+  :hook
+  (sly-mrepl-mode . completion-preview-mode)
+  (sly-mode . my/sly-eldoc-idle-delay)
   :custom
   (inferior-lisp-program "sbcl")
   (sly-complete-symbol-function #'sly-flex-completions)
@@ -545,6 +547,14 @@ Return `rspec', `minitest', or nil when no runner can be determined."
      (ros ("ros" "-Q" "run") :coding-system utf-8-unix)))
   (sly-contribs '(sly-fancy sly-stickers sly-scratch sly-mrepl sly-autodoc sly-trace-dialog))
   (sly-common-lisp-style 'modern)
+
+  :preface
+  (defun my/sly-eldoc-idle-delay ()
+    "Restore automatic eldoc display in sly buffers.
+`sly-autodoc-mode' shows arglists through `eldoc-mode', whose
+global `eldoc-idle-delay' disables automatic display; use a small
+buffer-local value instead."
+    (setq-local eldoc-idle-delay 0.5))
 
   :init
   (add-to-list 'auto-mode-alist '("\\.ros\\'" . lisp-mode)))
