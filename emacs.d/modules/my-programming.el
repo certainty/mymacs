@@ -571,12 +571,12 @@ buffer-local value instead."
   :pin "melpa"
   :hook sly-mode)
 
-(use-package sly-repl-ansi-color
-  :ensure t
-  :after sly
-  :pin "melpa"
-  :config
-  (add-to-list 'sly-contribs 'sly-repl-ansi-color))
+;; (use-package sly-repl-ansi-color
+;;   :ensure t
+;;   :after sly
+;;   :pin "melpa"
+;;   :config
+;;   (add-to-list 'sly-contribs 'sly-repl-ansi-color))
 
 (use-package sly-overlay
   :ensure t
