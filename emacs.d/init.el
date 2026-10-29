@@ -52,6 +52,11 @@ Each entry is a cons cell of the form (DESCRIPTION . URL)."
   :type 'directory
   :group 'mymacs)
 
+(defcustom my/rfc-directory "~/rfcs"
+  "Directory of rfcs. See also: https://www.rfc-editor.org/series/rfc-download/#download-rfcs-using-rsync"
+  :type 'directory
+  :group 'mymacs)
+
 (defcustom my/org-tasks-file  "todo.org" "Path to the tasks file relative to the org-directory" :type 'string :group 'mymacs)
 (defcustom my/gptel-enabled nil "Use gptel with mistral" :type 'boolean :group 'mymacs)
 (defcustom my/agent-shell-enabled nil "Use agent-shell with acp" :type 'boolean :group 'mymacs)

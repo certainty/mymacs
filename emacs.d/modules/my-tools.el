@@ -51,5 +51,11 @@
   :custom
   (epg-pinentry-mode 'loopback))
 
+(use-package rfc-mode
+  :ensure t
+  :pin "melpa"
+  :custom
+  (rfc-mode-directory my/rfc-directory))
+
 (provide 'my-tools)
 ;;; my-tools.el ends here
