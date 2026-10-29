@@ -96,15 +96,6 @@
    :height my/font-height
    :weight my/font-weight)
 
-;;;; modeline
-  (dolist (face-and-border '((mode-line . "#404040")
-                              (mode-line-active . "#404040")
-                              (mode-line-inactive . "#2a2a2a")))
-    (set-face-attribute (car face-and-border) nil
-                        :box (list :line-width -1 :color (cdr face-and-border))
-                        :overline "#606060"
-                        :underline nil))
-
   (setopt mode-line-compact nil
           mode-line-right-align-edge 'right-margin)
 
@@ -148,22 +139,26 @@
   (let ((custom-theme-load-path (cons t custom-theme-load-path)))
     (require-theme 'modus-themes))
   :config
-  (setq modus-vivendi-palette-overrides
+  (setq modus-themes-common-palette-overrides
+        '((bg-paren-match bg-magenta-intense)
+          (fringe bg-main)
+          (bg-space bg-main))
+        modus-vivendi-palette-overrides
         '((bg-line-number-active "#000000")
           (bg-line-number-inactive "#000000")
           (bg-mode-line-active "#000000")
-          (bg-mode-line-inactive "#000000")
-          (bg-paren-match bg-magenta-intense)
-          (fringe bg-main)
-          (bg-space bg-main)))
+          (bg-mode-line-inactive "#000000")))
   (load-theme my/theme t)
 
+  ;; Preserve the custom modeline edge while letting light themes choose
+  ;; their own contrasting backgrounds.
   (dolist (face '(mode-line mode-line-active mode-line-inactive))
     (set-face-attribute face nil
-                        :background "#000000"
                         :box nil
                         :overline "#606060"
-                        :underline nil)))
+                        :underline nil)
+    (when (eq my/theme 'modus-vivendi)
+      (set-face-attribute face nil :background "#000000"))))
 
 (use-package pulsar
   :ensure t

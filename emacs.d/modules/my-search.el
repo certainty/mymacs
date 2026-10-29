@@ -57,10 +57,10 @@
 
 (use-package avy
   :ensure t
-  :commands (avy-goto-word-0)
+  :commands (avy-goto-word-0 avy-goto-word-1)
   :bind
   (:map search-map
-        ("w" . avy-goto-word)
+        ("w" . avy-goto-word-0)
         ("c" . avy-goto-char-timer))
   :custom
   (avy-all-windows nil))
