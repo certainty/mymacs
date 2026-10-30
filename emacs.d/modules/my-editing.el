@@ -57,28 +57,36 @@
         ("C-=" . expreg-expand)
         ("C--" . expreg-contract)))
 
-(use-package paredit
-  :hook
-  (emacs-lisp-mode . paredit-mode)
-  (lisp-mode . paredit-mode)
-  :bind
+;; (use-package paredit
+;;   :hook
+;;   (emacs-lisp-mode . paredit-mode)
+;;   (lisp-mode . paredit-mode)
+;;   :bind
 
-  (:map paredit-mode-map
-        ("C-c f" . paredit-forward)
-        ("C-c b" . paredit-backward)
-        ("C-c d" . paredit-forward-down)
-        ("C-c D" . paredit-backward-down)
-        ("C-c (" . paredit-wrap-sexp)
-        ("C-c C-)" . paredit-forward-slurp-sexp)
-        ("C-c C-(" . paredit-backward-slurp-sexp)
-        ("C-c C-l" . paredit-recenter-on-defun)
-        ("C-j" . nil)
-        ("M-s" . nil) ;; free the search map
-        )
-  (:repeat-map my/paredit-slurp-repeat-map
-               ("C-)" . paredit-forward-slurp-sexp)
-               ("C-(" . paredit-backward-slurp-sexp))
-  :load-path "vendor")
+;;   (:map paredit-mode-map
+;;         ("C-c f" . paredit-forward)
+;;         ("C-c b" . paredit-backward)
+;;         ("C-c d" . paredit-forward-down)
+;;         ("C-c D" . paredit-backward-down)
+;;         ("C-c (" . paredit-wrap-sexp)
+;;         ("C-c C-)" . paredit-forward-slurp-sexp)
+;;         ("C-c C-(" . paredit-backward-slurp-sexp)
+;;         ("C-c C-l" . paredit-recenter-on-defun)
+;;         ("C-j" . nil)
+;;         ("M-s" . nil) ;; free the search map
+;;         )
+;;   (:repeat-map my/paredit-slurp-repeat-map
+;;                ("C-)" . paredit-forward-slurp-sexp)
+;;                ("C-(" . paredit-backward-slurp-sexp))
+;;   :load-path "vendor")
+
+(use-package iedit
+  :ensure t
+  :commands (iedit-mode)
+  :pin "melpa"
+  :bind
+  (:map my/leader-map
+        ("C-;" . iedit-mode)))
 
 (use-package substitute
   :ensure t
