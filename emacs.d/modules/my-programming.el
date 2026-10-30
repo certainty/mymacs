@@ -30,9 +30,7 @@
   (defun my/eldoc-display-manually-only (docs interactive)
     (when interactive
       (or (eldoc-display-in-echo-area docs interactive)
-          (eldoc-display-in-buffer docs interactive))))
-  ;(setq eldoc-display-functions '(my/eldoc-display-manually-only))
-  )
+          (eldoc-display-in-buffer docs interactive)))))
 
 (use-package eglot
   :hook (markdown-ts-mode . eglot-ensure)
@@ -530,6 +528,20 @@ Return `rspec', `minitest', or nil when no runner can be determined."
   :ensure t
   :pin "nongnu"
   :hook (adoc-mode . flymake-mode))
+
+;;; Lisp in general
+(use-package lispy
+  :hook
+  (lisp-mode . lispy-mode)
+  (emacs-lisp-mode . lispy-mode)
+  :ensure t
+  :pin "melpa"
+  :config
+  (use-package hydra
+    :ensure t)
+  (use-package zoutline
+    :ensure t
+    :pin "melpa"))
 
 ;;; Common Lisp
 (use-package sly
