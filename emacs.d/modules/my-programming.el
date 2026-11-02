@@ -65,6 +65,10 @@
                  (:isHttpEnabled t)))
   (add-to-list 'eglot-server-programs
                '(ada-ts-mode "alr" "exec" "ada_language_server"))
+  ;; GPR files get their own server (ALS handles one language per process),
+  ;; but also through `alr exec' so the alire environment is set up.
+  (add-to-list 'eglot-server-programs
+               '(gpr-ts-mode "alr" "exec" "ada_language_server" "--language-gpr"))
   (add-to-list 'eglot-server-programs
                '(swift-ts-mode "sourcekit-lsp")))
 
@@ -431,22 +435,24 @@ Return `rspec', `minitest', or nil when no runner can be determined."
                 (src (expand-file-name "src" root)))
       (setq-local compilation-search-extra-path (list src))))
 
-  (defun my-setup-ada ()
+  (defun my/setup-ada ()
     (my-project-compilation-search-path)
     (setq-local ada-ts-mode-indent-offset 3)
+    (setq-local tab-width 3)
     (setq-local indent-tabs-mode nil))
 
   :hook
   (ada-ts-mode . eglot-ensure)
-  (ada-ts-mode . my-setup-ada))
+  (ada-ts-mode . my/setup-ada))
 
 (use-package gpr-ts-mode
   :ensure t
   :pin "melpa"
   :mode ("\\.gpr\\'" "\\.cgpr\\'")
-  :hook (gpr-ts-mode . eglot-ensure)
-  :config
-  (require 'gpr-ts-lspclient-eglot))
+  ;; eglot-server-programs has a gpr-ts-mode entry (see above) that starts
+  ;; the server via `alr exec'; don't load gpr-ts-lspclient-eglot, which
+  ;; would register a second, alire-unaware `ada_language_server' entry.
+  :hook (gpr-ts-mode . eglot-ensure))
 
 ;;;; erlang
 ;; (use-package erlang-ts
@@ -530,18 +536,20 @@ Return `rspec', `minitest', or nil when no runner can be determined."
   :hook (adoc-mode . flymake-mode))
 
 ;;; Lisp in general
+(use-package zoutline
+  :ensure t
+  :pin "melpa")
+
+(use-package hydra
+  :ensure t
+  :pin "melpa")
+
 (use-package lispy
   :hook
   (lisp-mode . lispy-mode)
   (emacs-lisp-mode . lispy-mode)
   :ensure t
-  :pin "melpa"
-  :config
-  (use-package hydra
-    :ensure t)
-  (use-package zoutline
-    :ensure t
-    :pin "melpa"))
+  :pin "melpa")
 
 ;;; Common Lisp
 (use-package sly
