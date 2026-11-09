@@ -89,13 +89,6 @@
   (setq-default standard-indent 2)
   (setq-default tab-width 2)
 
-;;; default font
-  (set-face-attribute
-   'default nil
-   :font my/font
-   :height my/font-height
-   :weight my/font-weight)
-
   (setopt mode-line-compact nil
           mode-line-right-align-edge 'right-margin)
 
@@ -122,6 +115,28 @@
                             '(flymake-mode-line-format "  "))
                         mode-line-misc-info))))
                   mode-line-end-spaces)))
+
+(use-package fontaine
+  :ensure t
+  :hook (after-init . (lambda () (fontaine-mode 1) (fontaine-set-preset 'everyday)))
+  :custom
+  (fontaine-presets
+   `((everyday
+      :default-family ,my/font
+      :default-weight ,my/font-weight
+      :default-height ,my/font-height)
+     (pairing
+      :default-family ,my/font
+      :default-weight ,my/font-weight
+      :default-height ,(+ my/font-height 30))))
+  :config
+  (defun my/toggle-font-preset ()
+    "Toggle between the everyday and pairing font presets."
+    (interactive)
+    (fontaine-set-preset
+     (if (eq fontaine-current-preset 'everyday)
+         'pairing
+       'everyday))))
 
 ;;; Theme
 (use-package modus-themes

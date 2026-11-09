@@ -14,11 +14,6 @@
 (defun my/side-window-config (&optional mode slot)
   (my/window-config 'display-buffer-reuse-mode-window 'right 'window-width 0.33 mode slot))
 
-(defun my/tab-window-config (&optional name)
-  "Return a display-buffer action for a tab named NAME."
-  `((display-buffer-in-tab)
-    (tab-name . ,(or name "VC"))))
-
 (defun my/side-window-config-allow-other-window (&optional mode slot)
   "Return a side-window configuration that permits `other-window'."
   (let ((config (my/side-window-config mode slot)))
@@ -81,8 +76,7 @@
 ;;;;; buffer arrangement
   ;; Keep the catch-all last; feature-specific rules should be prepended.
   (display-buffer-alist
-   `(("^\\*\\(vc-.*\\|log-edit-files\\)\\*\\(<[0-9]+>\\)?$" . ,(my/tab-window-config "VC"))
-     ("\\*xref\\*" . ,(my/bottom-window-config 'special-mode))
+   `(("\\*xref\\*" . ,(my/bottom-window-config 'special-mode))
      ("\\*eldoc.*\\'" . ,(my/bottom-window-config 'special-mode 'display-buffer-reuse-window -1))
      ("\\*\\(compilation\\|Occur\\|grep\\).*\\*" . ,(my/bottom-window-config 'special-mode))
      ("\\*\\(Help\\|compilation\\|Occur\\|grep\\|Flymake.*\\)\\*" . ,(my/side-window-config 'special-mode))

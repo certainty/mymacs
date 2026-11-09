@@ -56,18 +56,12 @@
   :custom
   (vc-allow-rewriting-published-history 'ask)
   (vc-dir-hide-up-to-date-on-revert t)
-  (vc-deduce-backend-nonvc-modes t)
+  (vc-deduce-backend-non!vc-modes t)
   (vc-find-revision-no-save t)
   (vc-follow-symlinks t)
   (vc-use-incoming-outgoing-prefixes t)
   (vc-dir-simple-unmark-all-files t)
   :preface
-  (defun my/vc-dir-in-tab (original &rest args)
-    "Run ORIGINAL in the named VC tab."
-    (require (quote tab-bar))
-    (tab-bar-switch-to-tab "VC")
-    (apply original args))
-
   (defun my/vc-git-close-successful-pushpull (original command &rest args)
     "Close the VC Git output window after a successful push or pull."
     (let ((process (apply original command args)))
@@ -83,8 +77,8 @@
   :init
   (vc-auto-revert-mode 1)
   :config
-  (with-eval-after-load "vc-dir"
-    (advice-add (quote vc-dir) :around (function my/vc-dir-in-tab)))
+  (when (string-equal system-type "darwin")
+    (setopt vc-git-program "/opt/homebrew/bin/git"))
   (with-eval-after-load 'vc-git
     (advice-add 'vc-git--pushpull :around
                 #'my/vc-git-close-successful-pushpull)))
@@ -115,7 +109,11 @@
         ("V" . magit-status))
   :custom
   (magit-display-buffer-function
-   #'magit-display-buffer-same-window-except-diff-v1))
+   #'magit-display-buffer-same-window-except-diff-v1)
+
+  :config
+  (when (string-equal system-type "darwin")
+    (setopt magit-git-executable "/opt/homebrew/bin/git")))
 
 ;;;; vc log
 (use-package log-view

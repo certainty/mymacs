@@ -1,6 +1,31 @@
 ;;; my-ai.el --- simple ai integration -*- lexical-binding: t; -*-
 
 (when my/gptel-enabled
+  (use-package macher
+    :ensure t
+    :pin "melpa"
+    :custom
+    (macher-action-buffer-ui 'org)
+
+    :hook
+    ;; Set up action buffer behavior to your liking.  Alternately, do
+    ;; this more generally in your `gptel-mode-hook'.
+    (macher-action-buffer-setup
+     . (lambda ()
+         ;; Auto-scroll responses.
+         (setq-local window-point-insertion-type t)
+         ;; Wrap lines.
+         (visual-line-mode 1)))
+
+     :config
+     (macher-install)
+     (macher-enable)
+     (my/push-display-buffer-rule
+      "\\*macher:.*\\*" (my/side-window-config 'special-mode))
+     (my/push-display-buffer-rule
+      "\\*macher-patch:.*\\*" (my/side-window-config 'special-mode)))
+
+    
   (use-package gptel
     :ensure t
     :pin "melpa"
@@ -28,50 +53,26 @@
           "magistral-medium-latest"
           "zai-glm-5-3"
           )))
+
+    (gptel-make-preset 'json
+      :pre (lambda ()
+             (setq-local gptel--schema
+                         (buffer-substring-no-properties
+                          (point) (point-max)))
+             (delete-region (point) (point-max)))
+      :include-reasoning nil)
+
+    (gptel-make-preset 'websearch
+      :description  "Search only"
+      :temperature  0.7
+      :tools        '("search_web" "read_url" "get_youtube_meta"))
     
-    (setopt gptel-backend my/gptel-backend-mistral)
-    (setopt gptel-model 'mistral-medium-latest)))
-
-
-(when my/agent-shell-enabled
-  (use-package agent-shell
-    :ensure t
-    :pin "melpa"
-    :commands (agent-shell agent-shell-openai-start-codex
-                           agent-shell-project-buffers)
-    :bind
-    (:map my/project-prefix-map
-          ("a" . my/agent-shell-toggle-or-start-codex)
-          ("A" . agent-shell-codex))
-    :init
-    (defun my/agent-shell-toggle-or-start-codex ()
-      "Toggle the project agent shell, or start Codex when none is running."
-      (interactive)
-      (if (agent-shell-project-buffers)
-          (agent-shell)
-        (agent-shell-openai-start-codex)))
-
-    (defalias 'agent-shell-codex 'agent-shell-openai-start-codex)
-    :config
-    (my/push-display-buffer-rule
-     ".* Agent @ .*"
-     (my/side-window-config 'agent-shell-mode))
-
-    (setopt agent-shell-openai-authentication
-            (agent-shell-openai-make-authentication :login t))
-    (setopt agent-shell-write-inhibit-minor-modes '(aggressive-indent-mode))
-
-    (defun my/agent-shell-completion-setup ()
-      "Use minibuffer completion UI for in-buffer agent-shell completion."
-      (setq-local completion-in-region-function #'consult-completion-in-region))
-
-    (add-hook 'agent-shell-mode-hook #'my/agent-shell-completion-setup)
-
-    (defun my/agent-shell-dot-subdir (subdir)
-      (let* ((cwd (string-remove-suffix "/" (agent-shell-cwd)))
-             (sanitized (replace-regexp-in-string "/" "-" (string-remove-prefix "/" cwd))))
-        (expand-file-name subdir (locate-user-emacs-file (concat "agent-shell/" sanitized)))))
-
-    (setopt agent-shell-dot-subdir-function #'my/agent-shell-dot-subdir)))
+    (cond
+     ((string-equal my/gptel-provider "mistral")
+      (setq gptel-backend my/gptel-backend-mistral)
+      (setq gptel-model 'mistral-medium-latest))
+     ((string-equal my/gptel-provider "openai")
+      (setq gptel-backend (gptel-make-openai-oauth "OpenAI sub"))
+      (setq gptel-mode 'gpt-6-luna)))))
 
 (provide 'my-ai)
