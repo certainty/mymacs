@@ -145,7 +145,13 @@
         ("r" . rspec-rerun)
         ("t" . rspec-toggle-spec-and-target))
   :custom
-  (rspec-key-command-prefix (kbd "C-c t")))
+  (rspec-key-command-prefix (kbd "C-c t"))
+  :config
+  (defun my/rspec-bundle-p ()
+    "Return non-nil when Bundler is enabled and an ancestor has a Gemfile."
+    (and rspec-use-bundler-when-possible
+         (locate-dominating-file default-directory "Gemfile")))
+  (advice-add 'rspec-bundle-p :override #'my/rspec-bundle-p))
 
 (use-package minitest
   :ensure t
