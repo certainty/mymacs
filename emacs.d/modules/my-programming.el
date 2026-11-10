@@ -14,7 +14,19 @@
 (use-package compile
   :custom
   (compilation-scroll-output 'first-error)
-  (compilation-max-output-line-length nil))
+  (compilation-max-output-line-length nil)
+  :config
+  (defun my/compilation-add-project-root-to-search-path (process)
+    "Add the current project root to compilation source-file lookup paths."
+    (when-let* ((buffer (process-buffer process)))
+      (with-current-buffer buffer
+        (when-let* ((project (project-current nil)))
+          (let ((root (project-root project)))
+            (setq-local compilation-search-path
+                        (cons root
+                              (delete root compilation-search-path))))))))
+  (add-hook 'compilation-start-hook
+            #'my/compilation-add-project-root-to-search-path))
 
 (use-package ansi-color
   :hook (compilation-filter . ansi-color-compilation-filter))
