@@ -5,6 +5,15 @@
 ;; matching style, and annotations.  In-buffer completion remains built in.
 
 ;;;; Minibuffer
+
+(use-package vertico
+  :ensure t
+  :config
+  (setq completion-in-region-function #'consult-completion-in-region)
+  :init
+  (vertico-mode))
+
+
 (use-package orderless
   :ensure t
   :custom
@@ -34,8 +43,8 @@
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completions-format 'vertical)
-  :init
-  (fido-vertical-mode)
+  ;; :init
+  ;; (fido-vertical-mode)
   )
 
 (use-package icomplete

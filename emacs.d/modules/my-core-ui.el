@@ -163,17 +163,11 @@
           (bg-line-number-inactive "#000000")
           (bg-mode-line-active "#000000")
           (bg-mode-line-inactive "#000000")))
-  (load-theme my/theme t)
-
-  ;; Preserve the custom modeline edge while letting light themes choose
-  ;; their own contrasting backgrounds.
-  (dolist (face '(mode-line mode-line-active mode-line-inactive))
-    (set-face-attribute face nil
-                        :box nil
-                        :overline "#606060"
-                        :underline nil)
-    (when (eq my/theme 'modus-vivendi)
-      (set-face-attribute face nil :background "#000000"))))
+  (let* ((time (decode-time (current-time)))
+         (hour (caddr time)))
+    (if (and (> hour 7) (< hour 18))
+        (load-theme 'modus-operandi-tinted t)
+      (load-theme 'modus-vivendi))))
 
 (use-package pulsar
   :ensure t
