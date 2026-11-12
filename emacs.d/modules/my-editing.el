@@ -124,6 +124,10 @@
                        embark-isearch-highlight-indicator))
   (prefix-help-command 'embark-prefix-help-command)
   :init
+  (with-eval-after-load 'vertico
+    (require 'vertico-multiform)
+    (add-to-list 'vertico-multiform-categories '(embark-keybinding grid))
+    (vertico-multiform-mode))
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
