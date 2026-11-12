@@ -160,7 +160,10 @@
   :custom
   (popper-display-control nil)
   (popper-reference-buffers
-   '("\\*Messages\\*"
+   '((lambda (buffer)
+       (with-current-buffer buffer
+         (derived-mode-p 'compilation-mode)))
+     "\\*Messages\\*"
      "Output\\*$"
      "\\*Async Shell Command\\*"
      "^\\*sly-compilation"

@@ -146,6 +146,10 @@
         ("t" . rspec-toggle-spec-and-target))
   :custom
   (rspec-key-command-prefix (kbd "C-c t"))
+  :init
+  (my/push-display-buffer-rule
+   "^\\*rspec-compilation.*\\*"
+   (my/bottom-window-config 'rspec-compilation-mode))
   :config
   (defun my/rspec-bundle-p ()
     "Return non-nil when Bundler is enabled and an ancestor has a Gemfile."
@@ -165,7 +169,11 @@
         ("r" . minitest-rerun)
         ("t" . minitest-toggle-test-and-target))
   :custom
-  (minitest-keymap-prefix (kbd "C-c t")))
+  (minitest-keymap-prefix (kbd "C-c t"))
+  :init
+  (my/push-display-buffer-rule
+   "^\\*Minitest.*\\*"
+   (my/bottom-window-config 'minitest-compilation-mode)))
 
 (use-package ruby-ts-mode
   :mode ("\\.rb\\'" "Rakefile\\'" "Gemfile\\'" "\\.rake\\'" "\\.gemspec\\'" "\\.ru\\'")
