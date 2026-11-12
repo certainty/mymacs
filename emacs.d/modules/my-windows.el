@@ -166,6 +166,9 @@
      "\\*Messages\\*"
      "Output\\*$"
      "\\*Async Shell Command\\*"
+     (lambda (buffer)
+       (with-current-buffer buffer
+         (derived-mode-p 'inf-ruby-mode)))
      "^\\*sly-compilation"
      "^\\*sly-mrepl"
      "\\*eldoc.*\\'"))

@@ -133,6 +133,21 @@
   (setf (alist-get 'swift-ts-mode apheleia-mode-alist) '(swift-format)))
 
 ;;;; ruby
+(use-package inf-ruby
+  :ensure t
+  :pin "nongnu"
+  :commands (inf-ruby-console-auto
+             ruby-send-definition
+             ruby-send-region
+             ruby-send-block
+             ruby-send-last-stmt
+             ruby-send-buffer
+             ruby-switch-to-inf)
+  :init
+  (my/push-display-buffer-rule
+   '(derived-mode . inf-ruby-mode)
+   (my/side-window-config-allow-other-window 'inf-ruby-mode)))
+
 (use-package rspec-mode
   :ensure t
   :pin "melpa"
@@ -182,7 +197,14 @@
   (ruby-mode . ruby-ts-mode)
   :bind
   (:map ruby-ts-mode-map
-        ("C-c a" . +find-alternate-file))
+        ("C-c a" . +find-alternate-file)
+        ("C-c C-c" . ruby-send-definition)
+        ("C-c C-r" . ruby-send-region)
+        ("C-c C-b" . ruby-send-block)
+        ("C-c C-e" . ruby-send-last-stmt)
+        ("C-c C-k" . ruby-send-buffer)
+        ("C-c C-s" . inf-ruby-console-auto)
+        ("C-c C-z" . ruby-switch-to-inf))
   :custom
   (ruby-indent-level 2)
   (ruby-insert-encoding-magic-comment nil)
