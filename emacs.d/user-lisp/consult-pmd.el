@@ -7,6 +7,7 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'seq)
 (require 'bookmark)
 (require 'consult)
 (require 'browse-url)
@@ -45,6 +46,15 @@ When nil, resolve the value from `auth-source'."
   :type 'integer
   :group 'consult-pmd)
 
+(defconst pmd--amqp-catalog-url
+  "https://project-metadata.nwse.io/amqp_catalog.json"
+  "URL for the AMQP catalog JSON feed.")
+
+(defconst pmd--amqp-namespace-type 'pmd-amqp-namespace)
+
+(defvar pmd--entity-catalog-data (make-hash-table)
+  "Store full JSON catalogs by entity type for detail views.")
+
 (defun pmd--keyword->string (key)
   "Convert keyword KEY to string without leading colon."
   (format "%s" (substring (symbol-name key) 1)))
@@ -59,6 +69,8 @@ When nil, resolve the value from `auth-source'."
   (cond
    ((null value) nil)
    ((stringp value) value)
+   ((eq value :false) "false")
+   ((eq value t) "true")
    (t (format "%s" value))))
 
 (defun pmd--list-string (values)
@@ -155,6 +167,52 @@ When nil, resolve the value from `auth-source'."
           (when (buffer-live-p buffer)
             (kill-buffer buffer)))))))
 
+(defun pmd--json-request (url)
+  "Request URL without PMD authentication and return parsed JSON."
+  (defvar url-request-extra-headers)
+  (require 'url)
+  (require 'json)
+  (let ((url-request-extra-headers nil)
+        (buffer (url-retrieve-synchronously url t t 10)))
+    (unless buffer
+      (user-error "PMD catalog request failed"))
+    (unwind-protect
+        (with-current-buffer buffer
+          (goto-char (point-min))
+          (let ((status
+                 (when (re-search-forward "^HTTP/[^ ]+ \\([0-9]+\\)" nil t)
+                   (string-to-number (match-string 1)))))
+            (unless (and status (<= 200 status 299))
+              (error "PMD catalog request failed (HTTP %s)" (or status "unknown"))))
+          (unless (re-search-forward "\r?\n\r?\n" nil t)
+            (error "PMD catalog response headers not found"))
+          (json-parse-buffer :object-type 'hash-table
+                             :array-type 'list
+                             :null-object nil))
+      (when (buffer-live-p buffer)
+        (kill-buffer buffer)))))
+
+(defun pmd--json-catalog-entities (type url collection id-field)
+  "Fetch URL and return COLLECTION records indexed by ID-FIELD for TYPE."
+  (let* ((catalog (pmd--json-request url))
+         (items (gethash collection catalog))
+         (entities (make-hash-table :test #'equal)))
+    (unless (listp items)
+      (error "PMD catalog %s has no %s array" url collection))
+    (puthash type catalog pmd--entity-catalog-data)
+    (dolist (item items)
+      (unless (hash-table-p item)
+        (error "PMD catalog %s contains a non-object in %s" url collection))
+      (let ((id (pmd--string (gethash id-field item))))
+        (when (pmd--present-p id)
+          (puthash id item entities))))
+    entities))
+
+(defun pmd--fetch-json-catalog (type url collection id-field)
+  "Fetch and cache JSON catalog COLLECTION from URL for entity TYPE."
+  (pmd--fetch-cached-entities
+   type #'pmd--json-catalog-entities type url collection id-field))
+
 (defun pmd--open-url (url)
   "Open URL with the platform URL handler."
   (let ((browse-url-generic-program
@@ -166,10 +224,6 @@ When nil, resolve the value from `auth-source'."
           (browse-url url))
       (browse-url url))))
 
-(defun pmd--browse-url (path &rest params)
-  "Open PATH with PARAMS in the browser."
-  (pmd--open-url (apply #'pmd--make-url path params)))
-
 (defvar pmd--entities-data (make-hash-table)
   "Store PMD entities by type.
 Each value is an alist with `data' and `timestamp' keys.")
@@ -177,8 +231,8 @@ Each value is an alist with `data' and `timestamp' keys.")
 (defvar pmd--force-cache-refresh nil
   "Dynamic variable to force PMD cache refresh.")
 
-(defun pmd--fetch-entities (type &rest arguments)
-  "Fetch entities from PMD and return them."
+(defun pmd--fetch-cached-entities (type fetch-function &rest arguments)
+  "Fetch entities of TYPE using FETCH-FUNCTION and cache the result."
   (if (bound-and-true-p pmd--force-cache-refresh)
       (pmd--cache-clear-type type)
     (pmd--maybe-invalidate-cache type))
@@ -187,10 +241,14 @@ Each value is an alist with `data' and `timestamp' keys.")
         (progn
           (message "PMD Cache hit for type %s" type)
           (alist-get 'data record))
-      (when-let* ((data (apply #'pmd--api-request arguments)))
+      (when-let* ((data (apply fetch-function arguments)))
         (puthash type `((data . ,data) (timestamp . ,(current-time)))
                  pmd--entities-data)
         data))))
+
+(defun pmd--fetch-entities (type &rest arguments)
+  "Fetch entities from PMD and return them."
+  (apply #'pmd--fetch-cached-entities type #'pmd--api-request arguments))
 
 (defun pmd--recover-entity (type id)
   "Recover the entity of TYPE with ID."
@@ -209,6 +267,7 @@ Each value is an alist with `data' and `timestamp' keys.")
     (`pmd-team #'pmd--teams-display)
     (`pmd-service-group #'pmd--servicegroups-display)
     (`pmd-people #'pmd--people-display)
+    (`pmd-amqp-namespace #'pmd--amqp-namespaces-display)
     (_ nil)))
 
 (defun pmd--resolve-entity-id (type target entities)
@@ -228,7 +287,8 @@ Each value is an alist with `data' and `timestamp' keys.")
 
 (defun pmd--cache-clear-type (type)
   "Clear the PMD cache for TYPE."
-  (remhash type pmd--entities-data))
+  (remhash type pmd--entities-data)
+  (remhash type pmd--entity-catalog-data))
 
 (defun pmd--maybe-invalidate-cache (type)
   "Invalidate the cache for TYPE if it has expired."
@@ -244,6 +304,20 @@ Each value is an alist with `data' and `timestamp' keys.")
               'pmd-id id
               'pmd-type type
               'consult--candidate id))
+
+(defun pmd--catalog-candidates (type url collection id-field display-field)
+  "Return candidates from JSON catalog URL.
+COLLECTION is the array name; ID-FIELD and DISPLAY-FIELD name record fields."
+  (let ((entities (pmd--fetch-json-catalog type url collection id-field))
+        candidates)
+    (maphash
+     (lambda (id data)
+       (push (pmd--completion-candidate
+              (or (pmd--string (gethash display-field data)) id)
+              type id)
+             candidates))
+     entities)
+    (sort candidates #'string-lessp)))
 
 (cl-defun pmd--candidate-data (cand)
   "Return candidate data from CAND."
@@ -262,6 +336,21 @@ Each value is an alist with `data' and `timestamp' keys.")
   (let ((type (get-text-property 0 'pmd-type cand)))
     (cl-assert type "[BUG] no type property associated")
     type))
+
+(defvar-local pmd-item-type nil
+  "PMD entity type displayed in the current item buffer.")
+
+(defvar-local pmd-item-id nil
+  "PMD entity ID displayed in the current item buffer.")
+
+(defun pmd--interactive-item-id (type prompt)
+  "Return the current item's ID for TYPE, or read one using PROMPT."
+  (if (derived-mode-p 'pmd-item-mode)
+      (progn
+        (unless (eq type pmd-item-type)
+          (user-error "This action does not apply to the displayed PMD item"))
+        pmd-item-id)
+    (read-string prompt)))
 
 (defun pmd--grouping-fn (field)
   "Return a grouping function for FIELD."
@@ -322,6 +411,7 @@ Each value is an alist with `data' and `timestamp' keys.")
   "Clear the PMD cache for all entity types."
   (interactive)
   (clrhash pmd--entities-data)
+  (clrhash pmd--entity-catalog-data)
   (message "PMD cache cleared."))
 
 (cl-defmacro pmd--with-cache-control (&rest body)
@@ -403,7 +493,7 @@ The function receives the PMD project item and the selected clone base path."
                     :annotate (pmd--consult-annotator #'pmd--projects-annotate)
                     :group (pmd--grouping-fn "service_group")
                     :sort nil)))
-        (pmd--browse-url (format "projects/%s" project-id))))))
+        (pmd--display-entity pmd--project-type project-id)))))
 
 (defun pmd--projects-repository-url (project)
   "Return the full repository URL for PROJECT."
@@ -499,51 +589,51 @@ Resolve the local clone path with `pmd-project-local-target-path-function'."
 
 (defun +pmd-clone-repository-permanent (project)
   "Clone PROJECT to `pmd-code-path'."
-  (interactive "sProject ID: ")
+  (interactive (list (pmd--interactive-item-id pmd--project-type "Project ID: ")))
   (pmd--projects-clone-repository project pmd-code-path))
 
 (defun +pmd-clone-repository-temporary (project)
   "Clone PROJECT to `pmd-code-temp-path'."
-  (interactive "sProject ID: ")
+  (interactive (list (pmd--interactive-item-id pmd--project-type "Project ID: ")))
   (pmd--projects-clone-repository project pmd-code-temp-path))
 
 (defun +pmd-copy-repo-url (project)
   "Copy the repository URL for PROJECT to the clipboard."
-  (interactive "sProject ID: ")
+  (interactive (list (pmd--interactive-item-id pmd--project-type "Project ID: ")))
   (when-let* ((repo-url (pmd--projects-repository-url project)))
     (kill-new repo-url)
     (message "Copied repository URL: %s" repo-url)))
 
 (defun +pmd-open-repository (project)
   "Open the repository URL for PROJECT in the browser."
-  (interactive "sProject ID: ")
+  (interactive (list (pmd--interactive-item-id pmd--project-type "Project ID: ")))
   (when-let* ((repo-url (pmd--projects-repository-url project)))
     (pmd--open-url repo-url)))
 
 (defun +pmd-copy-repo-slug (project)
   "Copy the repository slug for PROJECT to the clipboard."
-  (interactive "sProject ID: ")
+  (interactive (list (pmd--interactive-item-id pmd--project-type "Project ID: ")))
   (when-let* ((repo-slug (pmd--projects-repository-slug project)))
     (kill-new repo-slug)
     (message "Copied repository slug: %s" repo-slug)))
 
 (defun +pmd-open-teams-channel (project)
   "Open the MS Teams channel for PROJECT in the browser."
-  (interactive "sProject ID: ")
+  (interactive (list (pmd--interactive-item-id pmd--project-type "Project ID: ")))
   (when-let* ((data (pmd--recover-entity pmd--project-type project))
               (teams-channel (pmd--dig data "msteams" "channel_url")))
     (pmd--open-url teams-channel)))
 
 (defun +pmd-open-teams-alerting-channel (project)
   "Open the MS Teams alerting channel for PROJECT in the browser."
-  (interactive "sProject ID: ")
+  (interactive (list (pmd--interactive-item-id pmd--project-type "Project ID: ")))
   (when-let* ((data (pmd--recover-entity pmd--project-type project))
               (alerting-channel (pmd--dig data "alerting" "msteams_channel_url")))
     (pmd--open-url alerting-channel)))
 
 (defun +pmd-open-project-documentation (project)
   "Open the project documentation URL for PROJECT in the browser."
-  (interactive "sProject ID: ")
+  (interactive (list (pmd--interactive-item-id pmd--project-type "Project ID: ")))
   (when-let* ((data (pmd--recover-entity pmd--project-type project))
               (doc-url (pmd--dig data "documentation")))
     (if doc-url
@@ -552,29 +642,34 @@ Resolve the local clone path with `pmd-project-local-target-path-function'."
 
 (defun +pmd-search-github-repo (project-id)
   "Search code in the GitHub repository for PROJECT-ID."
-  (interactive "sProject ID: ")
+  (interactive (list (pmd--interactive-item-id pmd--project-type "Project ID: ")))
   (when-let* ((repo-slug (pmd--projects-repository-slug project-id)))
     (consult-gh-search-code nil repo-slug)))
 
 (defun +pmd-browse-github-repo (project-id)
   "Browse the GitHub repository for PROJECT-ID."
-  (interactive "sProject ID: ")
+  (interactive (list (pmd--interactive-item-id pmd--project-type "Project ID: ")))
   (when-let* ((repo-slug (pmd--projects-repository-slug project-id)))
     (consult-gh-dired repo-slug)))
 
+(defvar-keymap pmd-projects-embark-map
+  "r" '+pmd-open-repository
+  "R" '+pmd-copy-repo-url
+  "s" '+pmd-copy-repo-slug
+  "t" '+pmd-open-teams-channel
+  "a" '+pmd-open-teams-alerting-channel
+  "d" '+pmd-open-project-documentation
+  "c" '+pmd-clone-repository-permanent
+  "C" '+pmd-clone-repository-temporary)
+
+(with-eval-after-load 'consult-gh
+  (keymap-set pmd-projects-embark-map "g" '+pmd-search-github-repo)
+  (keymap-set pmd-projects-embark-map "e" '+pmd-browse-github-repo)
+  (when (boundp 'pmd-project-mode-map)
+    (keymap-set pmd-project-mode-map "g" '+pmd-search-github-repo)
+    (keymap-set pmd-project-mode-map "e" '+pmd-browse-github-repo)))
+
 (with-eval-after-load 'embark
-  (defvar-keymap pmd-projects-embark-map
-    "r" '+pmd-open-repository
-    "R" '+pmd-copy-repo-url
-    "s" '+pmd-copy-repo-slug
-    "t" '+pmd-open-teams-channel
-    "a" '+pmd-open-teams-alerting-channel
-    "d" '+pmd-open-project-documentation
-    "c" '+pmd-clone-repository-permanent
-    "C" '+pmd-clone-repository-temporary)
-  (with-eval-after-load 'consult-gh
-    (keymap-set pmd-projects-embark-map "g" '+pmd-search-github-repo)
-    (keymap-set pmd-projects-embark-map "e" '+pmd-browse-github-repo))
   (add-to-list 'embark-keymap-alist '(pmd-project . pmd-projects-embark-map)))
 
 ;;;; Teams
@@ -629,7 +724,7 @@ Resolve the local clone path with `pmd-project-local-target-path-function'."
                   :group (pmd--grouping-fn "org_unit")
                   :lookup #'consult--lookup-candidate
                   :sort nil)))
-      (pmd--browse-url (format "teams/%s" team-id)))))
+      (pmd--display-entity pmd--team-type team-id))))
 
 (defun pmd--team-channel-url (team-id)
   "Return the PMD team channel URL for TEAM-ID."
@@ -638,25 +733,27 @@ Resolve the local clone path with `pmd-project-local-target-path-function'."
 
 (defun +pmd-open-team-channel (team-id)
   "Open the PMD team channel in the browser."
-  (interactive)
+  (interactive (list (pmd--interactive-item-id pmd--team-type "Team ID: ")))
   (when-let* ((url (pmd--team-channel-url team-id)))
     (pmd--open-url url)))
 
 (defun +pmd-copy-team-channel-url (team-id)
   "Copy the PMD team channel URL to the clipboard."
-  (interactive)
+  (interactive (list (pmd--interactive-item-id pmd--team-type "Team ID: ")))
   (when-let* ((url (pmd--team-channel-url team-id)))
     (kill-new url)
     (message "Copied team channel URL to clipboard.")))
 
 (defun +pmd-open-team-alerting-channel (team-id)
   "Open the PMD team alerting channel in the browser."
+  (interactive (list (pmd--interactive-item-id pmd--team-type "Team ID: ")))
   (when-let* ((data (pmd--recover-entity pmd--team-type team-id))
               (alerting-url (pmd--string (pmd--dig data "alerting" "msteams_channel_url"))))
     (pmd--open-url alerting-url)))
 
 (defun +pmd-copy-team-email (team-id)
   "Copy the email address of TEAM-ID to the clipboard."
+  (interactive (list (pmd--interactive-item-id pmd--team-type "Team ID: ")))
   (when-let* ((data (pmd--recover-entity pmd--team-type team-id))
               (email (pmd--string (gethash "email" data))))
     (kill-new email)
@@ -664,6 +761,7 @@ Resolve the local clone path with `pmd-project-local-target-path-function'."
 
 (defun +pmd-copy-team-alerting-channel (team-id)
   "Copy the PMD team alerting channel URL to the clipboard."
+  (interactive (list (pmd--interactive-item-id pmd--team-type "Team ID: ")))
   (when-let* ((data (pmd--recover-entity pmd--team-type team-id))
               (alerting-url (pmd--string (pmd--dig data "alerting" "msteams_channel_url"))))
     (kill-new alerting-url)
@@ -671,20 +769,22 @@ Resolve the local clone path with `pmd-project-local-target-path-function'."
 
 (defun +pmd-open-team-confluence (team-id)
   "Open the Confluence page of TEAM-ID in the browser."
+  (interactive (list (pmd--interactive-item-id pmd--team-type "Team ID: ")))
   (when-let* ((data (pmd--recover-entity pmd--team-type team-id))
               (confluence-key (pmd--string (pmd--dig data "confluence" "key"))))
       (pmd--open-url (format "https://new-work.atlassian.net/wiki/spaces/%s"
                            confluence-key))))
 
+(defvar-keymap pmd-teams-embark-map
+  :doc "Keymap for PMD teams metadata actions."
+  "t" '+pmd-open-team-channel
+  "T" '+pmd-copy-team-channel-url
+  "e" '+pmd-copy-team-email
+  "c" '+pmd-open-team-confluence
+  "a" '+pmd-open-team-alerting-channel
+  "A" '+pmd-copy-team-alerting-channel)
+
 (with-eval-after-load 'embark
-  (defvar-keymap pmd-teams-embark-map
-    :doc "Keymap for PMD teams metadata embark actions."
-    "t" '+pmd-open-team-channel
-    "T" '+pmd-copy-team-channel-url
-    "e" '+pmd-copy-team-email
-    "c" '+pmd-open-team-confluence
-    "a" '+pmd-open-team-alerting-channel
-    "A" '+pmd-copy-team-alerting-channel)
   (add-to-list 'embark-keymap-alist `(,pmd--team-type . pmd-teams-embark-map)))
 
 ;;;; Service Groups
@@ -737,7 +837,7 @@ Resolve the local clone path with `pmd-project-local-target-path-function'."
                   :lookup #'consult--lookup-candidate
                   :require-match t
                   :sort nil)))
-      (pmd--browse-url (format "service_groups/%s" team-id)))))
+      (pmd--display-entity pmd--servicegroup-type team-id))))
 
 ;;;; People
 
@@ -788,22 +888,314 @@ Resolve the local clone path with `pmd-project-local-target-path-function'."
                   :annotate (pmd--consult-annotator #'pmd--people-annotate)
                   :require-match t
                   :sort nil)))
-      (let ((data (pmd--recover-entity pmd--people-type person-id)))
-        (pmd--open-url
-         (format "https://github.com/%s"
-                 (pmd--string (gethash "github_com" data))))))))
+      (pmd--display-entity pmd--people-type person-id))))
 
 (defun +pmd-copy-person-email (person-id)
   "Copy the email address of PERSON-ID to the clipboard."
+  (interactive (list (pmd--interactive-item-id pmd--people-type "Person ID: ")))
   (when-let* ((data (pmd--recover-entity pmd--people-type person-id))
               (email (pmd--string (gethash "email" data))))
     (kill-new email)
     (message "Copied email: %s" email)))
 
+(defvar-keymap pmd-people-embark-map
+  "e" '+pmd-copy-person-email)
+
 (with-eval-after-load 'embark
-  (defvar-keymap pmd-people-embark-map
-    "e" '+pmd-copy-person-email)
   (add-to-list 'embark-keymap-alist `(,pmd--people-type . pmd-people-embark-map)))
+
+;;;; AMQP Catalog
+
+(defvar pmd--amqp-catalog-history nil
+  "History for the AMQP namespace completion.")
+
+(defun pmd--amqp-namespaces-display (data)
+  "Return the namespace name for AMQP catalog DATA."
+  (pmd--string (gethash "namespace" data)))
+
+(defun pmd--amqp-catalog-candidates ()
+  "Return AMQP namespace candidates from the JSON catalog."
+  (message "Fetching AMQP catalog...")
+  (pmd--catalog-candidates
+   pmd--amqp-namespace-type pmd--amqp-catalog-url
+   "namespaces" "namespace" "namespace"))
+
+(defun pmd--amqp-catalog-annotate (candidate)
+  "Annotate AMQP namespace CANDIDATE with its message count."
+  (when-let* ((data (pmd--candidate-data candidate)))
+    (pmd--annotate-columns
+     candidate
+     `((,(format "messages: %s" (or (pmd--string (gethash "message_count" data)) "—"))
+        24 font-lock-constant-face)))))
+
+;;;###autoload
+(defun +pmd-amqp-catalog ()
+  "Consult AMQP namespaces from the project metadata catalog."
+  (interactive)
+  (let ((candidates (pmd--amqp-catalog-candidates)))
+    (when-let* ((namespace
+                 (consult--read
+                  candidates
+                  :prompt "PMD AMQP Namespace: "
+                  :category pmd--amqp-namespace-type
+                  :history 'pmd--amqp-catalog-history
+                  :require-match t
+                  :lookup #'consult--lookup-candidate
+                  :annotate (pmd--consult-annotator #'pmd--amqp-catalog-annotate)
+                  :sort nil)))
+      (pmd--display-entity pmd--amqp-namespace-type namespace))))
+
+;;;; Detail buffers
+
+(defvar pmd-item--emulation-mode-map-alist nil
+  "Emulation keymaps active in PMD item buffers.")
+
+(defvar-local pmd-item--mask-embark nil
+  "Non-nil in PMD item buffers to suppress global Embark entry keys.")
+
+(add-to-list 'emulation-mode-map-alists 'pmd-item--emulation-mode-map-alist)
+
+(defvar pmd-item--embark-suppression-map
+  (let ((map (make-sparse-keymap)))
+    (dolist (key '("C-." "C-," "C-c ." "C-c ,"))
+      (keymap-set map key 'undefined))
+    map)
+  "Map that masks global Embark entry keys in PMD item buffers.")
+
+(defun pmd--property-label (key)
+  "Return a readable label for property KEY."
+  (capitalize (replace-regexp-in-string "[-_]" " " key)))
+
+(defun pmd--property-group (key)
+  "Return the display group for property KEY."
+  (let ((name (downcase key)))
+    (cond
+     ((equal name "description") 'overview)
+     ((member name '("audit" "collected_at" "diagnostics" "environment"
+                     "namespace_count" "stale"))
+      'catalog)
+     ((or (member name '("team" "org_unit" "people" "head" "heads"
+                         "director" "directors" "contacts" "contact"
+                         "owner" "owners" "email" "cost_centre"))
+          (string-match-p "\\(?:lead\\|owner\\|contact\\)" name))
+      'ownership)
+     ((or (member name '("technology" "technologies" "technology_stack"
+                         "service_type" "tags"))
+          (string-match-p "\\(?:technolog\\|language\\|framework\\|runtime\\|platform\\|tag\\)" name))
+      'technology)
+     ((or (member name '("service_group" "product_lifecycle" "lifecycle"
+                         "status" "maturity" "tier" "namespace"
+                         "message_count"))
+          (string-match-p "\\(?:lifecycle\\|service_group\\)" name))
+      'service-context)
+     ((or (member name '("git" "msteams" "alerting" "confluence"
+                         "documentation" "github_com" "website"))
+          (string-match-p "\\(?:url\\|uri\\|link\\)\\'" name))
+      'links)
+     (t 'other))))
+
+(defconst pmd--property-group-order
+  '((overview . "Overview")
+    (catalog . "Catalog")
+    (ownership . "Ownership")
+    (technology . "Technology")
+    (service-context . "Service context")
+    (links . "Links and channels")
+    (other . "Other properties"))
+  "Ordered groups used when rendering PMD entity properties.")
+
+(defun pmd--insert-grouped-properties (data)
+  "Insert DATA's properties under semantic section headings."
+  (let (properties)
+    (maphash (lambda (key value)
+               (unless (member key '("name" "display_name" "id"))
+                 (push (cons key value) properties)))
+             data)
+    (dolist (group pmd--property-group-order)
+      (let ((items (sort
+                    (seq-filter
+                     (lambda (property)
+                       (eq (pmd--property-group (car property)) (car group)))
+                     (copy-sequence properties))
+                    (lambda (left right)
+                      (string-lessp (car left) (car right))))))
+        (when items
+          (insert (propertize (cdr group) 'face '(:weight bold :height 1.1))
+                  "\n")
+          (dolist (property items)
+            (pmd--insert-property (car property) (cdr property) 1))
+          (insert "\n"))))))
+
+(defun pmd--copy-action-bindings (source target)
+  "Copy direct bindings from action keymap SOURCE into mode keymap TARGET."
+  (map-keymap
+   (lambda (event binding)
+     (unless (keymapp binding)
+       (define-key target (vector event) binding)))
+   source))
+
+(defun pmd--insert-property-value (value depth)
+  "Insert VALUE recursively, indented by DEPTH levels."
+  (let ((indent (make-string (* 2 depth) ?\s)))
+    (cond
+     ((hash-table-p value)
+      (let (keys)
+        (maphash (lambda (key _value) (push key keys)) value)
+        (if keys
+            (dolist (key (sort keys #'string-lessp))
+              (pmd--insert-property key (gethash key value) depth))
+          (insert "—\n"))))
+     ((and (listp value) value)
+      (dolist (item value)
+        (insert indent "• ")
+        (cond
+         ((or (hash-table-p item) (and (listp item) item))
+          (insert "\n")
+          (pmd--insert-property-value item (1+ depth)))
+         (t
+          (insert (replace-regexp-in-string
+                   "\n" (concat "\n" indent "  ")
+                   (or (pmd--string item) "—"))
+                  "\n")))))
+     ((null value) (insert "—\n"))
+     (t
+      (insert (replace-regexp-in-string
+               "\n" (concat "\n" indent)
+               (pmd--string value))
+              "\n")))))
+
+(defun pmd--insert-property (key value depth)
+  "Insert property KEY and VALUE at indentation DEPTH."
+  (let ((indent (make-string (* 2 depth) ?\s)))
+    (insert indent (propertize (pmd--property-label key)
+                               'face 'font-lock-keyword-face)
+            ": ")
+    (if (or (hash-table-p value)
+            (and (listp value) value))
+        (cond
+         ((and (hash-table-p value) (= (hash-table-count value) 0))
+          (insert "—\n"))
+         ((and (listp value) (null value))
+          (insert "—\n"))
+         (t
+          (insert "\n")
+          (pmd--insert-property-value value (1+ depth))))
+      (pmd--insert-property-value value depth))))
+
+(define-derived-mode pmd-item-mode special-mode "PMD Item"
+  "Major mode for read-only PMD entity details.
+Entity-specific actions are available from the derived PMD modes."
+  (setq-local truncate-lines nil)
+  (visual-line-mode 1)
+  (setq-local pmd-item--mask-embark t)
+  (setq-local pmd-item--emulation-mode-map-alist
+              `((pmd-item--mask-embark . ,pmd-item--embark-suppression-map)))
+  (setq buffer-read-only t))
+
+(define-derived-mode pmd-project-mode pmd-item-mode "PMD Project"
+  "Major mode for project detail buffers.
+Bindings match `pmd-projects-embark-map'.")
+
+(define-derived-mode pmd-team-mode pmd-item-mode "PMD Team"
+  "Major mode for team detail buffers.
+Bindings match `pmd-teams-embark-map'.")
+
+(define-derived-mode pmd-people-mode pmd-item-mode "PMD Person"
+  "Major mode for person detail buffers.
+Bindings match `pmd-people-embark-map'.")
+
+(define-derived-mode pmd-service-group-mode pmd-item-mode "PMD Service Group"
+  "Major mode for service-group detail buffers.")
+
+(define-derived-mode pmd-amqp-namespace-mode pmd-item-mode "PMD AMQP Namespace"
+  "Major mode for AMQP namespace detail buffers.")
+
+(pmd--copy-action-bindings pmd-projects-embark-map pmd-project-mode-map)
+(pmd--copy-action-bindings pmd-teams-embark-map pmd-team-mode-map)
+(pmd--copy-action-bindings pmd-people-embark-map pmd-people-mode-map)
+
+(defun pmd--entity-mode (type)
+  "Return the detail-buffer mode for PMD entity TYPE."
+  (pcase type
+    ('pmd-project #'pmd-project-mode)
+    ('pmd-team #'pmd-team-mode)
+    ('pmd-service-group #'pmd-service-group-mode)
+    ('pmd-people #'pmd-people-mode)
+    ('pmd-amqp-namespace #'pmd-amqp-namespace-mode)
+    (_ #'pmd-item-mode)))
+
+(defun pmd--entity-action-map (type)
+  "Return the detail-mode action map for entity TYPE."
+  (pcase type
+    ('pmd-project pmd-projects-embark-map)
+    ('pmd-team pmd-teams-embark-map)
+    ('pmd-people pmd-people-embark-map)
+    (_ nil)))
+
+(defun pmd--insert-binding-legend (type)
+  "Insert the available detail-buffer bindings for entity TYPE."
+  (let ((bindings '(("q" . "Close detail buffer")))
+        (map (pmd--entity-action-map type)))
+    (when map
+      (map-keymap
+       (lambda (event command)
+         (when (and (symbolp command) (commandp command))
+           (push (cons (key-description (vector event))
+                       (pmd--property-label
+                        (string-remove-prefix "+pmd-" (symbol-name command))))
+                 bindings)))
+       map))
+    (setq bindings
+          (sort bindings (lambda (left right)
+                           (string-lessp (car left) (car right)))))
+    (insert (propertize "Bindings: " 'face 'font-lock-keyword-face)
+            (mapconcat
+             (lambda (binding)
+               (concat (propertize (car binding) 'face 'font-lock-constant-face)
+                       " " (cdr binding)))
+             bindings "  ·  ")
+            "\n")))
+
+(defun pmd--insert-catalog-details (type)
+  "Insert catalog-level data for entity TYPE, if it has a catalog."
+  (when-let* ((catalog (gethash type pmd--entity-catalog-data)))
+    (let ((details (copy-hash-table catalog)))
+      ;; Namespace entries already have their own Consult selection.
+      (remhash "namespaces" details)
+      (puthash "namespace_count"
+               (length (gethash "namespaces" catalog)) details)
+      (pmd--insert-grouped-properties details))))
+
+(defun pmd--display-entity (type id)
+  "Display the PMD entity of TYPE and ID in a details buffer."
+  (let* ((data (pmd--recover-entity type id))
+         (display-fn (pmd--entity-display-function type))
+         (name (or (and display-fn (funcall display-fn data))
+                   (pmd--string id)))
+         (entity-mode (pmd--entity-mode type))
+         (buffer (get-buffer-create
+                  (format "*PMD %s: %s [%s]*"
+                          (pmd--property-label
+                           (string-remove-prefix "pmd-" (symbol-name type)))
+                          name id))))
+    (with-current-buffer buffer
+      (funcall entity-mode)
+      (setq-local pmd-item-type type
+                  pmd-item-id id)
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (insert (propertize name 'face '(:weight bold :height 1.2)) "\n")
+        (pmd--insert-binding-legend type)
+        (insert (propertize (format "%s · %s\n\n"
+                                    (pmd--property-label
+                                     (string-remove-prefix "pmd-" (symbol-name type)))
+                                    id)
+                            'face 'shadow))
+        (pmd--insert-grouped-properties data)
+        (pmd--insert-catalog-details type)
+        (goto-char (point-min))
+        (set-buffer-modified-p nil)))
+    (pop-to-buffer buffer)))
 
 (provide 'consult-pmd)
 

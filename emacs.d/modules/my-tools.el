@@ -35,6 +35,7 @@
         ("t" . +pmd-teams)
         ("p" . +pmd-people)
         ("s" . +pmd-servicegroups)
+        ("a" . +pmd-amqp-catalog)
         ("c" . +pmd-cache-clear))
   :custom
   (pmd-base-url my/pmd-base-url)

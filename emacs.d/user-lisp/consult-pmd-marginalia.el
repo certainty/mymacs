@@ -60,10 +60,19 @@
      ((pmd--icon-github (gethash "github_com" data))
       :format "%-32s" :truncate 32 :face 'font-lock-string-face))))
 
+(defun pmd--marginalia-amqp-namespace-annotate (cand)
+  "Return a Marginalia annotation for AMQP namespace candidate CAND."
+  (when-let* ((data (pmd--candidate-data cand)))
+    (marginalia--fields
+     ((format "messages: %s"
+              (or (pmd--string (gethash "message_count" data)) "—"))
+      :format "%-20s" :truncate 20 :face 'font-lock-constant-face))))
+
 (dolist (entry '((pmd-project . pmd--marginalia-project-annotate)
                  (pmd-team . pmd--marginalia-team-annotate)
                  (pmd-service-group . pmd--marginalia-service-group-annotate)
-                 (pmd-people . pmd--marginalia-person-annotate)))
+                 (pmd-people . pmd--marginalia-person-annotate)
+                 (pmd-amqp-namespace . pmd--marginalia-amqp-namespace-annotate)))
   (setf (alist-get (car entry) marginalia-annotators)
         (list (cdr entry) 'builtin 'none)))
 

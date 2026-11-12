@@ -452,7 +452,6 @@
   :ensure t
   :pin "melpa"
   :hook
-  (sly-mrepl-mode . completion-preview-mode)
   (sly-mode . my/sly-eldoc-idle-delay)
   :custom
   (inferior-lisp-program "sbcl")

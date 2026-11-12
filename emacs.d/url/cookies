@@ -1,0 +1,24 @@
+;; Emacs-W3 HTTP cookies file  -*- lexical-binding: t -*-
+;; Automatically generated file!!! DO NOT EDIT!!!
+
+(setq url-cookie-storage
+ '((".openai.com"
+    [url-cookie "oai-did" "7aa3c433-c9bd-4d65-95dc-63bce9734dbb"
+                "Tue Nov 09 07:05:42 2027 GMT" "/" ".openai.com" nil]))
+)
+(setq url-cookie-secure-storage
+ '(("auth.openai.com"
+    [url-cookie "__oailb"
+                "eyJhbGciOiJFUzI1NiIsImtpZCI6Im9haWxiLXYxIiwidHlwIjoiSldUIn0.eyJob3N0IjoiYXV0aGFwaS1sb2dpbi1wcm92aWRlci5nYXRld2F5LnVuaWZpZWQtMTUuYXBpLm9wZW5haS5jb20iLCJpc3MiOiJlZGdlLWdhdGV3YXkiLCJhdWQiOlsiYXV0aC5vcGVuYWkuY29tIl0sImV4cCI6MTc5NDIxMzY0MiwiaWF0IjoxNzk0MjA3OTQyfQ.E3AP1OV0KrTpM6DcWcLWiSnCfdw8Grarce861eci8pRao_iq6DN6GX6JtEyba-of8BM2AXhIOC4rawTUqDldTQ"
+                "Mon Nov 09 08:35:42 2026 GMT" "/" "auth.openai.com" t]
+    [url-cookie "__cflb" "0H28w2ZepuU3KZxNdeQ8nqPebvtHnkY7p568PBRefYw"
+                "Mon, 09 Nov 2026 08:05:42 GMT" "/" "auth.openai.com" t]))
+)
+
+;; Local Variables:
+;; version-control: never
+;; no-byte-compile: t
+;; coding: utf-8-emacs-unix
+;; End:
+
+;;; cookies ends here
