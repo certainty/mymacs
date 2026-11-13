@@ -54,6 +54,7 @@
   :demand t
   :bind
   (:map corfu-map
+        ("C-g" . corfu-quit)
         ("C-y" . corfu-insert))
   :custom
   (corfu-auto t)
