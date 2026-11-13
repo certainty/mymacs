@@ -165,7 +165,7 @@
           (bg-mode-line-inactive "#000000")))
   (let* ((time (decode-time (current-time)))
          (hour (caddr time)))
-    (if (and (> hour 7) (< hour 18))
+    (if (and (> hour 6) (< hour 18))
         (load-theme 'modus-operandi-tinted t)
       (load-theme 'modus-vivendi))))
 

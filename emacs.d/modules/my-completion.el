@@ -52,6 +52,9 @@
 (use-package corfu
   :ensure t
   :demand t
+  :bind
+  (:map corfu-map
+        ("C-y" . corfu-insert))
   :custom
   (corfu-auto t)
   (global-corfu-minibuffer nil)
